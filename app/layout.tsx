@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     "Discord 陪玩",
     "VIP",
   ],
+  verification: {
+    google: "Ffo_OiPVxlTWWz7YOG-QVUXp4rO3992421osmFC7sPU",
+  },
   openGraph: {
     title: "深夜不關燈｜We Are Still Here",
     description:
