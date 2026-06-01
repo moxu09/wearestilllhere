@@ -151,7 +151,8 @@ export default function Home() {
         </p>
 
         <a
-          href="https://discord.gg/"
+          href="https://discord.gg/tXNnXWMHbJ
+"
           target="_blank"
           className="inline-block rounded-full bg-purple-400 px-10 py-4 text-black font-bold hover:bg-purple-300 transition"
         >
