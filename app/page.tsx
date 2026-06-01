@@ -1,3 +1,4 @@
+import PriceExplorer from "./components/PriceExplorer";
 const discordLink = "https://discord.gg/tXNnXWMHbJ";
 
 const services = [
@@ -250,63 +251,17 @@ export default function Home() {
           ))}
         </div>
       </section>
-
       <section id="price" className="relative z-10 bg-white/[0.03] px-6 py-24">
         <div className="mx-auto max-w-7xl">
           <SectionTitle
             label="PRICE"
             title="價目參考"
-            text="官網保留簡潔分類，完整價目與最新公告請以 Discord 為準。"
+            text="點選分類後，可以繼續查看細項。完整價目與最新公告請以 Discord 為準。"
           />
 
-          <div className="space-y-6">
-            {priceCards.map((card) => (
-              <div
-                key={card.id}
-                id={card.id}
-                className="glass-card scroll-mt-28 overflow-hidden rounded-[40px] border border-white/10 bg-black/40"
-              >
-                <div className="grid lg:grid-cols-[0.75fr_1.25fr]">
-                  <div className="border-b border-white/10 bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-8 lg:border-b-0 lg:border-r">
-                    <p className="mb-4 text-sm tracking-[0.35em] text-purple-300">
-                      {card.label}
-                    </p>
-
-                    <h3 className="text-3xl font-black md:text-4xl">
-                      {card.title}
-                    </h3>
-
-                    <p className="mt-5 leading-relaxed text-zinc-300">
-                      {card.desc}
-                    </p>
-                  </div>
-
-                  <div className="grid gap-4 p-8 md:grid-cols-2">
-                    {card.items.map(([name, price]) => (
-                      <div
-                        key={name}
-                        className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
-                      >
-                        <div className="flex justify-between gap-4">
-                          <span className="text-sm text-zinc-300">{name}</span>
-                          <span className="shrink-0 text-sm font-bold text-white">
-                            {price}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 text-sm leading-relaxed text-zinc-500">
-            ※ 遊戲陪玩不保證勝率、KD、段位、掉落物或任務結果。保底與特殊服務請以客服說明為準。
-          </p>
+          <PriceExplorer />
         </div>
       </section>
-
       <section id="vip" className="relative z-10 mx-auto max-w-7xl px-6 py-24">
         <SectionTitle
           label="VIP"
