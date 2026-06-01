@@ -24,3 +24,58 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(168, 85, 247, 0.22), transparent 35%),
+    radial-gradient(circle at top right, rgba(236, 72, 153, 0.16), transparent 30%),
+    radial-gradient(circle at bottom, rgba(59, 130, 246, 0.12), transparent 35%),
+    #08080c;
+}
+
+::selection {
+  background: rgba(216, 180, 254, 0.35);
+  color: white;
+}
+
+@keyframes float-light {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: translateY(-18px) scale(1.04);
+    opacity: 0.75;
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.45;
+  }
+}
+
+@keyframes soft-glow {
+  0% {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.18);
+  }
+
+  50% {
+    box-shadow: 0 0 60px rgba(236, 72, 153, 0.22);
+  }
+
+  100% {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.18);
+  }
+}
+
+.float-light {
+  animation: float-light 6s ease-in-out infinite;
+}
+
+.soft-glow {
+  animation: soft-glow 5s ease-in-out infinite;
+}

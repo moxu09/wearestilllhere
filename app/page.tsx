@@ -1,10 +1,16 @@
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#08080c] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#08080c] text-white">
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="float-light absolute left-[-120px] top-20 h-72 w-72 rounded-full bg-purple-500/20 blur-3xl" />
+        <div className="float-light absolute right-[-100px] top-80 h-80 w-80 rounded-full bg-pink-500/10 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl" />
+      </div>
       {/* 導覽列 */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl">
+      <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-black/35 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <a href="#home" className="text-lg font-bold">
+          <a href="#home" className="flex items-center gap-2 text-lg font-bold">
+            <span className="h-2.5 w-2.5 rounded-full bg-purple-300 shadow-[0_0_18px_rgba(216,180,254,0.9)]" />
             深夜不關燈
           </a>
 
@@ -49,11 +55,11 @@ export default function Home() {
         id="home"
         className="flex min-h-screen flex-col items-center justify-center px-6 pt-24 text-center"
       >
-        <p className="mb-4 text-sm tracking-[0.3em] text-purple-300">
+        <p className="mb-5 rounded-full border border-purple-300/20 bg-purple-300/10 px-5 py-2 text-sm tracking-[0.3em] text-purple-200 soft-glow">
           WE ARE STILL HERE
         </p>
 
-        <h1 className="mb-6 text-5xl font-bold md:text-7xl">
+        <h1 className="mb-6 bg-gradient-to-r from-white via-purple-100 to-pink-200 bg-clip-text text-6xl font-black tracking-tight text-transparent md:text-8xl">
           深夜不關燈
         </h1>
 
@@ -66,14 +72,14 @@ export default function Home() {
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <a
             href="#price"
-            className="rounded-full bg-white px-8 py-3 font-semibold text-black transition hover:bg-purple-200"
+            className="rounded-full bg-gradient-to-r from-purple-200 to-pink-200 px-8 py-3 font-bold text-black shadow-[0_0_30px_rgba(216,180,254,0.28)] transition hover:scale-105"
           >
             查看價目表
           </a>
 
           <a
             href="#contact"
-            className="rounded-full border border-white/30 px-8 py-3 font-semibold transition hover:bg-white/10"
+            className="rounded-full border border-white/20 bg-white/5 px-8 py-3 font-semibold backdrop-blur transition hover:scale-105 hover:bg-white/10"
           >
             聯絡客服
           </a>
