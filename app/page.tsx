@@ -6,60 +6,77 @@ const serviceCards = [
     tag: "CHAT",
     text: "不想一個人待著的時候，可以找人聊天、聽你說話、陪你度過深夜。",
     accent: "from-purple-400/30 to-pink-400/10",
+    href: "#price-chat",
   },
   {
     title: "遊戲陪玩",
     tag: "GAME",
     text: "提供 Steam、PUBG、特戰英豪、三角洲行動等多種陪玩與護航服務。",
     accent: "from-blue-400/30 to-purple-400/10",
+    href: "#price-game",
   },
   {
     title: "打賞禮物",
     tag: "GIFT",
     text: "用一份心意點亮對方的夜晚，支援特殊打賞、專屬禮物與浪漫品項。",
     accent: "from-pink-400/30 to-yellow-400/10",
+    href: "#price-gift",
   },
   {
     title: "VIP 尊享",
     tag: "VIP",
     text: "累積消費與單次儲值皆可升級，解鎖專屬頻道、折價券、周邊與冠名福利。",
     accent: "from-yellow-300/30 to-purple-400/10",
+    href: "#vip",
   },
 ];
 
 const companions = [
   {
-    name: "深夜陪伴",
-    role: "聊天 / 陪伴",
-    time: "依當日排班",
+    name: "小夜燈",
+    role: "聊天陪伴",
+    time: "20:00 - 02:00",
+    tags: ["溫柔陪聊", "情緒陪伴", "深夜在線"],
     desc: "適合想找人說說話、放鬆情緒、安靜陪伴的夜晚。",
     status: "推薦",
+    gradient: "from-purple-400/40 via-pink-300/20 to-blue-400/20",
+    href: "#price-chat",
   },
   {
-    name: "遊戲同伴",
+    name: "星光陪陪",
     role: "娛樂陪玩",
-    time: "多人遊戲可約",
+    time: "依當日排班",
+    tags: ["PUBG", "Steam", "輕鬆玩"],
     desc: "不追求壓力，只想一起開心玩、有人互動的首選。",
     status: "熱門",
+    gradient: "from-blue-400/40 via-purple-300/20 to-pink-400/20",
+    href: "#price-game",
   },
   {
     name: "技術陪陪",
     role: "特戰 / 護航",
     time: "需洽客服",
+    tags: ["特戰英豪", "三角洲", "技術服務"],
     desc: "依段位、模式與需求安排，適合需要穩定配合的玩家。",
     status: "技術",
+    gradient: "from-red-400/40 via-purple-300/20 to-orange-300/20",
+    href: "#price-game",
   },
   {
-    name: "專屬服務",
+    name: "專屬小管家",
     role: "VIP / 打賞",
     time: "客製安排",
+    tags: ["VIP", "冠名", "專屬服務"],
     desc: "冠名、專屬語音、禮物區、活動福利與高階會員尊享內容。",
     status: "尊享",
+    gradient: "from-yellow-300/40 via-pink-300/20 to-purple-400/20",
+    href: "#vip",
   },
 ];
 
 const priceSections = [
   {
+    id: "price-chat",
     title: "聊天陪伴",
     subtitle: "你說話，我聽著；你沉默，我陪著。",
     items: [
@@ -74,6 +91,7 @@ const priceSections = [
     ],
   },
   {
+    id: "price-chat",
     title: "出氣陪伴",
     subtitle: "情緒出口，盡情傾訴，我會好好接住你。",
     items: [
@@ -87,6 +105,7 @@ const priceSections = [
     ],
   },
   {
+    id: "price-game",
     title: "PUBG 娛樂陪玩",
     subtitle: "娛樂性質，不保證勝率與 KD。遊戲開始即算一場。",
     items: [
@@ -101,6 +120,7 @@ const priceSections = [
     ],
   },
   {
+    id: "price-game",
     title: "特戰英豪",
     subtitle: "依段位與服務類型計價，超凡以上可洽詢技術陪陪。",
     items: [
@@ -117,6 +137,7 @@ const priceSections = [
     ],
   },
   {
+    id: "price-game",
     title: "Steam 遊戲陪玩",
     subtitle: "深夜不關燈擁有最終解釋權，任何問題請洽客服。",
     items: [
@@ -127,6 +148,7 @@ const priceSections = [
     ],
   },
   {
+    id: "price-game",
     title: "三角洲行動",
     subtitle: "專業護航、純綠安全、效率穩定、客戶至上。",
     items: [
@@ -137,6 +159,17 @@ const priceSections = [
       ["猛攻護航 有保底", "1100 / 小時"],
       ["猛攻護航 保底金額", "1800 萬"],
       ["一般陪玩", "280 / 小時"],
+    ],
+  },
+  {
+    id: "price-gift",
+    title: "打賞禮物",
+    subtitle: "用一份心意，點亮對方的夜晚。",
+    items: [
+      ["特殊打賞", "依品項公告"],
+      ["明燈千里", "1999 元"],
+      ["專寵獨賞", "16888 元"],
+      ["明燈三千", "請洽客服"],
     ],
   },
 ];
@@ -235,22 +268,27 @@ function SectionTitle({
 }
 
 function PriceCard({
+  id,
   title,
   subtitle,
   items,
 }: {
+  id: string;
   title: string;
   subtitle: string;
   items: string[][];
 }) {
   return (
-    <div className="glass-card rounded-3xl border border-white/10 bg-black/40 p-7">
+    <div id={id} className="glass-card scroll-mt-28 rounded-3xl border border-white/10 bg-black/40 p-7">
       <h3 className="mb-2 text-2xl font-bold">{title}</h3>
       <p className="mb-6 text-sm leading-relaxed text-zinc-500">{subtitle}</p>
 
       <ul className="space-y-4">
         {items.map(([name, price]) => (
-          <li key={`${title}-${name}`} className="flex justify-between gap-4 border-b border-white/5 pb-3 text-sm text-zinc-300">
+          <li
+            key={`${title}-${name}`}
+            className="flex justify-between gap-4 border-b border-white/5 pb-3 text-sm text-zinc-300"
+          >
             <span>{name}</span>
             <span className="shrink-0 font-bold text-white">{price}</span>
           </li>
@@ -274,14 +312,13 @@ function TierCard({
   return (
     <div
       className={`vip-card rounded-3xl border p-7 ${
-        vvip
-          ? "border-purple-400/20 bg-purple-500/10"
-          : "border-white/10 bg-white/5"
+        vvip ? "border-purple-400/20 bg-purple-500/10" : "border-white/10 bg-white/5"
       }`}
     >
       <p className={`mb-3 text-sm tracking-[0.3em] ${vvip ? "text-pink-300" : "text-purple-300"}`}>
         {vvip ? "VVIP" : "VIP"}
       </p>
+
       <h3 className="mb-3 text-2xl font-black">{level}</h3>
       <p className="mb-5 text-sm leading-relaxed text-zinc-300">{need}</p>
 
@@ -395,6 +432,7 @@ export default function Home() {
                     <p className="text-sm tracking-[0.3em] text-purple-300">TONIGHT</p>
                     <h3 className="mt-2 text-2xl font-black">深夜營業中</h3>
                   </div>
+
                   <div className="rounded-full border border-green-300/20 bg-green-300/10 px-4 py-2 text-sm text-green-200">
                     ONLINE
                   </div>
@@ -402,11 +440,11 @@ export default function Home() {
 
                 <div className="space-y-4">
                   {[
-                    ["聊天陪伴", "有人聽你說話", "bg-purple-300"],
-                    ["遊戲陪玩", "今晚一起開局", "bg-blue-300"],
-                    ["VIP 尊享", "解鎖限定福利", "bg-pink-300"],
-                  ].map(([title, text, dot]) => (
-                    <div key={title} className="glass-card rounded-3xl border border-white/10 bg-white/5 p-5">
+                    ["聊天陪伴", "有人聽你說話", "bg-purple-300", "#price-chat"],
+                    ["遊戲陪玩", "今晚一起開局", "bg-blue-300", "#price-game"],
+                    ["VIP 尊享", "解鎖限定福利", "bg-pink-300", "#vip"],
+                  ].map(([title, text, dot, href]) => (
+                    <a key={title} href={href} className="glass-card block rounded-3xl border border-white/10 bg-white/5 p-5">
                       <div className="flex items-center gap-4">
                         <span className={`h-3 w-3 rounded-full ${dot} shadow-[0_0_20px_rgba(216,180,254,0.8)]`} />
                         <div>
@@ -414,7 +452,7 @@ export default function Home() {
                           <p className="text-sm text-zinc-400">{text}</p>
                         </div>
                       </div>
-                    </div>
+                    </a>
                   ))}
                 </div>
 
@@ -427,7 +465,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       <section className="relative z-10 mx-auto max-w-7xl px-6 py-10">
         <div className="grid gap-4 md:grid-cols-4">
           {[
@@ -436,7 +473,10 @@ export default function Home() {
             ["活動福利", "抽獎券與會員獎勵"],
             ["客服協助", "訂單問題即時處理"],
           ].map(([title, text]) => (
-            <div key={title} className="glass-card rounded-3xl border border-white/10 bg-white/5 p-6">
+            <div
+              key={title}
+              className="glass-card rounded-3xl border border-white/10 bg-white/5 p-6"
+            >
               <h3 className="text-xl font-black">{title}</h3>
               <p className="mt-2 text-sm text-zinc-400">{text}</p>
             </div>
@@ -453,14 +493,31 @@ export default function Home() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {serviceCards.map((card) => (
-            <div key={card.title} className="glass-card relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-7">
+            <a
+              key={card.title}
+              href={card.href}
+              className="glass-card relative block overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-7"
+            >
               <div className={`absolute inset-x-0 top-0 h-24 bg-gradient-to-br ${card.accent} blur-2xl`} />
+
               <div className="relative">
-                <p className="mb-5 text-sm tracking-[0.3em] text-purple-300">{card.tag}</p>
-                <h3 className="mb-4 text-2xl font-black">{card.title}</h3>
-                <p className="leading-relaxed text-zinc-400">{card.text}</p>
+                <p className="mb-5 text-sm tracking-[0.3em] text-purple-300">
+                  {card.tag}
+                </p>
+
+                <h3 className="mb-4 text-2xl font-black">
+                  {card.title}
+                </h3>
+
+                <p className="leading-relaxed text-zinc-400">
+                  {card.text}
+                </p>
+
+                <p className="mt-6 text-sm font-bold text-purple-200">
+                  查看對應價目 →
+                </p>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </section>
@@ -469,28 +526,82 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <SectionTitle
             tag="COMPANIONS"
-            title="推薦服務展示"
-            text="先用服務卡片展示，之後可以替換成真正的陪陪名片、上線狀態與接單時間。"
+            title="深夜陪伴名片牆"
+            text="先放官方推薦服務卡，之後可以替換成真實陪陪名片、照片、上線時間與擅長遊戲。"
           />
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {companions.map((person) => (
-              <div key={person.name} className="glass-card overflow-hidden rounded-3xl border border-white/10 bg-black/40">
-                <div className="h-36 bg-gradient-to-br from-purple-400/30 via-pink-400/10 to-blue-400/20" />
-                <div className="p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="text-2xl font-black">{person.name}</h3>
-                    <span className="rounded-full border border-purple-300/20 bg-purple-300/10 px-3 py-1 text-xs text-purple-200">
-                      {person.status}
-                    </span>
+              <a
+                key={person.name}
+                href={person.href}
+                className="glass-card group block overflow-hidden rounded-[32px] border border-white/10 bg-black/40"
+              >
+                <div className={`relative h-48 bg-gradient-to-br ${person.gradient}`}>
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.22),transparent_35%)]" />
+
+                  <div className="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/30 shadow-[0_0_45px_rgba(216,180,254,0.35)] backdrop-blur-xl">
+                    <span className="text-4xl">✦</span>
                   </div>
 
-                  <p className="text-sm text-purple-200">{person.role}</p>
-                  <p className="mt-1 text-sm text-zinc-500">{person.time}</p>
-                  <p className="mt-5 leading-relaxed text-zinc-400">{person.desc}</p>
+                  <div className="absolute right-4 top-4 rounded-full border border-white/20 bg-black/30 px-3 py-1 text-xs text-white backdrop-blur">
+                    {person.status}
+                  </div>
                 </div>
-              </div>
+
+                <div className="p-6">
+                  <p className="mb-2 text-sm tracking-[0.25em] text-purple-300">
+                    {person.role}
+                  </p>
+
+                  <h3 className="text-2xl font-black">
+                    {person.name}
+                  </h3>
+
+                  <p className="mt-2 text-sm text-zinc-500">
+                    {person.time}
+                  </p>
+
+                  <p className="mt-5 min-h-[72px] leading-relaxed text-zinc-400">
+                    {person.desc}
+                  </p>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {person.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-purple-300/20 bg-purple-300/10 px-3 py-1 text-xs text-purple-100"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-center text-sm font-bold text-zinc-200">
+                    查看對應價目
+                  </div>
+                </div>
+              </a>
             ))}
+          </div>
+
+          <div className="mt-8 rounded-[32px] border border-purple-300/20 bg-purple-300/10 p-8 text-center">
+            <h3 className="text-2xl font-black">
+              想成為深夜不關燈的陪陪嗎？
+            </h3>
+
+            <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-zinc-300">
+              我們歡迎聊天陪伴、遊戲陪玩、技術陪陪與活動協助人員加入。
+              詳細招募條件、抽成與排班方式，請加入 Discord 洽詢。
+            </p>
+
+            <a
+              href={discordLink}
+              target="_blank"
+              className="glow-button mt-6 inline-block rounded-full bg-gradient-to-r from-purple-200 to-pink-200 px-8 py-3 font-black text-black"
+            >
+              申請加入團隊
+            </a>
           </div>
         </div>
       </section>
@@ -499,12 +610,15 @@ export default function Home() {
         <SectionTitle
           tag="PRICE LIST"
           title="服務價目表"
-          text="實際價格、服務時間與陪陪狀態，請以 Discord 客服公告為準。"
+          text="點擊上方推薦服務後，會自動跳到對應價目。實際價格、服務時間與陪陪狀態，請以 Discord 客服公告為準。"
         />
 
         <div className="grid gap-6 lg:grid-cols-3">
-          {priceSections.map((section) => (
-            <PriceCard key={section.title} {...section} />
+          {priceSections.map((section, index) => (
+            <PriceCard
+              key={`${section.title}-${index}`}
+              {...section}
+            />
           ))}
         </div>
 
@@ -552,10 +666,21 @@ export default function Home() {
             ["DRAW DATE", "9/10", "統一開獎"],
             ["TICKET", "1000 元 = 1 張", "可累加抽獎券"],
           ].map(([label, title, text]) => (
-            <div key={label} className="glass-card rounded-3xl border border-white/10 bg-white/5 p-8 text-center">
-              <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">{label}</p>
-              <h3 className="mb-2 text-2xl font-black">{title}</h3>
-              <p className="text-zinc-400">{text}</p>
+            <div
+              key={label}
+              className="glass-card rounded-3xl border border-white/10 bg-white/5 p-8 text-center"
+            >
+              <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+                {label}
+              </p>
+
+              <h3 className="mb-2 text-2xl font-black">
+                {title}
+              </h3>
+
+              <p className="text-zinc-400">
+                {text}
+              </p>
             </div>
           ))}
         </div>
@@ -564,6 +689,7 @@ export default function Home() {
           <h3 className="mb-3 text-center text-2xl font-black md:text-3xl">
             總抽獎券數達標，即解鎖對應獎項
           </h3>
+
           <p className="text-center text-zinc-400">
             全服總抽獎券累積達指定數量後，將開放抽出對應獎品。
           </p>
@@ -579,12 +705,23 @@ export default function Home() {
                   : "border-white/10 bg-black/40"
               }`}
             >
-              <p className={`mb-4 text-sm tracking-[0.3em] ${index === 0 ? "text-yellow-300" : "text-purple-300"}`}>
+              <p className={`mb-4 text-sm tracking-[0.3em] ${
+                index === 0 ? "text-yellow-300" : "text-purple-300"
+              }`}>
                 PRIZE {String(index + 1).padStart(2, "0")}
               </p>
-              <h3 className="mb-4 text-2xl font-black">總數滿 {tickets}</h3>
-              <p className="text-lg font-bold text-white">{item}</p>
-              <p className="mt-2 text-sm text-zinc-400">{value}</p>
+
+              <h3 className="mb-4 text-2xl font-black">
+                總數滿 {tickets}
+              </h3>
+
+              <p className="text-lg font-bold text-white">
+                {item}
+              </p>
+
+              <p className="mt-2 text-sm text-zinc-400">
+                {value}
+              </p>
             </div>
           ))}
         </div>
@@ -596,9 +733,17 @@ export default function Home() {
 
           <div className="space-y-5">
             {faqs.map(([question, answer]) => (
-              <div key={question} className="glass-card rounded-3xl border border-white/10 bg-black/40 p-8">
-                <h3 className="mb-3 text-xl font-bold">{question}</h3>
-                <p className="leading-relaxed text-zinc-400">{answer}</p>
+              <div
+                key={question}
+                className="glass-card rounded-3xl border border-white/10 bg-black/40 p-8"
+              >
+                <h3 className="mb-3 text-xl font-bold">
+                  {question}
+                </h3>
+
+                <p className="leading-relaxed text-zinc-400">
+                  {answer}
+                </p>
               </div>
             ))}
           </div>
@@ -607,8 +752,14 @@ export default function Home() {
 
       <section id="contact" className="relative z-10 px-6 py-28 text-center">
         <div className="mx-auto max-w-4xl rounded-[40px] border border-white/10 bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-10 md:p-16">
-          <p className="mb-4 text-sm tracking-[0.35em] text-purple-200">JOIN US</p>
-          <h2 className="text-4xl font-black md:text-6xl">今晚，讓燈為你亮著。</h2>
+          <p className="mb-4 text-sm tracking-[0.35em] text-purple-200">
+            JOIN US
+          </p>
+
+          <h2 className="text-4xl font-black md:text-6xl">
+            今晚，讓燈為你亮著。
+          </h2>
+
           <p className="mx-auto mt-6 max-w-2xl leading-relaxed text-zinc-300">
             想點單、儲值、詢問服務，請透過 Discord 聯絡客服。
             我們會在深夜裡，替你留一盞燈。
