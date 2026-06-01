@@ -79,7 +79,35 @@ export default function Home() {
           </a>
         </div>
       </section>
+        <div className="mt-8 grid grid-cols-2 gap-3 text-sm md:hidden">
+          <a
+            href="#services"
+            className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-zinc-300"
+          >
+            服務項目
+          </a>
 
+          <a
+            href="#price"
+            className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-zinc-300"
+          >
+            價目表
+          </a>
+
+          <a
+            href="#vip"
+            className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-zinc-300"
+          >
+            VIP 福利
+          </a>
+
+          <a
+            href="#event"
+            className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-zinc-300"
+          >
+            開幕活動
+          </a>
+        </div>
       {/* 服務項目 */}
       <section id="services" className="mx-auto max-w-6xl px-6 py-24">
         <h2 className="mb-4 text-center text-3xl font-bold md:text-4xl">
