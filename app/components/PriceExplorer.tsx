@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const priceData = [
   {
@@ -246,11 +246,42 @@ const priceData = [
     ],
   },
 ];
-
 export default function PriceExplorer() {
   const [categoryId, setCategoryId] = useState("chat");
   const [groupId, setGroupId] = useState("male-chat");
+  useEffect(() => {
+    function syncFromHash() {
+      const hash = window.location.hash.replace("#", "");
 
+      const hashMap: Record<string, string> = {
+        "price-chat": "chat",
+        "price-game": "game",
+        "price-gift": "gift",
+        "price-vip": "vip",
+      };
+
+      const nextCategoryId = hashMap[hash];
+
+      if (!nextCategoryId) return;
+
+      const nextCategory = priceData.find(
+        (category) => category.id === nextCategoryId
+      );
+
+      if (!nextCategory) return;
+
+      setCategoryId(nextCategory.id);
+      setGroupId(nextCategory.groups[0].id);
+    }
+
+    syncFromHash();
+
+    window.addEventListener("hashchange", syncFromHash);
+
+    return () => {
+      window.removeEventListener("hashchange", syncFromHash);
+    };
+  }, []);
   const activeCategory = useMemo(() => {
     return priceData.find((category) => category.id === categoryId) ?? priceData[0];
   }, [categoryId]);
@@ -277,6 +308,7 @@ export default function PriceExplorer() {
         {priceData.map((category) => (
           <button
             key={category.id}
+            id={`price-${category.id}`}
             type="button"
             onClick={() => selectCategory(category.id)}
             className={`glass-card rounded-[28px] border p-6 text-left transition ${

@@ -6,19 +6,19 @@ const services = [
     title: "陪伴聊天",
     label: "CHAT",
     text: "不想一個人待著的時候，有人聽你說話，也有人陪你安靜。",
-    href: "#chat",
+    href: "#price-chat",
   },
   {
     title: "遊戲陪玩",
     label: "GAME",
     text: "PUBG、Steam、特戰英豪、三角洲行動，今晚一起開局。",
-    href: "#game",
+    href: "#price-game",
   },
   {
     title: "VIP 尊享",
     label: "VIP",
     text: "累積消費與單次儲值皆可升級，解鎖專屬福利與高階尊享。",
-    href: "#vip",
+    href: "#price-vip",
   },
 ];
 
