@@ -1,33 +1,79 @@
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#08080c] text-white">
+      {/* 導覽列 */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <a href="#home" className="text-lg font-bold">
+            深夜不關燈
+          </a>
+
+          <nav className="hidden gap-6 text-sm text-zinc-300 md:flex">
+            <a href="#services" className="hover:text-white">
+              服務
+            </a>
+
+            <a href="#price" className="hover:text-white">
+              價目表
+            </a>
+
+            <a href="#vip" className="hover:text-white">
+              VIP
+            </a>
+
+            <a href="#event" className="hover:text-white">
+              活動
+            </a>
+
+            <a href="#faq" className="hover:text-white">
+              FAQ
+            </a>
+
+            <a href="#contact" className="hover:text-white">
+              聯絡
+            </a>
+          </nav>
+
+          <a
+            href="https://discord.gg/tXNnXWMHbJ"
+            target="_blank"
+            className="rounded-full bg-purple-400 px-5 py-2 text-sm font-bold text-black transition hover:bg-purple-300"
+          >
+            加入 Discord
+          </a>
+        </div>
+      </header>
+
       {/* 首頁 Banner */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
+      <section
+        id="home"
+        className="flex min-h-screen flex-col items-center justify-center px-6 pt-24 text-center"
+      >
         <p className="mb-4 text-sm tracking-[0.3em] text-purple-300">
           WE ARE STILL HERE
         </p>
 
-        <h1 className="text-5xl md:text-7xl font-bold mb-6">
+        <h1 className="mb-6 text-5xl font-bold md:text-7xl">
           深夜不關燈
         </h1>
 
-        <p className="max-w-2xl text-lg md:text-xl text-zinc-300 leading-relaxed">
+        <p className="max-w-2xl text-lg leading-relaxed text-zinc-300 md:text-xl">
           一個在深夜也有人陪你的地方。
           <br />
           陪玩、聊天、打賞、儲值、VIP 服務，讓每一段夜晚都不孤單。
         </p>
 
-        <div className="mt-10 flex flex-col sm:flex-row gap-4">
+        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <a
-            href="#services"
-            className="rounded-full bg-white px-8 py-3 text-black font-semibold hover:bg-purple-200 transition"
+            href="#price"
+            className="rounded-full bg-white px-8 py-3 font-semibold text-black transition hover:bg-purple-200"
           >
-            查看服務
+            查看價目表
           </a>
 
           <a
             href="#contact"
-            className="rounded-full border border-white/30 px-8 py-3 font-semibold hover:bg-white/10 transition"
+            className="rounded-full border border-white/30 px-8 py-3 font-semibold transition hover:bg-white/10"
           >
             聯絡客服
           </a>
@@ -35,65 +81,77 @@ export default function Home() {
       </section>
 
       {/* 服務項目 */}
-      <section id="services" className="px-6 py-24 max-w-6xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+      <section id="services" className="mx-auto max-w-6xl px-6 py-24">
+        <h2 className="mb-4 text-center text-3xl font-bold md:text-4xl">
           服務項目
         </h2>
-        <p className="text-center text-zinc-400 mb-12">
+
+        <p className="mb-12 text-center text-zinc-400">
           選一盞適合你的燈，讓今晚有人陪你。
         </p>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
-            <h3 className="text-2xl font-bold mb-3">聊天陪伴</h3>
-            <p className="text-zinc-400 leading-relaxed">
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <h3 className="mb-3 text-2xl font-bold">
+              聊天陪伴
+            </h3>
+
+            <p className="leading-relaxed text-zinc-400">
               不想一個人待著的時候，可以找人聊天、聽你說話、陪你度過深夜。
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
-            <h3 className="text-2xl font-bold mb-3">遊戲陪玩</h3>
-            <p className="text-zinc-400 leading-relaxed">
-              提供娛樂陪玩與遊戲陪伴服務，讓每一場遊戲都更有溫度。
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <h3 className="mb-3 text-2xl font-bold">
+              遊戲陪玩
+            </h3>
+
+            <p className="leading-relaxed text-zinc-400">
+              提供娛樂陪玩、Steam 遊戲、PUBG、特戰英豪與三角洲行動服務。
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
-            <h3 className="text-2xl font-bold mb-3">打賞禮物</h3>
-            <p className="text-zinc-400 leading-relaxed">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <h3 className="mb-3 text-2xl font-bold">
+              打賞禮物
+            </h3>
+
+            <p className="leading-relaxed text-zinc-400">
               用一份心意點亮對方的夜晚，支援特殊打賞與專屬禮物。
             </p>
           </div>
         </div>
       </section>
 
-            {/* 價目表 */}
-      <section className="px-6 py-24 bg-white/[0.03]">
-        <div className="max-w-6xl mx-auto">
+      {/* 價目表 */}
+      <section id="price" className="bg-white/[0.03] px-6 py-24">
+        <div className="mx-auto max-w-6xl">
           <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
             PRICE LIST
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+          <h2 className="mb-4 text-center text-3xl font-bold md:text-4xl">
             服務價目表
           </h2>
 
-          <p className="text-center text-zinc-400 mb-12">
+          <p className="mb-12 text-center text-zinc-400">
             深夜不關燈提供聊天陪伴、遊戲陪玩、技術陪陪與護航服務。
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
             {/* 聊天陪伴 */}
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-2xl font-bold mb-2">聊天陪伴</h3>
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-2 text-2xl font-bold">
+                聊天陪伴
+              </h3>
 
-              <p className="text-sm text-zinc-500 mb-6">
+              <p className="mb-6 text-sm text-zinc-500">
                 你說話，我聽著；你沉默，我陪著。
               </p>
 
-              <div className="grid sm:grid-cols-2 gap-6">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <h4 className="text-lg font-bold mb-4 text-purple-200">
+                  <h4 className="mb-4 text-lg font-bold text-purple-200">
                     男生價目表
                   </h4>
 
@@ -121,7 +179,7 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <h4 className="text-lg font-bold mb-4 text-pink-200">
+                  <h4 className="mb-4 text-lg font-bold text-pink-200">
                     女生價目表
                   </h4>
 
@@ -151,16 +209,18 @@ export default function Home() {
             </div>
 
             {/* 出氣陪伴 */}
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-2xl font-bold mb-2">出氣陪伴</h3>
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-2 text-2xl font-bold">
+                出氣陪伴
+              </h3>
 
-              <p className="text-sm text-zinc-500 mb-6">
+              <p className="mb-6 text-sm text-zinc-500">
                 情緒出口，盡情傾訴，我會好好接住你。
               </p>
 
-              <div className="grid sm:grid-cols-2 gap-6">
+              <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <h4 className="text-lg font-bold mb-4 text-purple-200">
+                  <h4 className="mb-4 text-lg font-bold text-purple-200">
                     男生出氣
                   </h4>
 
@@ -183,7 +243,7 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <h4 className="text-lg font-bold mb-4 text-pink-200">
+                  <h4 className="mb-4 text-lg font-bold text-pink-200">
                     女生出氣
                   </h4>
 
@@ -206,23 +266,25 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-5 text-sm text-zinc-400">
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-zinc-400">
                 可額外加購臨時頭像更換：20 元
               </div>
             </div>
           </div>
 
           {/* PUBG */}
-          <div className="mt-6 rounded-3xl bg-black/40 border border-blue-400/20 p-8">
-            <h3 className="text-2xl font-bold mb-2">PUBG 娛樂陪玩</h3>
+          <div className="mt-6 rounded-3xl border border-blue-400/20 bg-black/40 p-8">
+            <h3 className="mb-2 text-2xl font-bold">
+              PUBG 娛樂陪玩
+            </h3>
 
-            <p className="text-sm text-zinc-500 mb-6">
+            <p className="mb-6 text-sm text-zinc-500">
               娛樂性質，不保證勝率與 KD。遊戲開始即算一場，落地成盒也算完成。
             </p>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-blue-500/10 border border-blue-400/20 p-6">
-                <h4 className="text-xl font-bold mb-4 text-blue-200">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-6">
+                <h4 className="mb-4 text-xl font-bold text-blue-200">
                   娛樂單陪
                 </h4>
 
@@ -244,8 +306,8 @@ export default function Home() {
                 </ul>
               </div>
 
-              <div className="rounded-2xl bg-purple-500/10 border border-purple-400/20 p-6">
-                <h4 className="text-xl font-bold mb-4 text-purple-200">
+              <div className="rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6">
+                <h4 className="mb-4 text-xl font-bold text-purple-200">
                   娛樂雙陪
                 </h4>
 
@@ -268,8 +330,10 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-5">
-              <h4 className="font-bold mb-3">深夜加成</h4>
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5">
+              <h4 className="mb-3 font-bold">
+                深夜加成
+              </h4>
 
               <ul className="space-y-3 text-zinc-300">
                 <li className="flex justify-between">
@@ -290,16 +354,18 @@ export default function Home() {
           </div>
 
           {/* 特戰英豪 */}
-          <div className="mt-6 rounded-3xl bg-black/40 border border-red-400/20 p-8">
-            <h3 className="text-2xl font-bold mb-2">特戰英豪陪玩</h3>
+          <div className="mt-6 rounded-3xl border border-red-400/20 bg-black/40 p-8">
+            <h3 className="mb-2 text-2xl font-bold">
+              特戰英豪陪玩
+            </h3>
 
-            <p className="text-sm text-zinc-500 mb-6">
+            <p className="mb-6 text-sm text-zinc-500">
               依段位與服務類型計價，超凡以上可洽詢技術陪陪。
             </p>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-white/5 border border-white/10 p-6">
-                <h4 className="text-xl font-bold mb-4">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <h4 className="mb-4 text-xl font-bold">
                   一般陪玩
                 </h4>
 
@@ -336,8 +402,8 @@ export default function Home() {
                 </ul>
               </div>
 
-              <div className="rounded-2xl bg-red-500/10 border border-red-400/20 p-6">
-                <h4 className="text-xl font-bold mb-4 text-red-200">
+              <div className="rounded-2xl border border-red-400/20 bg-red-500/10 p-6">
+                <h4 className="mb-4 text-xl font-bold text-red-200">
                   技術陪陪
                 </h4>
 
@@ -377,22 +443,24 @@ export default function Home() {
           </div>
 
           {/* Steam 遊戲 */}
-          <div className="mt-6 rounded-3xl bg-black/40 border border-sky-400/20 p-8">
-            <h3 className="text-2xl font-bold mb-2">Steam 遊戲陪玩</h3>
+          <div className="mt-6 rounded-3xl border border-sky-400/20 bg-black/40 p-8">
+            <h3 className="mb-2 text-2xl font-bold">
+              Steam 遊戲陪玩
+            </h3>
 
-            <p className="text-sm text-zinc-500 mb-6">
+            <p className="mb-6 text-sm text-zinc-500">
               深夜不關燈擁有最終解釋權，任何問題請洽客服。
             </p>
 
             <div className="space-y-4">
-              <div className="rounded-2xl bg-sky-500/10 border border-sky-400/20 p-5">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="rounded-2xl border border-sky-400/20 bg-sky-500/10 p-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h4 className="text-xl font-bold text-sky-200">
                       恐怖遊戲
                     </h4>
 
-                    <p className="text-zinc-400 mt-2">
+                    <p className="mt-2 text-zinc-400">
                       精神病院 / Devour / DBD / Lunch Lady / Content Warning / Escape the Backrooms / Lethal Company / REPO / Emissary Zero
                     </p>
                   </div>
@@ -403,14 +471,14 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-green-500/10 border border-green-400/20 p-5">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="rounded-2xl border border-green-400/20 bg-green-500/10 p-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h4 className="text-xl font-bold text-green-200">
                       肉鴿遊戲
                     </h4>
 
-                    <p className="text-zinc-400 mt-2">
+                    <p className="mt-2 text-zinc-400">
                       傳送地下城 / World War 2 / Dying Light / Bloons TD 6
                     </p>
                   </div>
@@ -421,14 +489,14 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-yellow-500/10 border border-yellow-400/20 p-5">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h4 className="text-xl font-bold text-yellow-200">
                       派對遊戲
                     </h4>
 
-                    <p className="text-zinc-400 mt-2">
+                    <p className="mt-2 text-zinc-400">
                       PICO PARK 2 / For The King / Liar&apos;s Bar / Ember Knights / Witch It
                     </p>
                   </div>
@@ -439,14 +507,14 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-emerald-500/10 border border-emerald-400/20 p-5">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-5">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h4 className="text-xl font-bold text-emerald-200">
                       生存遊戲
                     </h4>
 
-                    <p className="text-zinc-400 mt-2">
+                    <p className="mt-2 text-zinc-400">
                       Grounded / Palia / Craftopia / Once Human / Core Keeper
                     </p>
                   </div>
@@ -460,20 +528,22 @@ export default function Home() {
           </div>
 
           {/* 三角洲行動 */}
-          <div className="mt-6 rounded-3xl bg-black/40 border border-emerald-400/20 p-8">
-            <h3 className="text-2xl font-bold mb-2">三角洲行動護航服務</h3>
+          <div className="mt-6 rounded-3xl border border-emerald-400/20 bg-black/40 p-8">
+            <h3 className="mb-2 text-2xl font-bold">
+              三角洲行動護航服務
+            </h3>
 
-            <p className="text-sm text-zinc-500 mb-6">
+            <p className="mb-6 text-sm text-zinc-500">
               專業護航、純綠安全、效率穩定、客戶至上。
             </p>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-emerald-500/10 border border-emerald-400/20 p-6">
-                <h4 className="text-xl font-bold mb-2 text-emerald-200">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6">
+                <h4 className="mb-2 text-xl font-bold text-emerald-200">
                   機密雙護
                 </h4>
 
-                <p className="text-sm text-zinc-500 mb-5">
+                <p className="mb-5 text-sm text-zinc-500">
                   機密行動雙人護航，穩定帶出高價值物資。
                 </p>
 
@@ -495,12 +565,12 @@ export default function Home() {
                 </ul>
               </div>
 
-              <div className="rounded-2xl bg-red-500/10 border border-red-400/20 p-6">
-                <h4 className="text-xl font-bold mb-2 text-red-200">
+              <div className="rounded-2xl border border-red-400/20 bg-red-500/10 p-6">
+                <h4 className="mb-2 text-xl font-bold text-red-200">
                   猛攻護航
                 </h4>
 
-                <p className="text-sm text-zinc-500 mb-5">
+                <p className="mb-5 text-sm text-zinc-500">
                   猛攻模式護航，穩定推進完成高強度任務。
                 </p>
 
@@ -523,12 +593,12 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl bg-blue-500/10 border border-blue-400/20 p-6">
-              <h4 className="text-xl font-bold mb-4 text-blue-200">
+            <div className="mt-6 rounded-2xl border border-blue-400/20 bg-blue-500/10 p-6">
+              <h4 className="mb-4 text-xl font-bold text-blue-200">
                 一般陪玩類型
               </h4>
 
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <p className="text-zinc-400">
                   輕鬆遊玩、聊天互動、放鬆減壓，適合想找人一起玩的玩家。
                 </p>
@@ -539,18 +609,22 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl bg-yellow-500/10 border border-yellow-400/20 p-5 text-zinc-300">
+            <div className="mt-6 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-5 text-zinc-300">
               如需 3x3 方案，請洽談客服。保底單以第一把開局時間做計算，若是時間到但對局未結束，當局仍計算保底內。
             </div>
           </div>
 
           {/* 注意事項 */}
-          <div className="mt-6 rounded-3xl bg-white/5 border border-white/10 p-8">
-            <h3 className="text-2xl font-bold mb-6">注意事項</h3>
+          <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-8">
+            <h3 className="mb-6 text-2xl font-bold">
+              注意事項
+            </h3>
 
-            <div className="grid md:grid-cols-3 gap-6 text-sm text-zinc-400 leading-relaxed">
+            <div className="grid gap-6 text-sm leading-relaxed text-zinc-400 md:grid-cols-3">
               <div>
-                <h4 className="font-bold text-white mb-2">服務性質</h4>
+                <h4 className="mb-2 font-bold text-white">
+                  服務性質
+                </h4>
 
                 <p>
                   本團服務以娛樂陪伴為主，不保證勝率、KD、掉落物或任務結果。
@@ -558,7 +632,9 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="font-bold text-white mb-2">遊戲規範</h4>
+                <h4 className="mb-2 font-bold text-white">
+                  遊戲規範
+                </h4>
 
                 <p>
                   請互相尊重並維持良好遊戲氛圍，任何違規行為可能列入黑名單。
@@ -566,7 +642,9 @@ export default function Home() {
               </div>
 
               <div>
-                <h4 className="font-bold text-white mb-2">客服協助</h4>
+                <h4 className="mb-2 font-bold text-white">
+                  客服協助
+                </h4>
 
                 <p>
                   中途離隊、訂單問題、服務異常或特殊需求，請立即洽詢客服人員。
@@ -576,30 +654,32 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
       {/* VIP 與 VVIP */}
-      <section className="px-6 py-24 max-w-6xl mx-auto">
+      <section id="vip" className="mx-auto max-w-6xl px-6 py-24">
         <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
           VIP & VVIP
         </p>
 
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+        <h2 className="mb-4 text-center text-3xl font-bold md:text-4xl">
           會員等級與尊享福利
         </h2>
 
-        <p className="text-center text-zinc-400 mb-12">
+        <p className="mb-12 text-center text-zinc-400">
           前五段為 VIP 1 至 VIP 5，後五段為 VVIP 1 至 VVIP 5。
         </p>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               VIP 01
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VIP 1</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VIP 1
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 5,000 或單次儲值 3,000 ASD
             </p>
 
@@ -608,14 +688,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               VIP 02
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VIP 2</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VIP 2
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 8,000 或單次儲值 7,000 ASD
             </p>
 
@@ -625,14 +707,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               VIP 03
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VIP 3</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VIP 3
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 15,000 或單次儲值 13,500 ASD
             </p>
 
@@ -643,14 +727,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               VIP 04
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VIP 4</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VIP 4
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 30,000 或單次儲值 27,500 ASD
             </p>
 
@@ -662,14 +748,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               VIP 05
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VIP 5</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VIP 5
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 50,000 或單次儲值 45,000 ASD
             </p>
 
@@ -681,14 +769,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+          <div className="rounded-3xl border border-purple-400/20 bg-purple-500/10 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
               VVIP 01
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VVIP 1</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VVIP 1
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 66,666 或單次儲值 60,000 ASD
             </p>
 
@@ -703,14 +793,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+          <div className="rounded-3xl border border-purple-400/20 bg-purple-500/10 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
               VVIP 02
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VVIP 2</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VVIP 2
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 88,888 或單次儲值 80,000 ASD
             </p>
 
@@ -726,14 +818,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+          <div className="rounded-3xl border border-purple-400/20 bg-purple-500/10 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
               VVIP 03
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VVIP 3</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VVIP 3
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 99,999 或單次儲值 90,000 ASD
             </p>
 
@@ -748,14 +842,16 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+          <div className="rounded-3xl border border-purple-400/20 bg-purple-500/10 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
               VVIP 04
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VVIP 4</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VVIP 4
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 131,420 或單次儲值 120,000 ASD
             </p>
 
@@ -770,18 +866,20 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-pink-300/30 p-8 lg:col-span-2">
+          <div className="rounded-3xl border border-pink-300/30 bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-8 lg:col-span-2">
             <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
               VVIP 05
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">VVIP 5</h3>
+            <h3 className="mb-4 text-2xl font-bold">
+              VVIP 5
+            </h3>
 
-            <p className="text-zinc-300 mb-5">
+            <p className="mb-5 text-zinc-300">
               累積消費 521,314 或單次儲值 450,000 ASD
             </p>
 
-            <ul className="grid md:grid-cols-2 gap-3 text-zinc-400">
+            <ul className="grid gap-3 text-zinc-400 md:grid-cols-2">
               <li>獲得 66,666 ASD</li>
               <li>闆闆全體專屬特別播報</li>
               <li>獲得 6 折折價券</li>
@@ -801,26 +899,26 @@ export default function Home() {
       </section>
 
       {/* 開幕活動 */}
-      <section className="px-6 py-24 max-w-6xl mx-auto">
+      <section id="event" className="mx-auto max-w-6xl px-6 py-24">
         <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
           OPENING EVENT
         </p>
 
-        <h2 className="text-3xl md:text-5xl font-bold text-center mb-4">
+        <h2 className="mb-4 text-center text-3xl font-bold md:text-5xl">
           開幕大活動
         </h2>
 
-        <p className="text-center text-zinc-400 mb-12">
+        <p className="mb-12 text-center text-zinc-400">
           活動期間消費滿額即可獲得抽獎券，每消費 1000 元獲得 1 張，抽獎券可以累加。
         </p>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8 text-center">
-            <p className="text-sm tracking-[0.3em] text-purple-300 mb-3">
+        <div className="mb-8 grid gap-6 md:grid-cols-3">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               EVENT TIME
             </p>
 
-            <h3 className="text-2xl font-bold mb-2">
+            <h3 className="mb-2 text-2xl font-bold">
               6/01 - 8/31
             </h3>
 
@@ -829,12 +927,12 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8 text-center">
-            <p className="text-sm tracking-[0.3em] text-purple-300 mb-3">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               DRAW DATE
             </p>
 
-            <h3 className="text-2xl font-bold mb-2">
+            <h3 className="mb-2 text-2xl font-bold">
               9/10
             </h3>
 
@@ -843,12 +941,12 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white/5 border border-white/10 p-8 text-center">
-            <p className="text-sm tracking-[0.3em] text-purple-300 mb-3">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               TICKET
             </p>
 
-            <h3 className="text-2xl font-bold mb-2">
+            <h3 className="mb-2 text-2xl font-bold">
               1000 元 = 1 張
             </h3>
 
@@ -858,8 +956,8 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-pink-300/30 p-8 mb-6">
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-3">
+        <div className="mb-6 rounded-3xl border border-pink-300/30 bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-8">
+          <h3 className="mb-3 text-center text-2xl font-bold md:text-3xl">
             總抽獎券數達標，即解鎖對應獎項
           </h3>
 
@@ -868,17 +966,17 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="rounded-3xl bg-black/40 border border-yellow-300/20 p-8">
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="rounded-3xl border border-yellow-300/20 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-yellow-300">
               GRAND PRIZE
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 3000 張
             </h3>
 
-            <div className="rounded-2xl bg-yellow-500/10 border border-yellow-300/20 p-5">
+            <div className="rounded-2xl border border-yellow-300/20 bg-yellow-500/10 p-5">
               <p className="text-xl font-bold">
                 iPhone 17 Pro Max 512G
               </p>
@@ -889,16 +987,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               PRIZE 02
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 2000 張
             </h3>
 
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xl font-bold">
                 MacBook Air 512G
               </p>
@@ -909,16 +1007,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               PRIZE 03
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 1000 張
             </h3>
 
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xl font-bold">
                 iPad Air 11 吋 512G
               </p>
@@ -929,16 +1027,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               PRIZE 04
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 700 張
             </h3>
 
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xl font-bold">
                 AirPods Max 1 副
               </p>
@@ -949,16 +1047,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               PRIZE 05
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 500 張
             </h3>
 
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xl font-bold">
                 AirPods Pro 1 副
               </p>
@@ -969,16 +1067,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               PRIZE 06
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 200 張
             </h3>
 
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xl font-bold">
                 AirPods 1 副
               </p>
@@ -989,16 +1087,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               PRIZE 07
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 100 張
             </h3>
 
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xl font-bold">
                 Discord Nitro 一年
               </p>
@@ -1009,16 +1107,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+          <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
             <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
               PRIZE 08
             </p>
 
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="mb-4 text-2xl font-bold">
               總數滿 50 張
             </h3>
 
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xl font-bold">
                 Discord Nitro 一個月
               </p>
@@ -1030,14 +1128,14 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-8 rounded-3xl bg-white/5 border border-white/10 p-8">
-          <h3 className="text-2xl font-bold mb-4">
+        <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-8">
+          <h3 className="mb-4 text-2xl font-bold">
             活動說明
           </h3>
 
-          <div className="grid md:grid-cols-3 gap-6 text-sm text-zinc-400 leading-relaxed">
+          <div className="grid gap-6 text-sm leading-relaxed text-zinc-400 md:grid-cols-3">
             <div>
-              <h4 className="font-bold text-white mb-2">
+              <h4 className="mb-2 font-bold text-white">
                 抽獎券取得
               </h4>
 
@@ -1047,7 +1145,7 @@ export default function Home() {
             </div>
 
             <div>
-              <h4 className="font-bold text-white mb-2">
+              <h4 className="mb-2 font-bold text-white">
                 獎項解鎖
               </h4>
 
@@ -1057,7 +1155,7 @@ export default function Home() {
             </div>
 
             <div>
-              <h4 className="font-bold text-white mb-2">
+              <h4 className="mb-2 font-bold text-white">
                 最終公告
               </h4>
 
@@ -1068,94 +1166,96 @@ export default function Home() {
           </div>
         </div>
       </section>
+
       {/* 常見問題 */}
-      <section className="px-6 py-24 bg-white/[0.03]">
-        <div className="max-w-5xl mx-auto">
+      <section id="faq" className="bg-white/[0.03] px-6 py-24">
+        <div className="mx-auto max-w-5xl">
           <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
             FAQ
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
             常見問題
           </h2>
 
           <div className="space-y-5">
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-xl font-bold mb-3">
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-3 text-xl font-bold">
                 如何下單？
               </h3>
 
-              <p className="text-zinc-400 leading-relaxed">
+              <p className="leading-relaxed text-zinc-400">
                 請加入 Discord 伺服器，依照點單系統選擇服務項目、陪陪、時段與付款方式，客服會協助確認訂單。
               </p>
             </div>
 
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-xl font-bold mb-3">
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-3 text-xl font-bold">
                 可以指定陪陪嗎？
               </h3>
 
-              <p className="text-zinc-400 leading-relaxed">
+              <p className="leading-relaxed text-zinc-400">
                 可以，指定陪陪需依照陪陪當下接單狀態與時間安排為主。若指定人員無法接單，客服會協助媒合其他合適人選。
               </p>
             </div>
 
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-xl font-bold mb-3">
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-3 text-xl font-bold">
                 付款方式有哪些？
               </h3>
 
-              <p className="text-zinc-400 leading-relaxed">
-                目前付款方式有信用卡、轉帳、無卡、月結，若已儲值 ASD，也可以使用儲值卡餘額付款。
+              <p className="leading-relaxed text-zinc-400">
+                目前付款方式請以 Discord 內公告為準。若已儲值 ASD，也可以使用儲值卡餘額付款。
               </p>
             </div>
 
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-xl font-bold mb-3">
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-3 text-xl font-bold">
                 遊戲陪玩會保證勝率嗎？
               </h3>
 
-              <p className="text-zinc-400 leading-relaxed">
+              <p className="leading-relaxed text-zinc-400">
                 一般娛樂陪玩不保證勝率、KD、段位、掉落物或任務結果。若為保底或特殊服務，請依照該服務規則與客服說明為準。
               </p>
             </div>
 
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-xl font-bold mb-3">
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-3 text-xl font-bold">
                 如果訂單中途有問題怎麼辦？
               </h3>
 
-              <p className="text-zinc-400 leading-relaxed">
+              <p className="leading-relaxed text-zinc-400">
                 若遇到陪陪離線、時間爭議、付款問題或其他異常，請立即聯絡客服，不要私下爭執，客服會協助處理。
               </p>
             </div>
-            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-xl font-bold mb-3">
-                深夜不關燈合法嗎？
+
+            <div className="rounded-3xl border border-white/10 bg-black/40 p-8">
+              <h3 className="mb-3 text-xl font-bold">
+                深夜不關燈是合法的嗎？
               </h3>
 
-              <p className="text-zinc-400 leading-relaxed">
-                我們絕對合法！並有依照中華民國法規設立登記。
+              <p className="leading-relaxed text-zinc-400">
+                絕對是！深夜不關燈是依據中華民國法規設立登記的工作室。
               </p>
             </div>
           </div>
         </div>
       </section>
+
       {/* 聯絡 */}
-      <section id="contact" className="px-6 py-24 bg-white/[0.03] text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section id="contact" className="bg-white/[0.03] px-6 py-24 text-center">
+        <h2 className="mb-6 text-3xl font-bold md:text-4xl">
           加入我們的 Discord
         </h2>
 
-        <p className="text-zinc-400 mb-10">
+        <p className="mb-10 text-zinc-400">
           想點單、儲值、詢問服務，請透過 Discord 聯絡客服。
         </p>
 
         <a
-          href="https://discord.gg/tXNnXWMHbJ
-"
+          href="https://discord.gg/tXNnXWMHbJ"
           target="_blank"
-          className="inline-block rounded-full bg-purple-400 px-10 py-4 text-black font-bold hover:bg-purple-300 transition"
+          className="inline-block rounded-full bg-purple-400 px-10 py-4 font-bold text-black transition hover:bg-purple-300"
         >
           進入 Discord
         </a>
