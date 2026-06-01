@@ -800,29 +800,275 @@ export default function Home() {
         </p>
       </section>
 
-
       {/* 開幕活動 */}
-      <section className="px-6 py-24 max-w-5xl mx-auto text-center">
-        <p className="mb-4 text-sm tracking-[0.3em] text-purple-300">
+      <section className="px-6 py-24 max-w-6xl mx-auto">
+        <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
           OPENING EVENT
         </p>
 
-        <h2 className="text-3xl md:text-5xl font-bold mb-6">
+        <h2 className="text-3xl md:text-5xl font-bold text-center mb-4">
           開幕大活動
         </h2>
 
-        <p className="text-zinc-300 text-lg leading-relaxed">
-          活動期間消費滿額即可獲得抽獎券。
-          <br />
-          每消費 1000 元獲得 1 張，抽獎券可以累加。
+        <p className="text-center text-zinc-400 mb-12">
+          活動期間消費滿額即可獲得抽獎券，每消費 1000 元獲得 1 張，抽獎券可以累加。
         </p>
 
-        <div className="mt-10 rounded-3xl bg-white/5 border border-white/10 p-8">
-          <p className="text-2xl font-bold mb-2">6/01 - 8/31</p>
-          <p className="text-zinc-400">開獎日期：9/10</p>
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8 text-center">
+            <p className="text-sm tracking-[0.3em] text-purple-300 mb-3">
+              EVENT TIME
+            </p>
+
+            <h3 className="text-2xl font-bold mb-2">
+              6/01 - 8/31
+            </h3>
+
+            <p className="text-zinc-400">
+              活動期間
+            </p>
+          </div>
+
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8 text-center">
+            <p className="text-sm tracking-[0.3em] text-purple-300 mb-3">
+              DRAW DATE
+            </p>
+
+            <h3 className="text-2xl font-bold mb-2">
+              9/10
+            </h3>
+
+            <p className="text-zinc-400">
+              統一開獎
+            </p>
+          </div>
+
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8 text-center">
+            <p className="text-sm tracking-[0.3em] text-purple-300 mb-3">
+              TICKET
+            </p>
+
+            <h3 className="text-2xl font-bold mb-2">
+              1000 元 = 1 張
+            </h3>
+
+            <p className="text-zinc-400">
+              可累加抽獎券
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-pink-300/30 p-8 mb-6">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-3">
+            總抽獎券數達標，即解鎖對應獎項
+          </h3>
+
+          <p className="text-center text-zinc-400">
+            全服總抽獎券累積達指定數量後，將開放抽出對應獎品。
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="rounded-3xl bg-black/40 border border-yellow-300/20 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-yellow-300">
+              GRAND PRIZE
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 3000 張
+            </h3>
+
+            <div className="rounded-2xl bg-yellow-500/10 border border-yellow-300/20 p-5">
+              <p className="text-xl font-bold">
+                iPhone 17 Pro Max 512G
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                價值約 52,900 元
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              PRIZE 02
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 2000 張
+            </h3>
+
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <p className="text-xl font-bold">
+                MacBook Air 512G
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                價值約 35,900 元
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              PRIZE 03
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 1000 張
+            </h3>
+
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <p className="text-xl font-bold">
+                iPad Air 11 吋 512G
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                價值約 30,400 元
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              PRIZE 04
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 700 張
+            </h3>
+
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <p className="text-xl font-bold">
+                AirPods Max 1 副
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                價值約 17,990 元
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              PRIZE 05
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 500 張
+            </h3>
+
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <p className="text-xl font-bold">
+                AirPods Pro 1 副
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                價值約 7,490 元
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              PRIZE 06
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 200 張
+            </h3>
+
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <p className="text-xl font-bold">
+                AirPods 1 副
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                價值約 4,990 元
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              PRIZE 07
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 100 張
+            </h3>
+
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <p className="text-xl font-bold">
+                Discord Nitro 一年
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                價值約 3,200 元
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              PRIZE 08
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">
+              總數滿 50 張
+            </h3>
+
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <p className="text-xl font-bold">
+                Discord Nitro 一個月
+              </p>
+
+              <p className="mt-2 text-zinc-400">
+                開幕限定小確幸
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-3xl bg-white/5 border border-white/10 p-8">
+          <h3 className="text-2xl font-bold mb-4">
+            活動說明
+          </h3>
+
+          <div className="grid md:grid-cols-3 gap-6 text-sm text-zinc-400 leading-relaxed">
+            <div>
+              <h4 className="font-bold text-white mb-2">
+                抽獎券取得
+              </h4>
+
+              <p>
+                活動期間每消費 1000 元即可獲得 1 張抽獎券，抽獎券可累加。
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white mb-2">
+                獎項解鎖
+              </h4>
+
+              <p>
+                依全服總抽獎券數量解鎖對應獎項，達標後才會抽出該獎項。
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-white mb-2">
+                最終公告
+              </h4>
+
+              <p>
+                活動規則、獎項細節與開獎結果，請以 Discord 官方公告為準。
+              </p>
+            </div>
+          </div>
         </div>
       </section>
-
+      
       {/* 聯絡 */}
       <section id="contact" className="px-6 py-24 bg-white/[0.03] text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
