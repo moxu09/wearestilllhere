@@ -67,56 +67,739 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 價目表 */}
+            {/* 價目表 */}
       <section className="px-6 py-24 bg-white/[0.03]">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            價目參考
+        <div className="max-w-6xl mx-auto">
+          <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
+            PRICE LIST
+          </p>
+
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+            服務價目表
           </h2>
 
+          <p className="text-center text-zinc-400 mb-12">
+            深夜不關燈提供聊天陪伴、遊戲陪玩、技術陪陪與護航服務。
+          </p>
+
           <div className="grid md:grid-cols-2 gap-6">
+            {/* 聊天陪伴 */}
             <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-2xl font-bold mb-6">聊天陪伴</h3>
-              <ul className="space-y-4 text-zinc-300">
-                <li className="flex justify-between">
-                  <span>女生 30 分鐘</span>
-                  <span>210 元</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>女生 1 小時</span>
-                  <span>350 元</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>女生 90 分鐘</span>
-                  <span>500 元</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>女生 2 小時</span>
-                  <span>650 元</span>
-                </li>
-              </ul>
+              <h3 className="text-2xl font-bold mb-2">聊天陪伴</h3>
+
+              <p className="text-sm text-zinc-500 mb-6">
+                你說話，我聽著；你沉默，我陪著。
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-lg font-bold mb-4 text-purple-200">
+                    男生價目表
+                  </h4>
+
+                  <ul className="space-y-4 text-zinc-300">
+                    <li className="flex justify-between">
+                      <span>半小時</span>
+                      <span>160 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>一小時</span>
+                      <span>300 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>90 分鐘</span>
+                      <span>450 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>兩小時</span>
+                      <span>550 元</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="text-lg font-bold mb-4 text-pink-200">
+                    女生價目表
+                  </h4>
+
+                  <ul className="space-y-4 text-zinc-300">
+                    <li className="flex justify-between">
+                      <span>半小時</span>
+                      <span>210 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>一小時</span>
+                      <span>350 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>90 分鐘</span>
+                      <span>500 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>兩小時</span>
+                      <span>650 元</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
 
+            {/* 出氣陪伴 */}
             <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
-              <h3 className="text-2xl font-bold mb-6">出氣陪伴</h3>
-              <ul className="space-y-4 text-zinc-300">
+              <h3 className="text-2xl font-bold mb-2">出氣陪伴</h3>
+
+              <p className="text-sm text-zinc-500 mb-6">
+                情緒出口，盡情傾訴，我會好好接住你。
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-lg font-bold mb-4 text-purple-200">
+                    男生出氣
+                  </h4>
+
+                  <ul className="space-y-4 text-zinc-300">
+                    <li className="flex justify-between">
+                      <span>10 分鐘</span>
+                      <span>100 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>30 分鐘</span>
+                      <span>250 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>一小時</span>
+                      <span>450 元</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="text-lg font-bold mb-4 text-pink-200">
+                    女生出氣
+                  </h4>
+
+                  <ul className="space-y-4 text-zinc-300">
+                    <li className="flex justify-between">
+                      <span>10 分鐘</span>
+                      <span>100 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>30 分鐘</span>
+                      <span>250 元</span>
+                    </li>
+
+                    <li className="flex justify-between">
+                      <span>一小時</span>
+                      <span>450 元</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-5 text-sm text-zinc-400">
+                可額外加購臨時頭像更換：20 元
+              </div>
+            </div>
+          </div>
+
+          {/* PUBG */}
+          <div className="mt-6 rounded-3xl bg-black/40 border border-blue-400/20 p-8">
+            <h3 className="text-2xl font-bold mb-2">PUBG 娛樂陪玩</h3>
+
+            <p className="text-sm text-zinc-500 mb-6">
+              娛樂性質，不保證勝率與 KD。遊戲開始即算一場，落地成盒也算完成。
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="rounded-2xl bg-blue-500/10 border border-blue-400/20 p-6">
+                <h4 className="text-xl font-bold mb-4 text-blue-200">
+                  娛樂單陪
+                </h4>
+
+                <ul className="space-y-4 text-zinc-300">
+                  <li className="flex justify-between">
+                    <span>1 場</span>
+                    <span>99 元</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>3 場</span>
+                    <span>289 元</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>5 場</span>
+                    <span>459 元</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="rounded-2xl bg-purple-500/10 border border-purple-400/20 p-6">
+                <h4 className="text-xl font-bold mb-4 text-purple-200">
+                  娛樂雙陪
+                </h4>
+
+                <ul className="space-y-4 text-zinc-300">
+                  <li className="flex justify-between">
+                    <span>1 場</span>
+                    <span>180 元</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>3 場</span>
+                    <span>499 元</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>5 場</span>
+                    <span>888 元</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-5">
+              <h4 className="font-bold mb-3">深夜加成</h4>
+
+              <ul className="space-y-3 text-zinc-300">
                 <li className="flex justify-between">
-                  <span>女生 10 分鐘</span>
-                  <span>100 元</span>
+                  <span>300 元以下訂單金額</span>
+                  <span>10%</span>
                 </li>
+
                 <li className="flex justify-between">
-                  <span>女生 30 分鐘</span>
-                  <span>250 元</span>
-                </li>
-                <li className="flex justify-between">
-                  <span>女生 1 小時</span>
-                  <span>450 元</span>
+                  <span>300 元以上訂單金額</span>
+                  <span>5%</span>
                 </li>
               </ul>
+
+              <p className="mt-4 text-sm text-zinc-500">
+                00:00 後開始計算。
+              </p>
+            </div>
+          </div>
+
+          {/* 特戰英豪 */}
+          <div className="mt-6 rounded-3xl bg-black/40 border border-red-400/20 p-8">
+            <h3 className="text-2xl font-bold mb-2">特戰英豪陪玩</h3>
+
+            <p className="text-sm text-zinc-500 mb-6">
+              依段位與服務類型計價，超凡以上可洽詢技術陪陪。
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="rounded-2xl bg-white/5 border border-white/10 p-6">
+                <h4 className="text-xl font-bold mb-4">
+                  一般陪玩
+                </h4>
+
+                <ul className="space-y-4 text-zinc-300">
+                  <li className="flex justify-between">
+                    <span>一般場</span>
+                    <span>250 / hr</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>黃金含以下</span>
+                    <span>250 / hr</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>白金</span>
+                    <span>260 / hr</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>鑽石</span>
+                    <span>270 / hr</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>超凡</span>
+                    <span>310 / hr</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>超凡以上</span>
+                    <span>請洽客服</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="rounded-2xl bg-red-500/10 border border-red-400/20 p-6">
+                <h4 className="text-xl font-bold mb-4 text-red-200">
+                  技術陪陪
+                </h4>
+
+                <ul className="space-y-4 text-zinc-300">
+                  <li className="flex justify-between">
+                    <span>黃金含以下及匹配</span>
+                    <span>260 / hr</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>白金</span>
+                    <span>180 / 局</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>鑽石</span>
+                    <span>210 / 局</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>超凡</span>
+                    <span>240 / 局</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>神話</span>
+                    <span>300 / 局</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>輻能</span>
+                    <span>洽詢客服</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Steam 遊戲 */}
+          <div className="mt-6 rounded-3xl bg-black/40 border border-sky-400/20 p-8">
+            <h3 className="text-2xl font-bold mb-2">Steam 遊戲陪玩</h3>
+
+            <p className="text-sm text-zinc-500 mb-6">
+              深夜不關燈擁有最終解釋權，任何問題請洽客服。
+            </p>
+
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-sky-500/10 border border-sky-400/20 p-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div>
+                    <h4 className="text-xl font-bold text-sky-200">
+                      恐怖遊戲
+                    </h4>
+
+                    <p className="text-zinc-400 mt-2">
+                      精神病院 / Devour / DBD / Lunch Lady / Content Warning / Escape the Backrooms / Lethal Company / REPO / Emissary Zero
+                    </p>
+                  </div>
+
+                  <span className="text-2xl font-bold">
+                    250 / hr
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-green-500/10 border border-green-400/20 p-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div>
+                    <h4 className="text-xl font-bold text-green-200">
+                      肉鴿遊戲
+                    </h4>
+
+                    <p className="text-zinc-400 mt-2">
+                      傳送地下城 / World War 2 / Dying Light / Bloons TD 6
+                    </p>
+                  </div>
+
+                  <span className="text-2xl font-bold">
+                    240 / hr
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-yellow-500/10 border border-yellow-400/20 p-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div>
+                    <h4 className="text-xl font-bold text-yellow-200">
+                      派對遊戲
+                    </h4>
+
+                    <p className="text-zinc-400 mt-2">
+                      PICO PARK 2 / For The King / Liar&apos;s Bar / Ember Knights / Witch It
+                    </p>
+                  </div>
+
+                  <span className="text-2xl font-bold">
+                    230 / hr
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-emerald-500/10 border border-emerald-400/20 p-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div>
+                    <h4 className="text-xl font-bold text-emerald-200">
+                      生存遊戲
+                    </h4>
+
+                    <p className="text-zinc-400 mt-2">
+                      Grounded / Palia / Craftopia / Once Human / Core Keeper
+                    </p>
+                  </div>
+
+                  <span className="text-2xl font-bold">
+                    260 / hr
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 三角洲行動 */}
+          <div className="mt-6 rounded-3xl bg-black/40 border border-emerald-400/20 p-8">
+            <h3 className="text-2xl font-bold mb-2">三角洲行動護航服務</h3>
+
+            <p className="text-sm text-zinc-500 mb-6">
+              專業護航、純綠安全、效率穩定、客戶至上。
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="rounded-2xl bg-emerald-500/10 border border-emerald-400/20 p-6">
+                <h4 className="text-xl font-bold mb-2 text-emerald-200">
+                  機密雙護
+                </h4>
+
+                <p className="text-sm text-zinc-500 mb-5">
+                  機密行動雙人護航，穩定帶出高價值物資。
+                </p>
+
+                <ul className="space-y-4 text-zinc-300">
+                  <li className="flex justify-between">
+                    <span>基本無保</span>
+                    <span>600 元 / 小時</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>有保底</span>
+                    <span>800 元 / 小時</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>保底金額</span>
+                    <span>1000 萬</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="rounded-2xl bg-red-500/10 border border-red-400/20 p-6">
+                <h4 className="text-xl font-bold mb-2 text-red-200">
+                  猛攻護航
+                </h4>
+
+                <p className="text-sm text-zinc-500 mb-5">
+                  猛攻模式護航，穩定推進完成高強度任務。
+                </p>
+
+                <ul className="space-y-4 text-zinc-300">
+                  <li className="flex justify-between">
+                    <span>基本無保</span>
+                    <span>700 元 / 小時</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>有保底</span>
+                    <span>1100 元 / 小時</span>
+                  </li>
+
+                  <li className="flex justify-between">
+                    <span>保底金額</span>
+                    <span>1800 萬</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-blue-500/10 border border-blue-400/20 p-6">
+              <h4 className="text-xl font-bold mb-4 text-blue-200">
+                一般陪玩類型
+              </h4>
+
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <p className="text-zinc-400">
+                  輕鬆遊玩、聊天互動、放鬆減壓，適合想找人一起玩的玩家。
+                </p>
+
+                <span className="text-3xl font-bold">
+                  280 元 / 小時
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-yellow-500/10 border border-yellow-400/20 p-5 text-zinc-300">
+              如需 3x3 方案，請洽談客服。保底單以第一把開局時間做計算，若是時間到但對局未結束，當局仍計算保底內。
+            </div>
+          </div>
+
+          {/* 注意事項 */}
+          <div className="mt-6 rounded-3xl bg-white/5 border border-white/10 p-8">
+            <h3 className="text-2xl font-bold mb-6">注意事項</h3>
+
+            <div className="grid md:grid-cols-3 gap-6 text-sm text-zinc-400 leading-relaxed">
+              <div>
+                <h4 className="font-bold text-white mb-2">服務性質</h4>
+
+                <p>
+                  本團服務以娛樂陪伴為主，不保證勝率、KD、掉落物或任務結果。
+                </p>
+              </div>
+
+              <div>
+                <h4 className="font-bold text-white mb-2">遊戲規範</h4>
+
+                <p>
+                  請互相尊重並維持良好遊戲氛圍，任何違規行為可能列入黑名單。
+                </p>
+              </div>
+
+              <div>
+                <h4 className="font-bold text-white mb-2">客服協助</h4>
+
+                <p>
+                  中途離隊、訂單問題、服務異常或特殊需求，請立即洽詢客服人員。
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
+      
+      {/* VIP 與 VVIP */}
+      <section className="px-6 py-24 max-w-6xl mx-auto">
+        <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
+          VIP & VVIP
+        </p>
+
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+          會員等級與尊享福利
+        </h2>
+
+        <p className="text-center text-zinc-400 mb-12">
+          前五段為 VIP 1 至 VIP 5，後五段為 VVIP 1 至 VVIP 5。
+        </p>
+
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              VIP 01
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VIP 1</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 5,000 或單次儲值 3,000 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 150 ASD</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              VIP 02
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VIP 2</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 8,000 或單次儲值 7,000 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 300 ASD</li>
+              <li>解鎖尊享頻道</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              VIP 03
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VIP 3</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 15,000 或單次儲值 13,500 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 1,000 ASD</li>
+              <li>獲得 1 個月自定義 TAG + 身分組圖標</li>
+              <li>獲得 95 折券 × 1</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              VIP 04
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VIP 4</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 30,000 或單次儲值 27,500 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 1,314 ASD</li>
+              <li>自定義指定陪玩冠名 3 日</li>
+              <li>獲得個人語音頻道</li>
+              <li>獲得 9 折券 × 1</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-white/5 border border-white/10 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
+              VIP 05
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VIP 5</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 50,000 或單次儲值 45,000 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 5,200 ASD</li>
+              <li>獲得 8 折折價券 × 1，升級一個月內使用完畢</li>
+              <li>獲得永久自定義 TAG + 身分組圖標</li>
+              <li>解鎖每季定期周邊好禮 × 1</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
+              VVIP 01
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VVIP 1</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 66,666 或單次儲值 60,000 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 6,666 ASD</li>
+              <li>獲得闆闆個人聊天區</li>
+              <li>個人頻道分組置產至尊享專區</li>
+              <li>獲得 8 折折價券 × 1</li>
+              <li>任選面額 500 元禮品卡</li>
+              <li>解鎖每月定期周邊好禮 × 1</li>
+              <li>自定義指定陪玩冠名</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
+              VVIP 02
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VVIP 2</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 88,888 或單次儲值 80,000 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 8,888 ASD</li>
+              <li>獲得 7 折折價券 × 1</li>
+              <li>獲得闆闆專屬禮物區</li>
+              <li>訂製專屬冠名圖</li>
+              <li>個人頻道分組置產至至尊專區</li>
+              <li>專屬客服冠名 1 個月</li>
+              <li>解鎖專屬客服一位</li>
+              <li>解鎖每月限定大禮包 × 1</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
+              VVIP 03
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VVIP 3</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 99,999 或單次儲值 90,000 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 9,999 ASD</li>
+              <li>獲得 7 折折價券 × 1</li>
+              <li>獲得闆闆專屬派單房</li>
+              <li>自定義陪玩冠名 3 日券 × 2，需經過陪陪本人同意</li>
+              <li>解鎖每月限定大禮包 × 1</li>
+              <li>獲得自定義 TAG + 身分組圖標半年</li>
+              <li>解鎖限定節假日好禮 × 1</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-purple-500/10 border border-purple-400/20 p-8">
+            <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
+              VVIP 04
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VVIP 4</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 131,420 或單次儲值 120,000 ASD
+            </p>
+
+            <ul className="space-y-3 text-zinc-400">
+              <li>獲得 11,111 ASD</li>
+              <li>自定義陪玩前綴一週券 × 2</li>
+              <li>獲得 7 折折價券 × 2</li>
+              <li>獲得陪玩冠名 7 日券 × 2</li>
+              <li>一年雙人獨顯 TAG + 身分組圖標</li>
+              <li>解鎖國定假日好禮 × 1</li>
+              <li>專屬客服自訂冠名一年</li>
+            </ul>
+          </div>
+
+          <div className="rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-pink-300/30 p-8 lg:col-span-2">
+            <p className="mb-3 text-sm tracking-[0.3em] text-pink-300">
+              VVIP 05
+            </p>
+
+            <h3 className="text-2xl font-bold mb-4">VVIP 5</h3>
+
+            <p className="text-zinc-300 mb-5">
+              累積消費 521,314 或單次儲值 450,000 ASD
+            </p>
+
+            <ul className="grid md:grid-cols-2 gap-3 text-zinc-400">
+              <li>獲得 66,666 ASD</li>
+              <li>闆闆全體專屬特別播報</li>
+              <li>獲得 6 折折價券</li>
+              <li>獲得永久自定義 TAG + 身分組圖標</li>
+              <li>訂製專屬禮物圖</li>
+              <li>每月修改指定三位陪陪冠名一個月，需經過陪陪本人同意</li>
+              <li>單次點三個陪陪及以上可獲得該次消費 10% 返點回饋</li>
+              <li>解鎖生日深夜現實好禮及小卡 × 1</li>
+              <li>獲得每月現實尊寵大禮包</li>
+            </ul>
+          </div>
+        </div>
+
+        <p className="mt-8 text-center text-sm text-zinc-500">
+          會員福利、折價券使用規則與實際發放內容，請以 Discord 官方公告與客服說明為準。
+        </p>
+      </section>
+
 
       {/* 開幕活動 */}
       <section className="px-6 py-24 max-w-5xl mx-auto text-center">
@@ -135,7 +818,7 @@ export default function Home() {
         </p>
 
         <div className="mt-10 rounded-3xl bg-white/5 border border-white/10 p-8">
-          <p className="text-2xl font-bold mb-2">6/18 - 8/31</p>
+          <p className="text-2xl font-bold mb-2">6/01 - 8/31</p>
           <p className="text-zinc-400">開獎日期：9/10</p>
         </div>
       </section>
