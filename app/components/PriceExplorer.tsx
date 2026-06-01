@@ -340,24 +340,34 @@ export default function PriceExplorer() {
 
           <div className="space-y-3">
             {activeCategory.groups.map((group) => (
-              <button
+              <div
                 key={group.id}
-                type="button"
-                onClick={() => setGroupId(group.id)}
-                className={`w-full rounded-2xl border p-5 text-left transition ${
+                className={`rounded-2xl border p-5 transition ${
                   activeGroup.id === group.id
                     ? "border-purple-300/40 bg-purple-300/10"
                     : "border-white/10 bg-white/[0.04] hover:bg-white/[0.07]"
                 }`}
               >
-                <h4 className="font-black text-white">
-                  {group.title}
-                </h4>
-
-                <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-                  {group.desc}
-                </p>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setGroupId(group.id)}
+                  className="block w-full text-left"
+                >
+                  <h4 className="font-black text-white">
+                    {group.title}
+                  </h4>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-500">
+                    {group.desc}
+                  </p>
+                </button>
+                <a
+                  href={discordLink}
+                  target="_blank"
+                  className="mt-5 block rounded-full bg-gradient-to-r from-purple-200 to-pink-200 px-5 py-3 text-center text-sm font-black text-black transition hover:opacity-90"
+                >
+                  立即預約
+                </a>
+              </div>
             ))}
           </div>
         </div>
