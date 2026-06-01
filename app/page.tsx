@@ -1,29 +1,40 @@
 const discordLink = "https://discord.gg/tXNnXWMHbJ";
 
+const quickStats = [
+  ["深夜陪伴", "聊天、陪玩、情緒陪伴"],
+  ["多元服務", "Steam / PUBG / 特戰 / 三角洲"],
+  ["會員福利", "VIP / VVIP 尊享福利"],
+  ["活動抽獎", "消費累積抽獎券"],
+];
+
 const serviceCards = [
   {
     title: "聊天陪伴",
     tag: "CHAT",
     text: "不想一個人待著的時候，可以找人聊天、聽你說話、陪你度過深夜。",
     href: "#price-chat",
+    style: "from-purple-400/40 via-pink-300/20 to-blue-400/10",
   },
   {
     title: "遊戲陪玩",
     tag: "GAME",
-    text: "Steam、PUBG、特戰英豪、三角洲行動，多種遊戲陪玩與護航服務。",
+    text: "Steam、PUBG、特戰英豪、三角洲行動，多種娛樂陪玩與護航服務。",
     href: "#price-game",
+    style: "from-blue-400/40 via-purple-300/20 to-pink-400/10",
   },
   {
     title: "打賞禮物",
     tag: "GIFT",
     text: "用一份心意點亮對方的夜晚，支援特殊打賞、專屬禮物與浪漫品項。",
     href: "#price-gift",
+    style: "from-pink-400/40 via-yellow-300/20 to-purple-400/10",
   },
   {
     title: "VIP 尊享",
     tag: "VIP",
     text: "累積消費與單次儲值皆可升級，解鎖專屬頻道、折價券、周邊與冠名福利。",
     href: "#vip",
+    style: "from-yellow-300/40 via-pink-300/20 to-purple-400/10",
   },
 ];
 
@@ -32,40 +43,51 @@ const companions = [
     name: "小夜燈",
     role: "聊天陪伴",
     time: "20:00 - 02:00",
-    tags: ["溫柔陪聊", "情緒陪伴", "深夜在線"],
     desc: "適合想找人說說話、放鬆情緒、安靜陪伴的夜晚。",
+    tags: ["溫柔陪聊", "情緒陪伴", "深夜在線"],
     status: "推薦",
     href: "#price-chat",
-    color: "from-purple-400/40 via-pink-300/20 to-blue-400/20",
+    gradient: "from-purple-400/45 via-pink-300/20 to-blue-400/15",
   },
   {
     name: "星光陪陪",
     role: "娛樂陪玩",
     time: "依當日排班",
-    tags: ["PUBG", "Steam", "輕鬆玩"],
     desc: "不追求壓力，只想一起開心玩、有人互動的首選。",
+    tags: ["PUBG", "Steam", "輕鬆玩"],
     status: "熱門",
     href: "#price-game",
-    color: "from-blue-400/40 via-purple-300/20 to-pink-400/20",
+    gradient: "from-blue-400/45 via-purple-300/20 to-pink-400/15",
   },
   {
     name: "技術陪陪",
     role: "特戰 / 護航",
     time: "需洽客服",
-    tags: ["特戰英豪", "三角洲", "技術服務"],
     desc: "依段位、模式與需求安排，適合需要穩定配合的玩家。",
+    tags: ["特戰英豪", "三角洲", "技術服務"],
     status: "技術",
     href: "#price-game",
-    color: "from-red-400/40 via-purple-300/20 to-orange-300/20",
+    gradient: "from-red-400/45 via-purple-300/20 to-orange-300/15",
+  },
+  {
+    name: "專屬小管家",
+    role: "VIP / 打賞",
+    time: "客製安排",
+    desc: "冠名、專屬語音、禮物區、活動福利與高階會員尊享內容。",
+    tags: ["VIP", "冠名", "專屬服務"],
+    status: "尊享",
+    href: "#vip",
+    gradient: "from-yellow-300/45 via-pink-300/20 to-purple-400/15",
   },
 ];
 
 const priceGroups = [
   {
     id: "price-chat",
-    label: "CHAT",
+    tag: "CHAT",
     title: "聊天與出氣陪伴",
-    text: "適合需要有人陪你說話、聽你發洩、陪你度過深夜的時候。",
+    subtitle: "適合想找人說話、聽你發洩、陪你度過深夜的時候。",
+    highlight: "你說話，我聽著；你沉默，我陪著。",
     items: [
       ["男生 半小時", "160 元"],
       ["男生 一小時", "300 元"],
@@ -83,9 +105,10 @@ const priceGroups = [
   },
   {
     id: "price-game",
-    label: "GAME",
+    tag: "GAME",
     title: "遊戲陪玩與護航",
-    text: "娛樂陪玩、技術陪陪、Steam 遊戲與三角洲行動護航服務。",
+    subtitle: "娛樂陪玩、技術陪陪、Steam 遊戲與三角洲行動護航服務。",
+    highlight: "今晚一起開局，讓遊戲不只是一個人。",
     items: [
       ["PUBG 娛樂單陪 1 場", "99 元"],
       ["PUBG 娛樂單陪 3 場", "289 元"],
@@ -97,6 +120,10 @@ const priceGroups = [
       ["特戰白金", "260 / hr"],
       ["特戰鑽石", "270 / hr"],
       ["特戰超凡", "310 / hr"],
+      ["技術陪白金", "180 / 局"],
+      ["技術陪鑽石", "210 / 局"],
+      ["技術陪超凡", "240 / 局"],
+      ["技術陪神話", "300 / 局"],
       ["Steam 恐怖遊戲", "250 / hr"],
       ["Steam 肉鴿遊戲", "240 / hr"],
       ["Steam 派對遊戲", "230 / hr"],
@@ -105,13 +132,15 @@ const priceGroups = [
       ["三角洲機密雙護保底", "800 / 小時"],
       ["三角洲猛攻護航無保", "700 / 小時"],
       ["三角洲猛攻護航保底", "1100 / 小時"],
+      ["三角洲一般陪玩", "280 / 小時"],
     ],
   },
   {
     id: "price-gift",
-    label: "GIFT",
+    tag: "GIFT",
     title: "打賞禮物與特殊服務",
-    text: "用禮物、冠名、專屬打賞，替對方點亮一盞只屬於你的燈。",
+    subtitle: "用禮物、冠名、專屬打賞，替對方點亮一盞只屬於你的燈。",
+    highlight: "一份心意，也可以成為夜裡最亮的光。",
     items: [
       ["特殊打賞", "依品項公告"],
       ["明燈千里", "1999 元"],
@@ -194,27 +223,32 @@ const faqs = [
   ["可以指定陪陪嗎？", "可以，指定陪陪需依照陪陪當下接單狀態與時間安排為主。若指定人員無法接單，客服會協助媒合其他合適人選。"],
   ["付款方式有哪些？", "目前付款方式請以 Discord 內公告為準。若已儲值 ASD，也可以使用儲值卡餘額付款。"],
   ["遊戲陪玩會保證勝率嗎？", "一般娛樂陪玩不保證勝率、KD、段位、掉落物或任務結果。若為保底或特殊服務，請依照該服務規則與客服說明為準。"],
+  ["訂單中途有問題怎麼辦？", "若遇到陪陪離線、時間爭議、付款問題或其他異常，請立即聯絡客服，不要私下爭執，客服會協助處理。"],
 ];
 
 function SectionTitle({
   tag,
   title,
   text,
+  center = false,
 }: {
   tag: string;
   title: string;
   text?: string;
+  center?: boolean;
 }) {
   return (
-    <div className="mb-14">
+    <div className={`mb-14 ${center ? "text-center" : ""}`}>
       <p className="mb-4 text-sm tracking-[0.35em] text-purple-300">
         {tag}
       </p>
+
       <h2 className="text-4xl font-black tracking-tight md:text-6xl">
         {title}
       </h2>
+
       {text && (
-        <p className="mt-5 max-w-2xl leading-relaxed text-zinc-400">
+        <p className={`mt-5 max-w-2xl leading-relaxed text-zinc-400 ${center ? "mx-auto" : ""}`}>
           {text}
         </p>
       )}
@@ -224,46 +258,61 @@ function SectionTitle({
 
 function PriceBlock({
   id,
-  label,
+  tag,
   title,
-  text,
+  subtitle,
+  highlight,
   items,
 }: {
   id: string;
-  label: string;
+  tag: string;
   title: string;
-  text: string;
+  subtitle: string;
+  highlight: string;
   items: string[][];
 }) {
   return (
     <div
       id={id}
-      className="glass-card scroll-mt-28 rounded-[36px] border border-white/10 bg-black/40 p-8"
+      className="glass-card scroll-mt-28 overflow-hidden rounded-[40px] border border-white/10 bg-black/40"
     >
-      <p className="mb-4 text-sm tracking-[0.3em] text-purple-300">
-        {label}
-      </p>
+      <div className="grid lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="relative border-b border-white/10 bg-gradient-to-br from-purple-500/20 via-black/20 to-pink-500/10 p-8 lg:border-b-0 lg:border-r">
+          <div className="absolute right-[-100px] top-[-100px] h-72 w-72 rounded-full bg-purple-400/20 blur-3xl" />
 
-      <h3 className="text-3xl font-black">
-        {title}
-      </h3>
+          <div className="relative">
+            <p className="mb-4 text-sm tracking-[0.35em] text-purple-200">
+              {tag}
+            </p>
 
-      <p className="mt-4 leading-relaxed text-zinc-400">
-        {text}
-      </p>
+            <h3 className="text-3xl font-black md:text-4xl">
+              {title}
+            </h3>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
-        {items.map(([name, price]) => (
-          <div
-            key={`${title}-${name}`}
-            className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
-          >
-            <div className="flex justify-between gap-4">
-              <span className="text-zinc-300">{name}</span>
-              <span className="shrink-0 font-bold text-white">{price}</span>
+            <p className="mt-5 leading-relaxed text-zinc-300">
+              {subtitle}
+            </p>
+
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/10 p-5">
+              <p className="text-sm text-zinc-400">推薦說明</p>
+              <p className="mt-2 font-bold text-white">{highlight}</p>
             </div>
           </div>
-        ))}
+        </div>
+
+        <div className="grid gap-4 p-8 md:grid-cols-2">
+          {items.map(([name, price]) => (
+            <div
+              key={`${title}-${name}`}
+              className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+            >
+              <div className="flex justify-between gap-4">
+                <span className="text-sm text-zinc-300">{name}</span>
+                <span className="shrink-0 text-sm font-bold text-white">{price}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -292,9 +341,7 @@ function TierCard({
         {vvip ? "VVIP" : "VIP"}
       </p>
 
-      <h3 className="text-2xl font-black">
-        {level}
-      </h3>
+      <h3 className="text-2xl font-black">{level}</h3>
 
       <p className="mt-4 text-sm leading-relaxed text-zinc-300">
         {need}
@@ -388,6 +435,23 @@ export default function Home() {
                 查看服務價目
               </a>
             </div>
+
+            <div className="mt-8 grid grid-cols-2 gap-3 text-sm md:hidden">
+              {[
+                ["服務項目", "#services"],
+                ["陪伴名片", "#companions"],
+                ["價目表", "#price"],
+                ["VIP 福利", "#vip"],
+              ].map(([name, link]) => (
+                <a
+                  key={name}
+                  href={link}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-center text-zinc-300"
+                >
+                  {name}
+                </a>
+              ))}
+            </div>
           </div>
 
           <div className="relative hidden lg:block">
@@ -397,12 +461,8 @@ export default function Home() {
               <div className="rounded-[32px] border border-white/10 bg-black/30 p-6">
                 <div className="mb-6 flex items-center justify-between">
                   <div>
-                    <p className="text-sm tracking-[0.3em] text-purple-300">
-                      TONIGHT
-                    </p>
-                    <h3 className="mt-2 text-2xl font-black">
-                      深夜營業中
-                    </h3>
+                    <p className="text-sm tracking-[0.3em] text-purple-300">TONIGHT</p>
+                    <h3 className="mt-2 text-2xl font-black">深夜營業中</h3>
                   </div>
 
                   <div className="rounded-full border border-green-300/20 bg-green-300/10 px-4 py-2 text-sm text-green-200">
@@ -445,12 +505,7 @@ export default function Home() {
       </section>
             <section className="relative z-10 mx-auto max-w-7xl px-6 py-10">
         <div className="grid gap-4 md:grid-cols-4">
-          {[
-            ["多元服務", "聊天、陪玩、打賞、VIP"],
-            ["深夜陪伴", "讓夜晚不只剩安靜"],
-            ["活動福利", "抽獎券與會員獎勵"],
-            ["客服協助", "訂單問題即時處理"],
-          ].map(([title, text]) => (
+          {quickStats.map(([title, text]) => (
             <div
               key={title}
               className="glass-card rounded-[30px] border border-white/10 bg-white/5 p-6"
@@ -511,7 +566,7 @@ export default function Home() {
                 href={card.href}
                 className="glass-card group relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-7"
               >
-                <div className="absolute right-[-70px] top-[-70px] h-48 w-48 rounded-full bg-purple-400/10 blur-3xl transition group-hover:scale-125" />
+                <div className={`absolute right-[-70px] top-[-70px] h-48 w-48 rounded-full bg-gradient-to-br ${card.style} blur-3xl transition group-hover:scale-125`} />
 
                 <div className="relative">
                   <p className="mb-4 text-sm tracking-[0.3em] text-purple-300">
@@ -564,14 +619,14 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {companions.map((person) => (
               <a
                 key={person.name}
                 href={person.href}
                 className="glass-card group block overflow-hidden rounded-[36px] border border-white/10 bg-black/40"
               >
-                <div className={`relative h-56 bg-gradient-to-br ${person.color}`}>
+                <div className={`relative h-56 bg-gradient-to-br ${person.gradient}`}>
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.22),transparent_35%)]" />
 
                   <div className="absolute left-8 top-8 rounded-full border border-white/20 bg-black/30 px-4 py-2 text-xs text-white backdrop-blur">
@@ -779,7 +834,7 @@ export default function Home() {
 
       <section id="faq" className="relative z-10 bg-white/[0.03] px-6 py-24">
         <div className="mx-auto max-w-5xl">
-          <SectionTitle tag="FAQ" title="常見問題" />
+          <SectionTitle tag="FAQ" title="常見問題" center />
 
           <div className="space-y-5">
             {faqs.map(([question, answer]) => (
@@ -801,7 +856,7 @@ export default function Home() {
       </section>
 
       <section id="contact" className="relative z-10 px-6 py-28 text-center">
-        <div className="mx-auto max-w-4xl rounded-[44px] border border-white/10 bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-10 md:p-16">
+        <div className="mx-auto max-w-4xl overflow-hidden rounded-[44px] border border-white/10 bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-10 md:p-16">
           <p className="mb-4 text-sm tracking-[0.35em] text-purple-200">
             JOIN US
           </p>
