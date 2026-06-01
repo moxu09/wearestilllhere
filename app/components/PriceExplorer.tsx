@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
+const discordLink = "https://discord.gg/tXNnXWMHbJ";
 const priceData = [
   {
     id: "chat",
@@ -423,14 +423,22 @@ export default function PriceExplorer() {
                     key={`${activeGroup.id}-${name}`}
                     className="rounded-2xl border border-white/10 bg-black/25 p-4"
                   >
-                    <div className="flex justify-between gap-4">
-                      <span className="text-sm text-zinc-300">
-                        {name}
-                      </span>
-
-                      <span className="shrink-0 text-sm font-bold text-white">
-                        {price}
-                      </span>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm text-zinc-300">
+                          {name}
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-white">
+                          {price}
+                        </p>
+                      </div>
+                      <a
+                        href={discordLink}
+                        target="_blank"
+                        className="shrink-0 rounded-full bg-gradient-to-r from-purple-200 to-pink-200 px-4 py-2 text-center text-xs font-black text-black transition hover:opacity-90"
+                      >
+                        立即預約
+                      </a>
                     </div>
                   </div>
                 ))}
