@@ -1068,7 +1068,79 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+      {/* 常見問題 */}
+      <section className="px-6 py-24 bg-white/[0.03]">
+        <div className="max-w-5xl mx-auto">
+          <p className="mb-4 text-center text-sm tracking-[0.3em] text-purple-300">
+            FAQ
+          </p>
+
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            常見問題
+          </h2>
+
+          <div className="space-y-5">
+            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+              <h3 className="text-xl font-bold mb-3">
+                如何下單？
+              </h3>
+
+              <p className="text-zinc-400 leading-relaxed">
+                請加入 Discord 伺服器，依照點單系統選擇服務項目、陪陪、時段與付款方式，客服會協助確認訂單。
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+              <h3 className="text-xl font-bold mb-3">
+                可以指定陪陪嗎？
+              </h3>
+
+              <p className="text-zinc-400 leading-relaxed">
+                可以，指定陪陪需依照陪陪當下接單狀態與時間安排為主。若指定人員無法接單，客服會協助媒合其他合適人選。
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+              <h3 className="text-xl font-bold mb-3">
+                付款方式有哪些？
+              </h3>
+
+              <p className="text-zinc-400 leading-relaxed">
+                目前付款方式有信用卡、轉帳、無卡、月結，若已儲值 ASD，也可以使用儲值卡餘額付款。
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+              <h3 className="text-xl font-bold mb-3">
+                遊戲陪玩會保證勝率嗎？
+              </h3>
+
+              <p className="text-zinc-400 leading-relaxed">
+                一般娛樂陪玩不保證勝率、KD、段位、掉落物或任務結果。若為保底或特殊服務，請依照該服務規則與客服說明為準。
+              </p>
+            </div>
+
+            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+              <h3 className="text-xl font-bold mb-3">
+                如果訂單中途有問題怎麼辦？
+              </h3>
+
+              <p className="text-zinc-400 leading-relaxed">
+                若遇到陪陪離線、時間爭議、付款問題或其他異常，請立即聯絡客服，不要私下爭執，客服會協助處理。
+              </p>
+            </div>
+            <div className="rounded-3xl bg-black/40 border border-white/10 p-8">
+              <h3 className="text-xl font-bold mb-3">
+                深夜不關燈合法嗎？
+              </h3>
+
+              <p className="text-zinc-400 leading-relaxed">
+                我們絕對合法！並有依照中華民國法規設立登記。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* 聯絡 */}
       <section id="contact" className="px-6 py-24 bg-white/[0.03] text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
