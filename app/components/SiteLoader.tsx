@@ -13,7 +13,7 @@ export default function SiteLoader() {
       setTimeout(() => {
         setLoading(false);
       }, 500);
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
