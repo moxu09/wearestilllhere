@@ -22,12 +22,21 @@ export const metadata: Metadata = {
     siteName: "深夜不關燈",
     type: "website",
     locale: "zh_TW",
+    images: [
+      {
+        url: "https://wearestilllhere.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "深夜不關燈 We Are Still Here",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "深夜不關燈｜We Are Still Here",
     description:
       "一個在深夜也有人陪你的地方。陪玩、聊天、打賞、儲值、VIP 服務，讓每一段夜晚都不孤單。",
+    images: ["https://wearestilllhere.com/og-image.png"],
   },
 };
 
