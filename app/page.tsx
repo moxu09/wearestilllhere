@@ -126,9 +126,9 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#050511] text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#050511] text-white">
       {/* 背景 */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#050511]">
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#050511]">
         {/* 深夜漸層光暈 */}
         <div className="absolute left-1/2 top-[-120px] h-[620px] w-[620px] -translate-x-1/2 rounded-full bg-yellow-400/18 blur-[150px]" />
         <div className="absolute right-[-160px] top-[22%] h-[560px] w-[560px] rounded-full bg-violet-600/22 blur-[150px]" />
@@ -258,7 +258,7 @@ export default function HomePage() {
       </section>
 
       {/* 價目探索 */}
-      <section id="prices" className="relative px-4 py-16 md:py-20">
+      <section id="prices" className="relative z-10 px-4 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-bold tracking-[0.35em] text-yellow-300/80">
@@ -465,7 +465,7 @@ export default function HomePage() {
       </section>
 
       {/* 抽獎活動 */}
-      <section id="lottery" className="relative px-4 py-16 md:py-20">
+      <section id="lottery" className="relative z-10 px-4 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-bold tracking-[0.35em] text-yellow-300/80">
@@ -569,7 +569,7 @@ export default function HomePage() {
       </section>
 
       {/* 特色 */}
-      <section className="px-4 py-16 md:py-20">
+      <section className="relative z-10 px-4 py-16 md:py-20">
         <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-3">
           {[
             {
@@ -601,7 +601,7 @@ export default function HomePage() {
       </section>
 
       {/* 聯絡 */}
-      <section id="contact" className="px-4 py-16 md:py-20">
+      <section id="contact" className="relative z-10 px-4 py-16 md:py-20">
         <div className="mx-auto max-w-4xl rounded-[2rem] border border-yellow-300/25 bg-yellow-300/10 p-8 text-center shadow-[0_0_35px_rgba(250,204,21,0.12)] md:p-10">
           <p className="text-xs font-bold tracking-[0.35em] text-yellow-300/80">
             CONTACT
@@ -622,7 +622,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="border-t border-white/10 px-4 py-8 text-center text-xs text-white/35">
+      <footer className="relative z-10 border-t border-white/10 px-4 py-8 text-center text-xs text-white/35">
         © 深夜不關燈 All Rights Reserved.
       </footer>
 
