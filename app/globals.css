@@ -11,11 +11,11 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(168, 85, 247, 0.22), transparent 35%),
-    radial-gradient(circle at top right, rgba(236, 72, 153, 0.16), transparent 30%),
-    radial-gradient(circle at bottom, rgba(59, 130, 246, 0.12), transparent 35%),
-    #08080c;
-  color: white;
+    radial-gradient(circle at top left, rgba(216, 180, 254, 0.45), transparent 34%),
+    radial-gradient(circle at top right, rgba(251, 207, 232, 0.42), transparent 32%),
+    radial-gradient(circle at bottom, rgba(191, 219, 254, 0.32), transparent 36%),
+    linear-gradient(180deg, #fff7fb 0%, #f8f3ff 45%, #f5f7ff 100%);
+  color: #18111f;
 }
 
 img {
@@ -27,8 +27,8 @@ a {
 }
 
 ::selection {
-  background: rgba(216, 180, 254, 0.35);
-  color: white;
+  background: rgba(192, 132, 252, 0.25);
+  color: #18111f;
 }
 
 /* 背景柔光漂浮 */
@@ -56,15 +56,15 @@ a {
 /* 微光呼吸 */
 @keyframes soft-glow {
   0% {
-    box-shadow: 0 0 30px rgba(168, 85, 247, 0.18);
+    box-shadow: 0 0 30px rgba(192, 132, 252, 0.18);
   }
 
   50% {
-    box-shadow: 0 0 60px rgba(236, 72, 153, 0.22);
+    box-shadow: 0 0 60px rgba(244, 114, 182, 0.22);
   }
 
   100% {
-    box-shadow: 0 0 30px rgba(168, 85, 247, 0.18);
+    box-shadow: 0 0 30px rgba(192, 132, 252, 0.18);
   }
 }
 
@@ -72,7 +72,7 @@ a {
   animation: soft-glow 5s ease-in-out infinite;
 }
 
-/* 卡片 hover 美化 */
+/* 亮色玻璃卡片 */
 .glass-card {
   transition:
     transform 0.25s ease,
@@ -83,12 +83,12 @@ a {
 
 .glass-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(216, 180, 254, 0.35);
-  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(192, 132, 252, 0.45);
+  background: rgba(255, 255, 255, 0.72);
   box-shadow: 0 18px 60px rgba(168, 85, 247, 0.14);
 }
 
-/* 高級 VIP 卡片光暈 */
+/* VIP 卡片 */
 .vip-card {
   position: relative;
   overflow: hidden;
@@ -105,7 +105,7 @@ a {
   background: linear-gradient(
     120deg,
     transparent,
-    rgba(216, 180, 254, 0.16),
+    rgba(216, 180, 254, 0.28),
     transparent
   );
   opacity: 0;
@@ -115,7 +115,7 @@ a {
 
 .vip-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(244, 114, 182, 0.35);
+  border-color: rgba(244, 114, 182, 0.45);
   box-shadow: 0 20px 70px rgba(236, 72, 153, 0.13);
 }
 
@@ -133,31 +133,14 @@ a {
 
 .glow-button:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 0 35px rgba(216, 180, 254, 0.28);
-}
-
-/* 淡入動畫 */
-@keyframes fade-up {
-  0% {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-up {
-  animation: fade-up 0.7s ease both;
+  box-shadow: 0 0 35px rgba(192, 132, 252, 0.28);
 }
 
 /* 文字微光 */
 .text-glow {
   text-shadow:
-    0 0 18px rgba(216, 180, 254, 0.35),
-    0 0 40px rgba(236, 72, 153, 0.18);
+    0 0 18px rgba(192, 132, 252, 0.25),
+    0 0 40px rgba(244, 114, 182, 0.16);
 }
 
 /* 捲軸美化 */
@@ -166,26 +149,26 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: #08080c;
+  background: #fff7fb;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(216, 180, 254, 0.28);
+  background: rgba(192, 132, 252, 0.35);
   border-radius: 999px;
-  border: 2px solid #08080c;
+  border: 2px solid #fff7fb;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(216, 180, 254, 0.45);
+  background: rgba(192, 132, 252, 0.55);
 }
 
 /* 手機版微調 */
 @media (max-width: 768px) {
   body {
     background:
-      radial-gradient(circle at top, rgba(168, 85, 247, 0.2), transparent 32%),
-      radial-gradient(circle at bottom, rgba(236, 72, 153, 0.12), transparent 32%),
-      #08080c;
+      radial-gradient(circle at top, rgba(216, 180, 254, 0.38), transparent 32%),
+      radial-gradient(circle at bottom, rgba(251, 207, 232, 0.28), transparent 32%),
+      linear-gradient(180deg, #fff7fb 0%, #f8f3ff 100%);
   }
 
   .glass-card:hover,
