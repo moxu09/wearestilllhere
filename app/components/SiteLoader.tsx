@@ -50,7 +50,7 @@
        <div
          className={`fixed flex flex-col items-center text-center transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
            flyToLogo
-             ? "left-[26px] top-[18px] translate-x-0 translate-y-0 scale-[0.25]"
+             ? "left-[50px] top-[30px] translate-x-0 translate-y-0 scale-[0.25]"
              : "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 scale-100"
          }`}
        >
