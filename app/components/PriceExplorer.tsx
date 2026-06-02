@@ -333,8 +333,8 @@ export default function PriceExplorer() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[0.3fr_0.7fr]">
-        <div className="rounded-[36px] border border-white/10 bg-black/40 p-5">
-          <p className="mb-4 px-3 text-sm tracking-[0.3em] text-purple-300">
+        <div className="rounded-[36px] border border-purple-200/60 bg-white/55 p-5 shadow-[0_12px_40px_rgba(168,85,247,0.08)] backdrop-blur-xl">
+          <p className="mb-4 px-3 text-sm tracking-[0.32em] text-purple-500">
             DETAIL
           </p>
 
@@ -342,36 +342,48 @@ export default function PriceExplorer() {
              {activeCategory.groups.map((group) => (
                <div
                  key={group.id}
-                 className={`rounded-2xl border p-4 transition ${
+                 className={`rounded-[24px] border p-4 transition duration-200 ${
                    activeGroup.id === group.id
-                     ? "border-purple-300/40 bg-purple-300/10"
-                     : "border-white/10 bg-white/[0.04] hover:bg-white/[0.07]"
+                     ? "border-purple-300 bg-white/90 shadow-[0_10px_30px_rgba(168,85,247,0.12)]"
+                     : "border-purple-100/70 bg-white/55 hover:bg-white/78"
                  }`}
                >
                  <button
-                  type="button"
+                   type="button"
                    onClick={() => setGroupId(group.id)}
                    className="block w-full text-left"
                  >
-                   <div className="flex items-center justify-between gap-3">
-                     <h4 className="font-black text-white">
-                       {group.title}
-                    </h4>
+                   <div className="flex items-start justify-between gap-3">
+                     <div>
+                       <h4 className="text-lg font-black text-[#18111f]">
+                         {group.title}
+                       </h4>
 
-                    <span className="text-sm text-purple-200">
-           →
+                       <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-zinc-500">
+                         {group.desc}
+                       </p>
+                     </div>
+
+                     <span
+                       className={`mt-1 text-base transition ${
+                         activeGroup.id === group.id
+                           ? "text-purple-500"
+                           : "text-zinc-400"
+                       }`}
+                     >
+                       →
                      </span>
                    </div>
-
-                   <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-zinc-500">
-                     {group.desc}
-                   </p>
                  </button>
 
-                <a
+                 <a
                    href={discordLink}
                    target="_blank"
-                   className="mt-4 inline-block rounded-full bg-gradient-to-r from-purple-200 to-pink-200 px-4 py-2 text-center text-xs font-black text-black transition hover:opacity-90"
+                   className={`mt-4 inline-flex items-center justify-center rounded-full px-4 py-2 text-xs font-black transition ${
+                     activeGroup.id === group.id
+                       ? "bg-gradient-to-r from-purple-300 to-pink-300 text-[#18111f] shadow-[0_8px_20px_rgba(192,132,252,0.22)]"
+                       : "border border-purple-200 bg-white/80 text-purple-600 hover:bg-white"
+                   }`}
                  >
                    立即預約
                  </a>
