@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 
+
+const instagramUrl = "https://www.instagram.com/w.a.s.h.co";
+const threadsUrl = "https://www.threads.net/@w.a.s.h.co";
+const discordUrl = "#";
+
 const priceCards = [
   {
     icon: "🎮",
@@ -613,12 +618,34 @@ export default function HomePage() {
             可透過 Discord 官方客服確認服務內容、陪陪安排與付款方式。
           </p>
 
+          <div className="mt-7 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a
-            href="#"
-            className="mt-7 inline-flex rounded-full bg-yellow-300 px-8 py-3 text-sm font-black text-black shadow-[0_0_25px_rgba(250,204,21,0.35)] transition hover:-translate-y-1 hover:bg-yellow-200"
+            href={discordUrl}
+            className="inline-flex w-full items-center justify-center rounded-full bg-yellow-300 px-8 py-3 text-sm font-black text-black shadow-[0_0_25px_rgba(250,204,21,0.35)] transition hover:-translate-y-1 hover:bg-yellow-200 sm:w-auto"
           >
-            前往 Discord
+           前往 Discord
           </a>
+
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-pink-300/40 bg-pink-300/10 px-8 py-3 text-sm font-bold text-pink-100 transition hover:-translate-y-1 hover:border-pink-300/70 hover:bg-pink-300/15 sm:w-auto"
+          >
+            <span className="text-lg">📷</span>
+            Instagram
+          </a>
+
+          <a
+            href={threadsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-8 py-3 text-sm font-bold text-white transition hover:-translate-y-1 hover:border-white/50 hover:bg-white/15 sm:w-auto"
+          >
+            <span className="text-lg">＠</span>
+            Threads
+          </a>
+        </div>
         </div>
       </section>
 

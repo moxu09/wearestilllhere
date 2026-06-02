@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "深夜不關燈｜We Are Still Here",
     description:
-      "一個在深夜也有人陪你的地方。陪玩、聊天、打賞、儲值、VIP 服務，讓每一段夜晚都不孤單。",
+      "一個在深夜也有人陪你的地方，讓每一段夜晚都不孤單。",
     url: "https://wearestilllhere.com",
     siteName: "深夜不關燈",
     type: "website",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "深夜不關燈｜We Are Still Here",
     description:
-      "一個在深夜也有人陪你的地方。陪玩、聊天、打賞、儲值、VIP 服務，讓每一段夜晚都不孤單。",
+      "一個在深夜也有人陪你的地方，讓每一段夜晚都不孤單。",
     images: ["https://wearestilllhere.com/og-image.png"],
   },
 };
