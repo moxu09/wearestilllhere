@@ -16,7 +16,10 @@ export default function HomePage() {
       {/* 首頁 Hero */}
       <section className="relative mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 py-20 text-center">
         {/* 動畫 Icon */}
-        <div className="relative mb-8 flex h-36 w-36 items-center justify-center">
+        <div
+          id="hero-icon-target"
+          className="relative mb-8 flex h-36 w-36 items-center justify-center"
+        >
           <div className="icon-glow absolute h-32 w-32 rounded-full bg-yellow-300/25 blur-2xl" />
 
           <div className="icon-float relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-yellow-300/70 bg-zinc-900 shadow-2xl shadow-yellow-300/20">

@@ -1,478 +1,369 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-const discordLink = "https://discord.gg/tXNnXWMHbJ";
-const priceData = [
+import { useState } from "react";
+
+type PriceItem = {
+  name: string;
+  price: string;
+  note?: string;
+};
+
+type PriceCategory = {
+  id: string;
+  emoji: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  suitable: string[];
+  prices: PriceItem[];
+};
+
+const categories: PriceCategory[] = [
   {
-    id: "chat",
-    title: "陪伴聊天",
-    label: "CHAT",
-    desc: "聊天、陪伴、出氣與情緒放鬆服務。",
-    groups: [
-      {
-        id: "male-chat",
-        title: "男生陪伴",
-        desc: "適合想找男生聊天、陪伴、聽你說話的夜晚。",
-        intro:
-          "男生陪伴偏向穩定、放鬆、陪你聊天或聽你說話。適合想要有人回應、陪你度過一段時間，但不想太有壓力的客人。",
-        suitable: ["想找人聊天", "想有人陪著", "想放鬆心情", "想要比較穩定的陪伴感"],
-        rules: [
-          "服務內容以聊天陪伴為主。",
-          "實際接單時間依陪陪當日狀態為準。",
-          "若有特殊需求，請先告知客服確認。",
-        ],
-        items: [
-          ["半小時", "160 元"],
-          ["一小時", "300 元"],
-          ["90 分鐘", "450 元"],
-          ["兩小時", "550 元"],
-        ],
-      },
-      {
-        id: "female-chat",
-        title: "女生陪伴",
-        desc: "適合想找女生聊天、陪伴、放鬆心情的夜晚。",
-        intro:
-          "女生陪伴適合想要輕鬆聊天、撒嬌互動、分享日常或單純有人陪著的客人。可以依照陪陪風格選擇比較活潑或比較溫柔的類型。",
-        suitable: ["想聊天放鬆", "想聽溫柔聲音", "想分享日常", "想要輕鬆陪伴"],
-        rules: [
-          "服務以陪伴聊天為主，不包含不合理或違規要求。",
-          "可指定陪陪，但需依陪陪時間與接單狀態安排。",
-          "若中途有問題，請直接聯絡客服協助。",
-        ],
-        items: [
-          ["半小時", "210 元"],
-          ["一小時", "350 元"],
-          ["90 分鐘", "500 元"],
-          ["兩小時", "650 元"],
-        ],
-      },
-      {
-        id: "vent",
-        title: "出氣陪伴",
-        desc: "情緒出口，盡情傾訴，我們會好好接住你。",
-        intro:
-          "出氣陪伴適合情緒比較滿、想抱怨、想哭、想吐苦水，或只是需要一個人先聽你說完的時候。我們會盡量提供情緒承接與陪伴。",
-        suitable: ["心情不好", "想抱怨事情", "想找人聽你說", "需要短時間情緒出口"],
-        rules: [
-          "出氣陪伴不是心理治療或醫療諮詢。",
-          "請避免人身攻擊、威脅、騷擾或違法內容。",
-          "若涉及危急狀況，建議立即尋求身邊可信任的人或專業協助。",
-        ],
-        items: [
-          ["10 分鐘", "100 元"],
-          ["30 分鐘", "250 元"],
-          ["一小時", "450 元"],
-          ["臨時頭像更換", "20 元"],
-        ],
-      },
+    id: "chat-girl",
+    emoji: "🌙",
+    title: "女生聊天陪伴",
+    subtitle: "溫柔陪聊、深夜陪伴",
+    description:
+      "適合想找人聊天、放鬆、撒嬌、分享日常，或是不想一個人待著的闆闆。",
+    suitable: ["想有人陪你聊天", "想放鬆心情", "喜歡溫柔陪伴", "深夜不想一個人"],
+    prices: [
+      { name: "30 分鐘", price: "210 元" },
+      { name: "1 小時", price: "350 元" },
+      { name: "90 分鐘", price: "500 元" },
+      { name: "2 小時", price: "650 元" },
+    ],
+  },
+  {
+    id: "vent-girl",
+    emoji: "🫧",
+    title: "女生出氣陪伴",
+    subtitle: "聽你說、陪你消化情緒",
+    description:
+      "適合心情不好、想抱怨、想被理解，或只是需要一個人安靜聽你說話的時候。",
+    suitable: ["想抱怨一下", "需要情緒出口", "想被安慰", "想有人聽你說"],
+    prices: [
+      { name: "10 分鐘", price: "100 元" },
+      { name: "30 分鐘", price: "250 元" },
+      { name: "1 小時", price: "450 元" },
+    ],
+  },
+  {
+    id: "chat-boy",
+    emoji: "☕",
+    title: "男生聊天陪伴",
+    subtitle: "自然聊天、輕鬆陪伴",
+    description:
+      "適合想要輕鬆聊天、打發時間、找人陪著，或喜歡比較自然互動的闆闆。",
+    suitable: ["想輕鬆聊天", "想找人陪著", "喜歡自然互動", "想聽男聲陪伴"],
+    prices: [
+      { name: "10 分鐘", price: "80 元" },
+      { name: "30 分鐘", price: "150 元" },
+      { name: "1 小時", price: "280 元" },
     ],
   },
   {
     id: "game",
+    emoji: "🎮",
     title: "遊戲陪玩",
-    label: "GAME",
-    desc: "PUBG、特戰英豪、Steam、三角洲行動等遊戲服務。",
-    groups: [
+    subtitle: "娛樂陪玩、一起上線",
+    description:
+      "適合想找人一起玩遊戲、雙排、組隊、破冰，或是單純想讓遊戲過程更熱鬧的闆闆。",
+    suitable: ["想找人一起玩", "想雙排或組隊", "不想一個人打遊戲", "想要歡樂氣氛"],
+    prices: [
+      { name: "單陪", price: "99 / 289 / 459 元" },
+      { name: "雙陪", price: "180 / 499 元" },
+      { name: "特殊方案", price: "888 元" },
+    ],
+  },
+  {
+    id: "delta",
+    emoji: "🛡️",
+    title: "三角洲行動",
+    subtitle: "機密雙護、猛攻護航",
+    description:
+      "適合需要護航、陪打、保底規劃，或想要更穩定遊戲體驗的闆闆。",
+    suitable: ["想要護航", "想打保底", "想穩定遊戲體驗", "想找熟悉玩法的人陪"],
+    prices: [
+      { name: "機密雙護｜無保", price: "600 元 / 小時" },
+      { name: "機密雙護｜保底 1000 萬", price: "800 元 / 小時" },
+      { name: "猛攻護航｜無保", price: "700 元 / 小時" },
+      { name: "猛攻護航｜保底 1800 萬", price: "1100 元 / 小時" },
       {
-        id: "pubg",
-        title: "PUBG",
-        desc: "娛樂性質，不保證勝率與 KD。遊戲開始即算一場。",
-        intro:
-          "PUBG 娛樂陪玩主打輕鬆開局、有人互動、一起跑圖與聊天。適合想找人一起玩，不想單排太無聊的玩家。",
-        suitable: ["想找人一起玩 PUBG", "不想單排", "想輕鬆聊天開局", "想要單陪或雙陪"],
-        rules: [
-          "娛樂陪玩不保證勝率、吃雞、KD 或排名。",
-          "遊戲開始即算一場，落地成盒也算完成。",
-          "深夜加成依訂單金額與開始時間計算。",
-        ],
-        items: [
-          ["娛樂單陪 1 場", "99 元"],
-          ["娛樂單陪 3 場", "289 元"],
-          ["娛樂單陪 5 場", "459 元"],
-          ["娛樂雙陪 1 場", "180 元"],
-          ["娛樂雙陪 3 場", "499 元"],
-          ["娛樂雙陪 5 場", "888 元"],
-          ["深夜加成 300 元以下", "10%"],
-          ["深夜加成 300 元以上", "5%"],
-        ],
-      },
-      {
-        id: "valorant",
-        title: "特戰英豪",
-        desc: "一般陪玩與技術陪陪，依段位與服務類型計價。",
-        intro:
-          "特戰英豪陪玩分為一般陪玩與技術陪陪。一般陪玩適合想輕鬆打、有人配合；技術陪陪則適合想要更穩定的遊戲體驗。",
-        suitable: ["想雙排或多人排", "想找人配合溝通", "想要比較穩的隊友", "想依段位安排陪玩"],
-        rules: [
-          "一般陪玩不保證勝率與升段。",
-          "技術陪陪依段位與局數計價。",
-          "超凡以上或特殊需求請洽客服確認。",
-          "本團不提供代打服務。",
-        ],
-        items: [
-          ["一般場", "250 / hr"],
-          ["黃金含以下", "250 / hr"],
-          ["白金", "260 / hr"],
-          ["鑽石", "270 / hr"],
-          ["超凡", "310 / hr"],
-          ["超凡以上", "請洽客服"],
-          ["技術陪 黃金含以下及匹配", "260 / hr"],
-          ["技術陪 白金", "180 / 局"],
-          ["技術陪 鑽石", "210 / 局"],
-          ["技術陪 超凡", "240 / 局"],
-          ["技術陪 神話", "300 / 局"],
-          ["技術陪 輻能", "洽詢客服"],
-        ],
-      },
-      {
-        id: "steam",
-        title: "Steam 遊戲",
-        desc: "依遊戲類型計價，詳細支援遊戲請以 Discord 公告為準。",
-        intro:
-          "Steam 遊戲陪玩適合多人派對、恐怖遊戲、生存遊戲、合作闖關。可以依照想玩的氣氛選擇遊戲類型。",
-        suitable: ["想玩恐怖遊戲", "想找人合作破關", "想多人派對同樂", "想開新遊戲但不想一個人"],
-        rules: [
-          "實際支援遊戲請以 Discord 公告為準。",
-          "部分遊戲需客人自備遊戲本體。",
-          "若遊戲需要多人數，請先洽客服安排。",
-        ],
-        items: [
-          ["恐怖遊戲", "250 / hr"],
-          ["肉鴿遊戲", "240 / hr"],
-          ["派對遊戲", "230 / hr"],
-          ["生存遊戲", "260 / hr"],
-        ],
-      },
-      {
-        id: "delta",
-        title: "三角洲行動",
-        desc: "護航、保底與一般陪玩服務，詳細規則請洽客服。",
-        intro:
-          "三角洲行動提供一般陪玩、機密雙護與猛攻護航。適合想穩定跑圖、提高帶出效率、或想找人一起配合的玩家。",
-        suitable: ["想找人一起跑圖", "想穩定護航", "想做保底服務", "想要三角洲陪玩"],
-        rules: [
-          "保底單以第一把開局時間做計算。",
-          "若時間到但對局未結束，當局仍計算保底內。",
-          "如需 3x3 方案，請洽談客服。",
-          "護航服務不包含任何違規外掛或破壞遊戲公平性的行為。",
-        ],
-        items: [
-          ["機密雙護 基本無保", "600 元 / 小時"],
-          ["機密雙護 有保底", "800 元 / 小時"],
-          ["機密雙護 保底金額", "1000 萬"],
-          ["猛攻護航 基本無保", "700 元 / 小時"],
-          ["猛攻護航 有保底", "1100 元 / 小時"],
-          ["猛攻護航 保底金額", "1800 萬"],
-          ["一般陪玩", "280 元 / 小時"],
-          ["3x3 方案", "請洽客服"],
-        ],
+        name: "保底補充",
+        price: "時間內未達到保底，重新計算",
+        note: "以第一把開局時間做計算；若時間到但對局未結束，當局仍計算保底內。",
       },
     ],
   },
   {
     id: "gift",
+    emoji: "🎁",
     title: "打賞禮物",
-    label: "GIFT",
-    desc: "特殊打賞、專屬禮物與客製服務。",
-    groups: [
-      {
-        id: "special-gift",
-        title: "特殊打賞",
-        desc: "用一份心意，點亮對方的夜晚。",
-        intro:
-          "打賞禮物適合想表達心意、支持陪陪、製造驚喜或留下專屬紀念。特殊品項可依官方公告或客服說明安排。",
-        suitable: ["想支持陪陪", "想送特殊禮物", "想製造驚喜", "想要專屬紀念感"],
-        rules: [
-          "特殊打賞與客製禮物請先洽客服確認。",
-          "部分禮物可能需要製圖或排程時間。",
-          "實際品項與發放方式以 Discord 官方公告為準。",
-        ],
-        items: [
-          ["明燈千里", "1999 元"],
-          ["專寵獨賞", "16888 元"],
-          ["明燈三千", "請洽客服"],
-          ["其他客製禮物", "請洽客服"],
-        ],
-      },
+    subtitle: "把喜歡變成儀式感",
+    description:
+      "適合想支持陪陪、送出心意、製造驚喜，或想用特殊禮物留下紀念的闆闆。",
+    suitable: ["想支持喜歡的陪陪", "想送禮物", "想製造驚喜", "喜歡儀式感"],
+    prices: [
+      { name: "小禮物", price: "30 / 45 / 50 元" },
+      { name: "一般打賞", price: "100 / 250 / 380 元" },
+      { name: "浪漫打賞", price: "520 / 666 / 888 元" },
+      { name: "全體廣播", price: "1688 元" },
+      { name: "明燈千里", price: "1999 元" },
+      { name: "專寵獨賞", price: "16888 元" },
     ],
   },
   {
     id: "vip",
+    emoji: "💎",
     title: "VIP 會員",
-    label: "VIP",
-    desc: "VIP / VVIP 會員福利與升級條件。",
-    groups: [
-      {
-        id: "vip-normal",
-        title: "VIP",
-        desc: "VIP 1 至 VIP 5，依累積消費或單次儲值升級。",
-        intro:
-          "VIP 適合常態消費、想要折價券、ASD 回饋、尊享頻道與個人化福利的客人。等級越高，可解鎖越多專屬內容。",
-        suitable: ["常態點單", "想要折價券", "想累積福利", "想解鎖專屬身分"],
-        rules: [
-          "VIP 可透過累積消費或單次儲值達成。",
-          "福利發放與使用期限以 Discord 官方公告為準。",
-          "部分自定義內容需符合伺服器規範。",
-        ],
-        items: [
-          ["VIP 1", "累積 5,000 或單儲 3,000 ASD"],
-          ["VIP 2", "累積 8,000 或單儲 7,000 ASD"],
-          ["VIP 3", "累積 15,000 或單儲 13,500 ASD"],
-          ["VIP 4", "累積 30,000 或單儲 27,500 ASD"],
-          ["VIP 5", "累積 50,000 或單儲 45,000 ASD"],
-        ],
-      },
-      {
-        id: "vip-vvip",
-        title: "VVIP",
-        desc: "VVIP 1 至 VVIP 5，解鎖更高階尊享福利。",
-        intro:
-          "VVIP 是高階尊享會員，適合想要專屬客服、冠名福利、禮品卡、限定禮包、節日好禮與更多客製化服務的客人。",
-        suitable: ["高頻消費", "想要專屬客服", "想要冠名福利", "想解鎖高階尊寵禮"],
-        rules: [
-          "VVIP 福利內容較多，實際使用方式以客服說明為準。",
-          "冠名、前綴、專屬服務等可能需經陪陪本人同意。",
-          "禮包、周邊、現實好禮發放方式以官方公告為準。",
-        ],
-        items: [
-          ["VVIP 1", "累積 66,666 或單儲 60,000 ASD"],
-          ["VVIP 2", "累積 88,888 或單儲 80,000 ASD"],
-          ["VVIP 3", "累積 99,999 或單儲 90,000 ASD"],
-          ["VVIP 4", "累積 131,420 或單儲 120,000 ASD"],
-          ["VVIP 5", "累積 521,314 或單儲 450,000 ASD"],
-        ],
-      },
+    subtitle: "專屬權益、優先服務",
+    description:
+      "適合常常下單、想要優惠、想優先預約，或想要更多專屬感的闆闆。",
+    suitable: ["常常下單", "想要折扣", "想優先排單", "喜歡專屬感"],
+    prices: [
+      { name: "小夜燈", price: "149 元 / 月" },
+      { name: "星光燈", price: "399 元 / 月" },
+      { name: "永夜燈", price: "999 元 / 月" },
+      { name: "終身 VIP", price: "單筆儲值 18000 元" },
+      { name: "VIP+", price: "單筆儲值 50000 元" },
+    ],
+  },
+  {
+    id: "topup",
+    emoji: "🪙",
+    title: "ASD 儲值",
+    subtitle: "一元台幣 = 一枚 ASD",
+    description:
+      "適合想先儲值、之後慢慢使用，或想拿儲值贈送回饋的闆闆。",
+    suitable: ["想先儲值", "想拿贈送回饋", "常常消費", "想方便扣款"],
+    prices: [
+      { name: "儲值比例", price: "1 元台幣 = 1 枚 ASD" },
+      { name: "滿 5000", price: "贈送 300 ASD" },
+      { name: "滿 8000", price: "贈送 700 ASD" },
+      { name: "滿 18000", price: "贈送 1800 ASD" },
+      { name: "滿 30000", price: "贈送 3000 ASD" },
+      { name: "滿 50000", price: "贈送 5000 ASD" },
+      { name: "滿 75000", price: "贈送 8000 ASD" },
     ],
   },
 ];
+
 export default function PriceExplorer() {
-  const [categoryId, setCategoryId] = useState("chat");
-  const [groupId, setGroupId] = useState("male-chat");
-  useEffect(() => {
-    function syncFromHash() {
-      const hash = window.location.hash.replace("#", "");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [step, setStep] = useState<"category" | "info" | "price">("category");
 
-      const hashMap: Record<string, string> = {
-        "price-chat": "chat",
-        "price-game": "game",
-        "price-gift": "gift",
-        "price-vip": "vip",
-      };
+  const selected = categories.find((item) => item.id === selectedId);
 
-      const nextCategoryId = hashMap[hash];
+  function openInfo(id: string) {
+    setSelectedId(id);
+    setStep("info");
+  }
 
-      if (!nextCategoryId) return;
-
-      const nextCategory = priceData.find(
-        (category) => category.id === nextCategoryId
-      );
-
-      if (!nextCategory) return;
-
-      setCategoryId(nextCategory.id);
-      setGroupId(nextCategory.groups[0].id);
+  function goBack() {
+    if (step === "price") {
+      setStep("info");
+      return;
     }
 
-    syncFromHash();
-
-    window.addEventListener("hashchange", syncFromHash);
-
-    return () => {
-      window.removeEventListener("hashchange", syncFromHash);
-    };
-  }, []);
-  const activeCategory = useMemo(() => {
-    return priceData.find((category) => category.id === categoryId) ?? priceData[0];
-  }, [categoryId]);
-
-  const activeGroup = useMemo(() => {
-    return (
-      activeCategory.groups.find((group) => group.id === groupId) ??
-      activeCategory.groups[0]
-    );
-  }, [activeCategory, groupId]);
-
-  function selectCategory(id: string) {
-    const nextCategory = priceData.find((category) => category.id === id);
-
-    if (!nextCategory) return;
-
-    setCategoryId(id);
-    setGroupId(nextCategory.groups[0].id);
+    setSelectedId(null);
+    setStep("category");
   }
 
   return (
-    <div className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-4">
-        {priceData.map((category) => (
-          <button
-            key={category.id}
-            id={`price-${category.id}`}
-            type="button"
-            onClick={() => selectCategory(category.id)}
-            className={`glass-card rounded-[28px] border p-6 text-left transition ${
-              categoryId === category.id
-                ? "border-purple-300/40 bg-purple-300/10"
-                : "border-white/10 bg-white/5"
-            }`}
-          >
-            <p className="mb-3 text-sm tracking-[0.3em] text-purple-300">
-              {category.label}
+    <div className="relative">
+      {/* 第一層：分類卡片 */}
+      {step === "category" && (
+        <div>
+          <div className="mb-8 text-center">
+            <p className="text-sm font-bold tracking-[0.3em] text-yellow-300">
+              STEP 01
             </p>
-
-            <h3 className="text-2xl font-black">
-              {category.title}
+            <h3 className="mt-2 text-3xl font-black text-white">
+              先選擇你想看的服務
             </h3>
-
-            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-              {category.desc}
+            <p className="mt-3 text-sm text-zinc-400">
+              點擊卡片後，會先看到服務說明，再進入價目表。
             </p>
-          </button>
-        ))}
-      </div>
+          </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.3fr_0.7fr]">
-        <div className="rounded-[36px] border border-purple-200/60 bg-white/55 p-5 shadow-[0_12px_40px_rgba(168,85,247,0.08)] backdrop-blur-xl">
-          <p className="mb-4 px-3 text-sm tracking-[0.32em] text-purple-500">
-            DETAIL
-          </p>
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {categories.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => openInfo(item.id)}
+                className="group relative min-h-[190px] overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 p-6 text-left shadow-xl transition hover:-translate-y-2 hover:border-yellow-300/70 hover:bg-zinc-900"
+              >
+                <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-yellow-300/10 blur-2xl transition group-hover:bg-yellow-300/20" />
 
-          <div className="space-y-3">
-             {activeCategory.groups.map((group) => (
-               <div
-                 key={group.id}
-                 className={`rounded-[24px] border p-4 transition duration-200 ${
-                   activeGroup.id === group.id
-                     ? "border-purple-300 bg-white/90 shadow-[0_10px_30px_rgba(168,85,247,0.12)]"
-                     : "border-purple-100/70 bg-white/55 hover:bg-white/78"
-                 }`}
-               >
-                 <button
-                   type="button"
-                   onClick={() => setGroupId(group.id)}
-                   className="block w-full text-left"
-                 >
-                   <div className="flex items-start justify-between gap-3">
-                     <div>
-                       <h4 className="text-lg font-black text-[#18111f]">
-                         {group.title}
-                       </h4>
+                <div className="relative">
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-yellow-300/40 bg-yellow-300/10 text-3xl">
+                    {item.emoji}
+                  </div>
 
-                       <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-zinc-500">
-                         {group.desc}
-                       </p>
-                     </div>
+                  <h4 className="text-xl font-black text-white">
+                    {item.title}
+                  </h4>
 
-                     <span
-                       className={`mt-1 text-base transition ${
-                         activeGroup.id === group.id
-                           ? "text-purple-500"
-                           : "text-zinc-400"
-                       }`}
-                     >
-                       →
-                     </span>
-                   </div>
-                 </button>
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">
+                    {item.subtitle}
+                  </p>
 
-                 <a
-                   href={discordLink}
-                   target="_blank"
-                   className={`mt-4 inline-flex items-center justify-center rounded-full px-4 py-2 text-xs font-black transition ${
-                     activeGroup.id === group.id
-                       ? "bg-gradient-to-r from-purple-300 to-pink-300 text-[#18111f] shadow-[0_8px_20px_rgba(192,132,252,0.22)]"
-                       : "border border-purple-200 bg-white/80 text-purple-600 hover:bg-white"
-                   }`}
-                 >
-                   立即預約
-                 </a>
-               </div>
-             ))}
+                  <p className="mt-5 text-sm font-bold text-yellow-300">
+                    點我查看 →
+                  </p>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
+      )}
 
-        <div className="glass-card overflow-hidden rounded-[36px] border border-white/10 bg-black/40">
-          <div className="border-b border-white/10 bg-gradient-to-br from-purple-500/20 to-pink-500/10 p-8">
-            <p className="mb-4 text-sm tracking-[0.35em] text-purple-200">
-              {activeCategory.label}
-            </p>
+      {/* 第二層：服務資訊 */}
+      {step === "info" && selected && (
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={goBack}
+              className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-bold text-zinc-300 transition hover:border-yellow-300/50 hover:text-yellow-300"
+            >
+              ← 返回分類
+            </button>
 
-            <h3 className="text-4xl font-black">
-              {activeGroup.title}
-            </h3>
-
-            <p className="mt-4 leading-relaxed text-zinc-300">
-              {activeGroup.intro}
+            <p className="text-sm font-bold tracking-[0.25em] text-yellow-300">
+              STEP 02
             </p>
           </div>
 
-          <div className="grid gap-6 p-8 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="space-y-6">
-              <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-                <h4 className="mb-4 text-xl font-black">
-                  適合誰？
-                </h4>
+          <div className="relative overflow-hidden rounded-[2rem] border border-yellow-300/40 bg-zinc-950 p-8 shadow-2xl shadow-yellow-300/10">
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-yellow-300/10 blur-3xl" />
+            <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
 
-                <div className="flex flex-wrap gap-2">
-                  {activeGroup.suitable.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-purple-300/20 bg-purple-300/10 px-3 py-1 text-sm text-purple-100"
+            <div className="relative">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-yellow-300/50 bg-yellow-300/10 text-5xl">
+                {selected.emoji}
+              </div>
+
+              <p className="text-sm font-bold tracking-[0.3em] text-yellow-300">
+                {selected.subtitle}
+              </p>
+
+              <h3 className="mt-3 text-4xl font-black text-white">
+                {selected.title}
+              </h3>
+
+              <p className="mt-5 text-base leading-8 text-zinc-300">
+                {selected.description}
+              </p>
+
+              <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6">
+                <p className="mb-4 text-sm font-black text-yellow-300">
+                  適合這樣的你
+                </p>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {selected.suitable.map((text) => (
+                    <div
+                      key={text}
+                      className="rounded-2xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm text-zinc-300"
                     >
-                      {tag}
-                    </span>
+                      ✦ {text}
+                    </div>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-                <h4 className="mb-4 text-xl font-black">
-                  服務規則
-                </h4>
-
-                <ul className="space-y-3 text-sm leading-relaxed text-zinc-400">
-                  {activeGroup.rules.map((rule) => (
-                    <li key={rule} className="flex gap-3">
-                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-purple-300" />
-                      <span>{rule}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <button
+                type="button"
+                onClick={() => setStep("price")}
+                className="mt-8 w-full rounded-2xl bg-yellow-300 px-6 py-4 text-base font-black text-zinc-950 shadow-xl shadow-yellow-300/20 transition hover:scale-[1.02] hover:bg-yellow-200"
+              >
+                查看 {selected.title} 價目表
+              </button>
             </div>
-
-            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-              <h4 className="mb-4 text-xl font-black">
-                價目細項
-              </h4>
-
-              <div className="grid gap-4">
-                {activeGroup.items.map(([name, price]) => (
-                  <div
-                    key={`${activeGroup.id}-${name}`}
-                    className="rounded-2xl border border-white/10 bg-black/25 p-4"
-                  >
-                    <div className="flex justify-between gap-4">
-                      <span className="text-sm text-zinc-300">
-                        {name}
-                      </span>
-
-                      <span className="shrink-0 text-sm font-bold text-white">
-                        {price}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 p-6 text-sm leading-relaxed text-zinc-500">
-            ※ 官網為分類參考，完整價目、陪陪狀態、活動規則與最新公告，請以 Discord 官方公告與客服說明為準。
           </div>
         </div>
-      </div>
+      )}
+
+      {/* 第三層：價目表 */}
+      {step === "price" && selected && (
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={goBack}
+              className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-sm font-bold text-zinc-300 transition hover:border-yellow-300/50 hover:text-yellow-300"
+            >
+              ← 返回介紹
+            </button>
+
+            <p className="text-sm font-bold tracking-[0.25em] text-yellow-300">
+              STEP 03
+            </p>
+          </div>
+
+          <div className="overflow-hidden rounded-[2rem] border border-yellow-300/40 bg-zinc-950 shadow-2xl shadow-yellow-300/10">
+            <div className="border-b border-white/10 bg-yellow-300/10 p-8">
+              <div className="flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-yellow-300/50 bg-zinc-950 text-4xl">
+                  {selected.emoji}
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold tracking-[0.25em] text-yellow-300">
+                    PRICE LIST
+                  </p>
+                  <h3 className="mt-1 text-3xl font-black text-white">
+                    {selected.title}
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4 p-6">
+              {selected.prices.map((item, index) => (
+                <div
+                  key={`${item.name}-${index}`}
+                  className="rounded-3xl border border-white/10 bg-zinc-900 p-5"
+                >
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-lg font-black text-white">
+                      {item.name}
+                    </p>
+
+                    <p className="text-xl font-black text-yellow-300">
+                      {item.price}
+                    </p>
+                  </div>
+
+                  {item.note && (
+                    <p className="mt-3 border-t border-white/10 pt-3 text-sm leading-6 text-zinc-400">
+                      {item.note}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="border-t border-white/10 bg-zinc-900/70 p-6 text-center text-sm leading-6 text-zinc-400">
+              實際方案可能依活動、指定陪陪、服務內容調整，以下單時客服確認為準。
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedId(null);
+              setStep("category");
+            }}
+            className="mt-6 w-full rounded-2xl border border-yellow-300/50 bg-yellow-300/10 px-6 py-4 text-sm font-black text-yellow-300 transition hover:bg-yellow-300 hover:text-zinc-950"
+          >
+            重新選擇其他服務
+          </button>
+        </div>
+      )}
     </div>
   );
 }
