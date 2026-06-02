@@ -5,11 +5,13 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "深夜不關燈｜We Are Still Here",
   description:
-    "深夜不關燈官方網站，提供聊天陪伴、遊戲陪玩、打賞禮物、VIP 會員與開幕活動資訊。",
+    "深夜不關燈官方網站，在這裡，有一盞燈，永遠為你亮著。",
   keywords: [
+    "深夜",
     "深夜不關燈",
     "We Are Still Here",
     "陪玩",
+    "陪聊",
     "聊天陪伴",
     "遊戲陪玩",
     "Discord 陪玩",
@@ -17,6 +19,11 @@ export const metadata: Metadata = {
   ],
   verification: {
     google: "Ffo_OiPVxlTWWz7YOG-QVUXp4rO3992421osmFC7sPU",
+  },
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
   },
   openGraph: {
     title: "深夜不關燈｜We Are Still Here",
