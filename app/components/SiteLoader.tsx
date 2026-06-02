@@ -4,11 +4,29 @@ import { useEffect, useState } from "react";
 
 export default function SiteLoader() {
   const [show, setShow] = useState(true);
+  const [flyStyle, setFlyStyle] = useState<React.CSSProperties>({});
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShow(false);
-    }, 1800);
+      const target = document.getElementById("home-logo-icon");
+
+      if (!target) {
+        setShow(false);
+        return;
+      }
+
+      const rect = target.getBoundingClientRect();
+
+      setFlyStyle({
+        "--target-x": `${rect.left + rect.width / 2 - window.innerWidth / 2}px`,
+        "--target-y": `${rect.top + rect.height / 2 - window.innerHeight / 2}px`,
+        "--target-scale": `${rect.width / 128}`,
+      } as React.CSSProperties);
+
+      setTimeout(() => {
+        setShow(false);
+      }, 900);
+    }, 900);
 
     return () => clearTimeout(timer);
   }, []);
@@ -18,14 +36,14 @@ export default function SiteLoader() {
   return (
     <div className="fixed inset-0 z-[9999] flex min-h-screen items-center justify-center overflow-hidden bg-[#050511] text-white">
       {/* 背景光暈 */}
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 loader-bg">
         <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-yellow-400/20 blur-[120px]" />
         <div className="absolute right-0 top-1/3 h-[420px] w-[420px] rounded-full bg-violet-600/25 blur-[130px]" />
         <div className="absolute bottom-0 left-0 h-[360px] w-[360px] rounded-full bg-cyan-500/15 blur-[120px]" />
       </div>
 
       {/* 星星裝飾 */}
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 loader-bg">
         <span className="absolute left-[17%] top-[23%] animate-pulse text-3xl text-yellow-300/70">
           ✦
         </span>
@@ -40,15 +58,18 @@ export default function SiteLoader() {
         </span>
       </div>
 
-      {/* 主要內容：整組進場上移 */}
-      <div className="loader-rise relative z-10 flex flex-col items-center justify-center">
+      {/* 中間內容 */}
+      <div className="relative z-10 flex flex-col items-center justify-center">
         {/* 品牌文字 */}
-        <div className="rounded-full border border-yellow-400/70 bg-black/25 px-7 py-2 text-sm font-bold tracking-[0.35em] text-yellow-300 shadow-[0_0_22px_rgba(250,204,21,0.35)]">
+        <div className="loader-text rounded-full border border-yellow-400/70 bg-black/25 px-7 py-2 text-sm font-bold tracking-[0.35em] text-yellow-300 shadow-[0_0_22px_rgba(250,204,21,0.35)]">
           深夜不關燈
         </div>
 
-        {/* icon：微微上下漂浮 */}
-        <div className="loader-float relative mt-6 h-32 w-32 shrink-0 rounded-[2rem] border border-yellow-400/70 bg-black/40 p-2 shadow-[0_0_35px_rgba(250,204,21,0.45)]">
+        {/* 飛到主頁 icon 的 icon */}
+        <div
+          style={flyStyle}
+          className="loader-icon-fly relative mt-6 h-32 w-32 shrink-0 rounded-[2rem] border border-yellow-400/70 bg-black/40 p-2 shadow-[0_0_35px_rgba(250,204,21,0.45)]"
+        >
           <span className="pointer-events-none absolute -right-4 -top-2 text-3xl text-yellow-300 drop-shadow-[0_0_10px_rgba(250,204,21,0.9)]">
             ✦
           </span>
@@ -64,13 +85,13 @@ export default function SiteLoader() {
           />
         </div>
 
-        {/* 文字 */}
-        <p className="mt-10 text-center text-base font-medium tracking-[0.2em] text-white/80">
+        {/* 文字，不會被擋 */}
+        <p className="loader-text mt-10 text-center text-base font-medium tracking-[0.2em] text-white/80">
           正在為你點亮深夜燈光...
         </p>
 
-        {/* 小圓點 */}
-        <div className="mt-5 flex items-center justify-center gap-3">
+        {/* 點點 */}
+        <div className="loader-text mt-5 flex items-center justify-center gap-3">
           <span className="h-3 w-3 animate-bounce rounded-full bg-yellow-300 shadow-[0_0_12px_rgba(250,204,21,0.9)]" />
           <span className="h-3 w-3 animate-bounce rounded-full bg-yellow-400/70 shadow-[0_0_12px_rgba(250,204,21,0.75)] [animation-delay:120ms]" />
           <span className="h-3 w-3 animate-bounce rounded-full bg-yellow-500/50 shadow-[0_0_12px_rgba(250,204,21,0.55)] [animation-delay:240ms]" />
@@ -78,18 +99,26 @@ export default function SiteLoader() {
       </div>
 
       <style jsx>{`
-        .loader-rise {
-          animation: loaderRise 0.9s ease-out both;
+        .loader-icon-fly {
+          animation:
+            loaderEnter 0.45s ease-out both,
+            loaderFlyToLogo 0.9s ease-in-out 0.9s forwards;
         }
 
-        .loader-float {
-          animation: loaderFloat 1.6s ease-in-out infinite;
+        .loader-text {
+          animation:
+            loaderTextEnter 0.45s ease-out both,
+            loaderTextOut 0.45s ease-in-out 0.9s forwards;
         }
 
-        @keyframes loaderRise {
+        .loader-bg {
+          animation: loaderBgOut 0.45s ease-in-out 0.9s forwards;
+        }
+
+        @keyframes loaderEnter {
           0% {
             opacity: 0;
-            transform: translateY(38px) scale(0.96);
+            transform: translateY(35px) scale(0.96);
           }
 
           100% {
@@ -98,14 +127,49 @@ export default function SiteLoader() {
           }
         }
 
-        @keyframes loaderFloat {
-          0%,
-          100% {
-            transform: translateY(0);
+        @keyframes loaderFlyToLogo {
+          0% {
+            transform: translateY(0) scale(1);
           }
 
-          50% {
-            transform: translateY(-10px);
+          100% {
+            transform: translate(
+                var(--target-x, 0px),
+                var(--target-y, -260px)
+              )
+              scale(var(--target-scale, 0.35));
+          }
+        }
+
+        @keyframes loaderTextEnter {
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes loaderTextOut {
+          0% {
+            opacity: 1;
+          }
+
+          100% {
+            opacity: 0;
+          }
+        }
+
+        @keyframes loaderBgOut {
+          0% {
+            opacity: 1;
+          }
+
+          100% {
+            opacity: 0;
           }
         }
       `}</style>

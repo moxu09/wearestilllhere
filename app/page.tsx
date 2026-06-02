@@ -24,6 +24,7 @@ export default function HomePage() {
 
           <div className="icon-float relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-yellow-300/70 bg-zinc-900 shadow-2xl shadow-yellow-300/20">
             <Image
+              id="home-logo-icon"
               src="/icon.png"
               alt="深夜不關燈"
               width={82}
