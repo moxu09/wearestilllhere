@@ -100,9 +100,13 @@ export default function Home() {
 
       <header className="fixed left-0 right-0 top-0 z-50 border-b border-purple-200/50 bg-white/60 backdrop-blur-2xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="#home" className="flex items-center gap-2 text-lg font-black">
-            <span className="h-2.5 w-2.5 rounded-full bg-purple-400 shadow-[0_0_18px_rgba(192,132,252,0.9)]" />
-            深夜不關燈
+           <a href="#home" className="flex items-center gap-2 text-lg font-black">
+             <img
+               src="/loader-icon.png"
+               alt="深夜不關燈"
+               className="h-7 w-7 rounded-lg object-cover shadow-[0_0_18px_rgba(192,132,252,0.45)]"
+             />
+             深夜不關燈
           </a>
 
           <nav className="hidden gap-6 text-sm text-zinc-600 md:flex">
@@ -149,12 +153,12 @@ export default function Home() {
           <p className="mx-auto mt-8 max-w-2xl text-xl leading-relaxed text-zinc-700 md:text-2xl">
             不是每個夜晚都需要很熱鬧，
             <br />
-            但至少可以有人在。
+            但我們一直都在。
           </p>
 
           <p className="mx-auto mt-6 max-w-2xl leading-relaxed text-zinc-600">
-            聊天陪伴、遊戲陪玩、打賞禮物與 VIP 尊享，
-            為每一個不想獨自度過的深夜，留一盞微光。
+            嚴格的把關，安全的地方，滿滿的熱誠。
+            為每個不想獨自度過的深夜，留一盞微光。
           </p>
 
           <div className="mt-12 flex flex-col justify-center gap-4 sm:flex-row">
@@ -173,25 +177,6 @@ export default function Home() {
               查看服務
             </a>
           </div>
-        </div>
-      </section>
-
-      <section className="relative z-10 mx-auto max-w-7xl px-6 pb-24">
-        <div className="grid gap-4 md:grid-cols-4">
-          {[
-            ["聊天陪伴", "有人聽你說話"],
-            ["遊戲陪玩", "今晚一起開局"],
-            ["打賞禮物", "讓心意被看見"],
-            ["VIP 尊享", "解鎖限定福利"],
-          ].map(([title, text]) => (
-            <div
-              key={title}
-              className="glass-card rounded-[30px] border border-purple-200/50 bg-white/60 p-6 text-center shadow-sm backdrop-blur"
-            >
-              <h3 className="text-xl font-black text-[#18111f]">{title}</h3>
-              <p className="mt-2 text-sm text-zinc-600">{text}</p>
-            </div>
-          ))}
         </div>
       </section>
 
