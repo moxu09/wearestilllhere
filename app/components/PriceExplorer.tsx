@@ -63,36 +63,267 @@ const categories: PriceCategory[] = [
     ],
   },
   {
-    id: "game",
-    emoji: "🎮",
-    title: "遊戲陪玩",
-    subtitle: "娛樂陪玩、一起上線",
+    id: "valorant-normal",
+    emoji: "🔫",
+    title: "特戰英豪一般場",
+    subtitle: "一般陪玩、段位陪打",
     description:
-      "適合想找人一起玩遊戲、雙排、組隊、破冰，或是單純想讓遊戲過程更熱鬧的闆闆。",
-    suitable: ["想找人一起玩", "想雙排或組隊", "不想一個人打遊戲", "想要歡樂氣氛"],
+      "適合想找人一起打特戰英豪、輕鬆上線、雙排或依照段位安排陪玩的闆闆。",
+    suitable: [
+      "想找人一起打瓦",
+      "想輕鬆雙排",
+      "想照段位安排陪玩",
+      "不想一個人排",
+    ],
     prices: [
-      { name: "單陪", price: "99 / 289 / 459 元" },
-      { name: "雙陪", price: "180 / 499 元" },
-      { name: "特殊方案", price: "888 元" },
+      {
+        name: "一般場",
+        price: "250 元 / 小時",
+      },
+      {
+        name: "黃金含以下",
+        price: "250 元 / 小時",
+      },
+      {
+        name: "白金",
+        price: "260 元 / 小時",
+      },
+      {
+        name: "鑽石",
+        price: "270 元 / 小時",
+      },
+      {
+        name: "超凡",
+        price: "310 元 / 小時",
+      },
+      {
+        name: "超凡以上",
+        price: "請查看技術陪陪",
+      },
     ],
   },
+
+  {
+    id: "valorant-tech",
+    emoji: "🎯",
+    title: "特戰英豪技術陪陪",
+    subtitle: "技術陪玩、依段位計價",
+    description:
+      "適合想找技術陪玩、需要更高段位陪打，或想依照需求安排技術陪陪的闆闆。",
+    suitable: [
+      "想找技術陪玩",
+      "想依段位安排",
+      "想要更穩定對局",
+      "需要高段位陪打",
+    ],
+    prices: [
+      {
+        name: "黃金",
+        price: "260 元 / 小時",
+        note: "含以下及匹配。",
+      },
+      {
+        name: "白金",
+        price: "180 元 / 局",
+      },
+      {
+        name: "鑽石",
+        price: "210 元 / 局",
+      },
+      {
+        name: "超凡",
+        price: "240 元 / 局",
+      },
+      {
+        name: "神話",
+        price: "300 元 / 局",
+      },
+      {
+        name: "輻能",
+        price: "請洽詢客服",
+      },
+    ],
+  },
+
+  {
+    id: "pubg",
+    emoji: "🏹",
+    title: "PUBG",
+    subtitle: "娛樂單陪、娛樂雙陪",
+    description:
+      "適合想找人一起吃雞、娛樂陪玩、語音互動，或深夜想找人一起組隊的闆闆。",
+    suitable: [
+      "想找人一起玩 PUBG",
+      "想語音互動",
+      "想單陪或雙陪",
+      "想要深夜陪伴",
+    ],
+    prices: [
+      {
+        name: "娛樂單陪｜1 場",
+        price: "99 元 / 場",
+      },
+      {
+        name: "娛樂單陪｜3 場",
+        price: "289 元 / 3 場",
+      },
+      {
+        name: "娛樂單陪｜5 場",
+        price: "459 元 / 5 場",
+      },
+      {
+        name: "娛樂雙陪｜1 場",
+        price: "180 元 / 場",
+      },
+      {
+        name: "娛樂雙陪｜3 場",
+        price: "499 元 / 3 場",
+      },
+      {
+        name: "娛樂雙陪｜5 場",
+        price: "888 元 / 5 場",
+      },
+      {
+        name: "深夜加成",
+        price: "00:00 後開始計算",
+        note: "300 元以下訂單金額加收 10%；300 元以上訂單金額加收 5%。",
+      },
+    ],
+  },
+
   {
     id: "delta",
     emoji: "🛡️",
     title: "三角洲行動",
-    subtitle: "機密雙護、猛攻護航",
+    subtitle: "護航服務、一般陪玩",
     description:
-      "適合需要護航、陪打、保底規劃，或想要更穩定遊戲體驗的闆闆。",
-    suitable: ["想要護航", "想打保底", "想穩定遊戲體驗", "想找熟悉玩法的人陪"],
+      "適合需要護航、陪打、保底規劃，或想要穩定完成任務與高價值物資帶出的闆闆。",
+    suitable: [
+      "想要護航",
+      "想打保底",
+      "想完成高強度任務",
+      "想找專業團隊陪玩",
+    ],
     prices: [
-      { name: "機密雙護｜無保", price: "600 元 / 小時" },
-      { name: "機密雙護｜保底 1000 萬", price: "800 元 / 小時" },
-      { name: "猛攻護航｜無保", price: "700 元 / 小時" },
-      { name: "猛攻護航｜保底 1800 萬", price: "1100 元 / 小時" },
       {
-        name: "保底補充",
-        price: "時間內未達到保底，重新計算",
-        note: "以第一把開局時間做計算；若時間到但對局未結束，當局仍計算保底內。",
+        name: "機密雙護｜基本無保",
+        price: "600 元 / 小時",
+      },
+      {
+        name: "機密雙護｜有保底",
+        price: "800 元 / 小時",
+        note: "保底金額：1000 萬。",
+      },
+      {
+        name: "猛攻護航｜基本無保",
+        price: "700 元 / 小時",
+      },
+      {
+        name: "猛攻護航｜有保底",
+        price: "1100 元 / 小時",
+        note: "保底金額：1800 萬。",
+      },
+      {
+        name: "一般陪玩",
+        price: "280 元 / 小時",
+      },
+      {
+        name: "3x3 方案",
+        price: "請洽談客服",
+        note: "依需求客製隊伍與戰術配置，價格另行評估。",
+      },
+      {
+        name: "補充說明",
+        price: "以第一把開局時間做計算",
+        note: "若是時間到但對局未結束，當局仍計算保底內。",
+      },
+    ],
+  },
+
+  {
+    id: "steam-horror",
+    emoji: "👻",
+    title: "Steam 恐怖遊戲",
+    subtitle: "恐怖遊戲陪玩",
+    description:
+      "適合想找人一起玩恐怖遊戲、壯膽、語音互動，或想一起被嚇的闆闆。",
+    suitable: [
+      "想玩恐怖遊戲",
+      "需要人陪壯膽",
+      "想語音互動",
+      "想一起被嚇",
+    ],
+    prices: [
+      {
+        name: "恐怖遊戲",
+        price: "250 元 / 小時",
+        note: "精神病院 / Devour / DBD / Lunch Lady / Content Warning / Escape the Backrooms / Lethal Company / REPO / Emissary Zero。",
+      },
+    ],
+  },
+
+  {
+    id: "steam-roguelike",
+    emoji: "🕊️",
+    title: "Steam 肉鴿遊戲",
+    subtitle: "肉鴿類遊戲陪玩",
+    description:
+      "適合想找人一起刷關卡、打配合、慢慢農進度，或想要有人一起探索的闆闆。",
+    suitable: [
+      "想一起刷關卡",
+      "想找人配合",
+      "想慢慢農進度",
+      "想一起探索",
+    ],
+    prices: [
+      {
+        name: "肉鴿遊戲",
+        price: "240 元 / 小時",
+        note: "傳送地下城 / World War 2 / Dying Light / Bloons TD 6。",
+      },
+    ],
+  },
+
+  {
+    id: "steam-party",
+    emoji: "🎲",
+    title: "Steam 派對遊戲",
+    subtitle: "派對類遊戲陪玩",
+    description:
+      "適合想找人一起玩派對遊戲、搞笑互動、多人娛樂，或想讓氣氛更熱鬧的闆闆。",
+    suitable: [
+      "想玩派對遊戲",
+      "想多人娛樂",
+      "想搞笑互動",
+      "想讓氣氛更熱鬧",
+    ],
+    prices: [
+      {
+        name: "派對遊戲",
+        price: "230 元 / 小時",
+        note: "PICO PARK 2 / For The King / Liar’s Bar / Ember Knights / Witch It。",
+      },
+    ],
+  },
+
+  {
+    id: "steam-survival",
+    emoji: "🌿",
+    title: "Steam 生存遊戲",
+    subtitle: "生存類遊戲陪玩",
+    description:
+      "適合想找人一起蓋家、探索、打怪、生存合作，或想慢慢養成進度的闆闆。",
+    suitable: [
+      "想一起生存合作",
+      "想蓋家探索",
+      "想慢慢養成",
+      "想找人一起冒險",
+    ],
+    prices: [
+      {
+        name: "生存遊戲",
+        price: "260 元 / 小時",
+        note: "Grounded / Palia / Craftopia / Once Human / Core Keeper。",
       },
     ],
   },
