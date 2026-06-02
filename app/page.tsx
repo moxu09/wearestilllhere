@@ -1,255 +1,296 @@
 "use client";
 
-import Image from "next/image";
-import PriceExplorer from "./components/PriceExplorer";
+import { useState } from "react";
+
+const priceCards = [
+  {
+    icon: "🎮",
+    title: "遊戲陪玩",
+    desc: "特戰英豪、PUBG、三角洲行動等遊戲服務",
+    detailTitle: "遊戲陪玩",
+    detailDesc: "依不同遊戲、陪玩類型與保底需求計價。",
+    prices: [
+      "特戰英豪｜娛樂陪玩：依時段與人員報價",
+      "PUBG｜娛樂陪玩：依場次或時數計價",
+      "三角洲行動｜保底 / 無保方案另計",
+      "其他遊戲可洽客服確認",
+    ],
+  },
+  {
+    icon: "💬",
+    title: "聊天陪伴",
+    desc: "深夜聊天、陪伴、出氣與情緒陪伴服務",
+    detailTitle: "聊天陪伴",
+    detailDesc: "適合想找人聊天、放鬆、陪伴或深夜不想一個人的你。",
+    prices: [
+      "女生陪伴：210 / 350 / 500 / 650",
+      "女生出氣：100 / 250 / 450",
+      "男生出氣：80 / 150 / 280",
+      "實際方案依客服確認為準",
+    ],
+  },
+  {
+    icon: "🎁",
+    title: "打賞禮物",
+    desc: "浪漫禮物、特殊打賞與專寵獨賞",
+    detailTitle: "打賞禮物",
+    detailDesc: "送給喜歡的陪陪，讓深夜多一點儀式感。",
+    prices: [
+      "一般禮物：30 起",
+      "特殊打賞｜明燈千里：1999",
+      "專寵獨賞：16888",
+      "明燈三千：依商品頁為準",
+    ],
+  },
+  {
+    icon: "💎",
+    title: "儲值 VIP",
+    desc: "ASD 儲值、會員方案與專屬福利",
+    detailTitle: "儲值 VIP",
+    detailDesc: "儲值後可用於下單、打賞與站內消費。",
+    prices: [
+      "1 元台幣 = 1 枚 ASD",
+      "小夜燈 VIP：149 / 月",
+      "星光燈 VIP：399 / 月",
+      "永夜燈 VIP：999 / 月",
+    ],
+  },
+];
 
 export default function HomePage() {
+  const [selectedCard, setSelectedCard] = useState<number | null>(null);
+
+  const currentCard =
+    selectedCard === null ? null : priceCards[selectedCard];
+
   return (
-    <main className="min-h-screen overflow-hidden bg-[#070711] text-white">
-      {/* 背景光暈 */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-yellow-300/20 blur-3xl" />
-        <div className="absolute right-[-120px] top-40 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl" />
-        <div className="absolute bottom-[-160px] left-[-120px] h-96 w-96 rounded-full bg-cyan-400/10 blur-3xl" />
+    <main className="min-h-screen overflow-hidden bg-[#050511] text-white">
+      {/* 背景 */}
+      <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute left-1/2 top-0 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-yellow-400/15 blur-[140px]" />
+        <div className="absolute right-0 top-1/3 h-[460px] w-[460px] rounded-full bg-violet-600/20 blur-[130px]" />
+        <div className="absolute bottom-0 left-0 h-[420px] w-[420px] rounded-full bg-cyan-500/10 blur-[120px]" />
       </div>
 
-      {/* 首頁 Hero */}
-      <section className="relative mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 py-20 text-center">
-        {/* 動畫 Icon */}
-        <div
-          id="hero-icon-target"
-          className="relative mb-8 flex h-36 w-36 items-center justify-center"
-        >
-          <div className="icon-glow absolute h-32 w-32 rounded-full bg-yellow-300/25 blur-2xl" />
-
-          <div className="icon-float relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-3xl border border-yellow-300/70 bg-zinc-900 shadow-2xl shadow-yellow-300/20">
-            <Image
+      {/* Navbar */}
+      <header className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#050511]/70 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+          <div className="flex items-center gap-3">
+            <img
               id="home-logo-icon"
               src="/icon.png"
               alt="深夜不關燈"
-              width={82}
-              height={82}
-              className="rounded-2xl"
-              priority
+              className="h-10 w-10 rounded-xl object-cover shadow-[0_0_20px_rgba(250,204,21,0.35)] md:h-12 md:w-12"
             />
+            <div>
+              <p className="text-sm font-bold tracking-[0.25em] text-yellow-300">
+                深夜不關燈
+              </p>
+              <p className="text-xs text-white/45">Night Light Service</p>
+            </div>
           </div>
 
-          <span className="star star-one">✦</span>
-          <span className="star star-two">✧</span>
-          <span className="star star-three">✦</span>
+          <nav className="hidden items-center gap-6 text-sm text-white/65 md:flex">
+            <a href="#home" className="transition hover:text-yellow-300">
+              首頁
+            </a>
+            <a href="#prices" className="transition hover:text-yellow-300">
+              價目探索
+            </a>
+            <a href="#contact" className="transition hover:text-yellow-300">
+              聯絡我們
+            </a>
+          </nav>
         </div>
+      </header>
 
-        <p className="mb-4 rounded-full border border-yellow-300/40 bg-yellow-300/10 px-5 py-2 text-sm font-bold tracking-[0.3em] text-yellow-300">
-          深夜不關燈
-        </p>
+      {/* Hero */}
+      <section
+        id="home"
+        className="relative flex min-h-screen items-center justify-center px-4 pt-24"
+      >
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <p className="mx-auto inline-flex rounded-full border border-yellow-400/50 bg-yellow-300/10 px-5 py-2 text-xs font-bold tracking-[0.35em] text-yellow-300 shadow-[0_0_20px_rgba(250,204,21,0.18)]">
+            WELCOME TO MIDNIGHT
+          </p>
 
-        <h1 className="max-w-4xl text-5xl font-black leading-tight tracking-tight text-white md:text-7xl">
-          夜還很長，
-          <br />
-          我們陪你到天亮。
-        </h1>
+          <h1 className="mt-6 text-4xl font-black leading-tight md:text-6xl">
+            深夜也有人陪你
+            <span className="block text-yellow-300 drop-shadow-[0_0_18px_rgba(250,204,21,0.45)]">
+              把燈亮著
+            </span>
+          </h1>
 
-        <p className="mt-6 max-w-2xl text-base leading-8 text-zinc-300 md:text-lg">
-          遊戲陪玩、聊天陪伴、專屬打賞、會員儲值與活動抽獎，
-          <br className="hidden md:block" />
-          這裡是屬於深夜的溫柔燈火。
-        </p>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-white/65 md:text-lg">
+            陪玩、聊天、打賞、儲值與 VIP 服務，一站式深夜陪伴平台。
+          </p>
 
-        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-wrap justify-center gap-4">
+            <a
+              href="#prices"
+              className="rounded-full bg-yellow-300 px-7 py-3 text-sm font-black text-black shadow-[0_0_25px_rgba(250,204,21,0.35)] transition hover:-translate-y-1 hover:bg-yellow-200"
+            >
+              查看價目
+            </a>
+
+            <a
+              href="#contact"
+              className="rounded-full border border-white/15 bg-white/5 px-7 py-3 text-sm font-bold text-white/80 transition hover:-translate-y-1 hover:border-yellow-300/50 hover:text-yellow-300"
+            >
+              聯絡客服
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* 價目探索 */}
+      <section id="prices" className="relative px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="text-center">
+            <p className="text-xs font-bold tracking-[0.35em] text-yellow-300/80">
+              PRICE EXPLORE
+            </p>
+            <h2 className="mt-3 text-3xl font-black md:text-5xl">
+              價目探索
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/55 md:text-base">
+              選擇你想了解的服務，點開後會顯示對應資訊與價目。
+            </p>
+          </div>
+
+          {/* 2x2 方形卡片 */}
+          {selectedCard === null ? (
+            <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-4 md:gap-6">
+              {priceCards.map((card, index) => (
+                <button
+                  key={card.title}
+                  type="button"
+                  onClick={() => setSelectedCard(index)}
+                  className="group aspect-square rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 text-left shadow-[0_0_25px_rgba(250,204,21,0.08)] transition duration-300 hover:-translate-y-1 hover:border-yellow-300/50 hover:bg-yellow-300/10 md:p-6"
+                >
+                  <div className="flex h-full flex-col justify-between">
+                    <div>
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-300/15 text-2xl shadow-[0_0_18px_rgba(250,204,21,0.12)] md:h-14 md:w-14 md:text-3xl">
+                        {card.icon}
+                      </div>
+
+                      <h3 className="text-lg font-black text-white md:text-2xl">
+                        {card.title}
+                      </h3>
+
+                      <p className="mt-2 line-clamp-3 text-xs leading-6 text-white/55 md:text-sm">
+                        {card.desc}
+                      </p>
+                    </div>
+
+                    <p className="text-xs font-bold tracking-[0.25em] text-yellow-300/80">
+                      點擊查看
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="mx-auto mt-10 max-w-3xl rounded-[2rem] border border-yellow-300/25 bg-white/[0.06] p-6 shadow-[0_0_35px_rgba(250,204,21,0.12)] md:p-8">
+              <button
+                type="button"
+                onClick={() => setSelectedCard(null)}
+                className="mb-6 rounded-full border border-white/10 bg-black/25 px-4 py-2 text-xs font-bold tracking-[0.2em] text-white/65 transition hover:border-yellow-300/50 hover:text-yellow-300"
+              >
+                ← 返回價目探索
+              </button>
+
+              <div className="flex items-start gap-4">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-yellow-300/15 text-4xl">
+                  {currentCard?.icon}
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-black text-white md:text-3xl">
+                    {currentCard?.detailTitle}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-white/55 md:text-base">
+                    {currentCard?.detailDesc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-7 grid gap-3">
+                {currentCard?.prices.map((price) => (
+                  <div
+                    key={price}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm font-medium text-white/75"
+                  >
+                    {price}
+                  </div>
+                ))}
+              </div>
+
+              <p className="mt-6 text-xs leading-6 text-white/40">
+                實際價格與接單內容，仍以客服確認與當下公告為準。
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 特色 */}
+      <section className="px-4 py-16 md:py-20">
+        <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-3">
+          {[
+            {
+              title: "快速回覆",
+              desc: "客服協助確認需求，快速安排適合的陪陪。",
+            },
+            {
+              title: "多元服務",
+              desc: "遊戲、聊天、打賞、儲值與 VIP 服務整合。",
+            },
+            {
+              title: "深夜陪伴",
+              desc: "深夜不關燈，讓想被陪伴的人不再一個人。",
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6"
+            >
+              <h3 className="text-xl font-black text-yellow-300">
+                {item.title}
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-white/55">
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 聯絡 */}
+      <section id="contact" className="px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-4xl rounded-[2rem] border border-yellow-300/25 bg-yellow-300/10 p-8 text-center shadow-[0_0_35px_rgba(250,204,21,0.12)] md:p-10">
+          <p className="text-xs font-bold tracking-[0.35em] text-yellow-300/80">
+            CONTACT
+          </p>
+          <h2 className="mt-3 text-3xl font-black md:text-4xl">
+            想下單或詢問價目？
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white/60 md:text-base">
+            可透過 Discord 官方客服確認服務內容、陪陪安排與付款方式。
+          </p>
+
           <a
-            href="#prices"
-            className="rounded-2xl bg-yellow-300 px-8 py-4 text-base font-black text-zinc-950 shadow-xl shadow-yellow-300/20 transition hover:scale-105 hover:bg-yellow-200"
+            href="#"
+            className="mt-7 inline-flex rounded-full bg-yellow-300 px-8 py-3 text-sm font-black text-black shadow-[0_0_25px_rgba(250,204,21,0.35)] transition hover:-translate-y-1 hover:bg-yellow-200"
           >
-            查看價目表
-          </a>
-
-          <a
-            href="#services"
-            className="rounded-2xl border border-yellow-300/50 bg-white/5 px-8 py-4 text-base font-bold text-yellow-200 backdrop-blur transition hover:scale-105 hover:bg-yellow-300/10"
-          >
-            查看服務項目
+            前往 Discord
           </a>
         </div>
-
-        <div className="mt-14 grid w-full max-w-3xl grid-cols-3 gap-4">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-            <p className="text-2xl font-black text-yellow-300">24H</p>
-            <p className="mt-1 text-xs text-zinc-400">深夜陪伴</p>
-          </div>
-
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-            <p className="text-2xl font-black text-yellow-300">VIP</p>
-            <p className="mt-1 text-xs text-zinc-400">會員制度</p>
-          </div>
-
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
-            <p className="text-2xl font-black text-yellow-300">ASD</p>
-            <p className="mt-1 text-xs text-zinc-400">儲值代幣</p>
-          </div>
-        </div>
       </section>
 
-      {/* 服務區 */}
-      <section id="services" className="relative mx-auto max-w-6xl px-6 py-24">
-        <div className="mb-12 text-center">
-          <p className="text-sm font-bold tracking-[0.3em] text-yellow-300">
-            SERVICES
-          </p>
-          <h2 className="mt-3 text-4xl font-black text-white">服務項目</h2>
-          <p className="mt-4 text-zinc-400">
-            不只陪你玩，也陪你度過每一個不想關燈的夜晚。
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-3xl border border-white/10 bg-zinc-900/80 p-7 shadow-2xl shadow-black/20">
-            <div className="mb-5 text-4xl">🎮</div>
-            <h3 className="text-2xl font-black text-yellow-300">遊戲陪玩</h3>
-            <p className="mt-4 leading-7 text-zinc-300">
-              VALORANT、LOL、PUBG、三角洲行動等多種遊戲陪玩服務。
-            </p>
-          </div>
-
-          <div className="rounded-3xl border border-white/10 bg-zinc-900/80 p-7 shadow-2xl shadow-black/20">
-            <div className="mb-5 text-4xl">🌙</div>
-            <h3 className="text-2xl font-black text-yellow-300">聊天陪伴</h3>
-            <p className="mt-4 leading-7 text-zinc-300">
-              深夜聊天、情緒陪伴、出氣陪聊，讓你不再一個人熬夜。
-            </p>
-          </div>
-
-          <div className="rounded-3xl border border-white/10 bg-zinc-900/80 p-7 shadow-2xl shadow-black/20">
-            <div className="mb-5 text-4xl">🎁</div>
-            <h3 className="text-2xl font-black text-yellow-300">打賞禮物</h3>
-            <p className="mt-4 leading-7 text-zinc-300">
-              專屬禮物、特殊打賞、明燈系列，讓喜歡變得更有儀式感。
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 價格區 */}
-      <section id="prices" className="relative mx-auto max-w-6xl px-6 py-24">
-        <div className="mb-12 text-center">
-          <p className="text-sm font-bold tracking-[0.3em] text-yellow-300">
-            PRICE
-          </p>
-          <h2 className="mt-3 text-4xl font-black text-white">價目探索</h2>
-          <p className="mt-4 text-zinc-400">
-            選擇你想看的服務，快速查看對應價格。
-          </p>
-        </div>
-
-        <div className="rounded-[2rem] border border-yellow-300/30 bg-zinc-900/70 p-4 shadow-2xl shadow-yellow-300/10 md:p-8">
-          <PriceExplorer />
-        </div>
-      </section>
-
-      {/* 特色區 */}
-      <section className="relative mx-auto max-w-6xl px-6 py-24">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur">
-            <h3 className="text-3xl font-black text-white">為深夜點一盞燈</h3>
-            <p className="mt-5 leading-8 text-zinc-300">
-              深夜不關燈希望成為一個溫柔、安心、好玩的陪伴空間。
-              無論你是想打遊戲、想找人聊天，或只是想有人陪著，
-              都能在這裡找到一盞燈。
-            </p>
-          </div>
-
-          <div className="rounded-[2rem] border border-yellow-300/30 bg-yellow-300/10 p-8 backdrop-blur">
-            <h3 className="text-3xl font-black text-yellow-300">會員與儲值</h3>
-            <p className="mt-5 leading-8 text-zinc-200">
-              支援 ASD 儲值、VIP 會員、專屬優惠與活動抽獎。
-              讓每一次消費都有更多回饋與紀念感。
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 底部 */}
-      <footer className="relative border-t border-white/10 px-6 py-10 text-center text-sm text-zinc-500">
-        © 深夜不關燈 All rights reserved.
+      <footer className="border-t border-white/10 px-4 py-8 text-center text-xs text-white/35">
+        © 深夜不關燈 All Rights Reserved.
       </footer>
-
-      <style>{`
-        .icon-float {
-          animation: iconFloat 2.6s ease-in-out infinite;
-        }
-
-        .icon-glow {
-          animation: iconGlow 2.6s ease-in-out infinite;
-        }
-
-        .star {
-          position: absolute;
-          color: #fde047;
-          font-size: 20px;
-          animation: starBlink 1.9s ease-in-out infinite;
-          text-shadow: 0 0 14px rgba(253, 224, 71, 0.9);
-        }
-
-        .star-one {
-          top: 14px;
-          right: 16px;
-        }
-
-        .star-two {
-          left: 10px;
-          bottom: 26px;
-          font-size: 16px;
-          animation-delay: 0.4s;
-        }
-
-        .star-three {
-          right: 8px;
-          bottom: 14px;
-          font-size: 15px;
-          animation-delay: 0.8s;
-        }
-
-        @keyframes iconFloat {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes iconGlow {
-          0% {
-            transform: scale(0.85);
-            opacity: 0.18;
-          }
-          50% {
-            transform: scale(1.15);
-            opacity: 0.45;
-          }
-          100% {
-            transform: scale(0.85);
-            opacity: 0.18;
-          }
-        }
-
-        @keyframes starBlink {
-          0% {
-            opacity: 0.25;
-            transform: scale(0.8) rotate(0deg);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2) rotate(14deg);
-          }
-          100% {
-            opacity: 0.25;
-            transform: scale(0.8) rotate(0deg);
-          }
-        }
-      `}</style>
     </main>
   );
 }
