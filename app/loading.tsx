@@ -1,6 +1,6 @@
 "use client";
 
-export default function LoadingScreen() {
+export default function loading() {
   return (
     <div className="fixed inset-0 z-[9999] flex min-h-screen items-center justify-center overflow-hidden bg-[#050511] text-white">
       {/* 背景光暈 */}
