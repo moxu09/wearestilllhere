@@ -332,43 +332,51 @@ export default function PriceExplorer() {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.35fr_0.65fr]">
+      <div className="grid gap-6 lg:grid-cols-[0.3fr_0.7fr]">
         <div className="rounded-[36px] border border-white/10 bg-black/40 p-5">
           <p className="mb-4 px-3 text-sm tracking-[0.3em] text-purple-300">
             DETAIL
           </p>
 
           <div className="space-y-3">
-            {activeCategory.groups.map((group) => (
-              <div
-                key={group.id}
-                className={`rounded-2xl border p-5 transition ${
-                  activeGroup.id === group.id
-                    ? "border-purple-300/40 bg-purple-300/10"
-                    : "border-white/10 bg-white/[0.04] hover:bg-white/[0.07]"
-                }`}
-              >
-                <button
+             {activeCategory.groups.map((group) => (
+               <div
+                 key={group.id}
+                 className={`rounded-2xl border p-4 transition ${
+                   activeGroup.id === group.id
+                     ? "border-purple-300/40 bg-purple-300/10"
+                     : "border-white/10 bg-white/[0.04] hover:bg-white/[0.07]"
+                 }`}
+               >
+                 <button
                   type="button"
-                  onClick={() => setGroupId(group.id)}
-                  className="block w-full text-left"
-                >
-                  <h4 className="font-black text-white">
-                    {group.title}
-                  </h4>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-                    {group.desc}
-                  </p>
-                </button>
+                   onClick={() => setGroupId(group.id)}
+                   className="block w-full text-left"
+                 >
+                   <div className="flex items-center justify-between gap-3">
+                     <h4 className="font-black text-white">
+                       {group.title}
+                    </h4>
+
+                    <span className="text-sm text-purple-200">
+           →
+                     </span>
+                   </div>
+
+                   <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-zinc-500">
+                     {group.desc}
+                   </p>
+                 </button>
+
                 <a
-                  href={discordLink}
-                  target="_blank"
-                  className="mt-5 block rounded-full bg-gradient-to-r from-purple-200 to-pink-200 px-5 py-3 text-center text-sm font-black text-black transition hover:opacity-90"
-                >
-                  立即預約
-                </a>
-              </div>
-            ))}
+                   href={discordLink}
+                   target="_blank"
+                   className="mt-4 inline-block rounded-full bg-gradient-to-r from-purple-200 to-pink-200 px-4 py-2 text-center text-xs font-black text-black transition hover:opacity-90"
+                 >
+                   立即預約
+                 </a>
+               </div>
+             ))}
           </div>
         </div>
 
