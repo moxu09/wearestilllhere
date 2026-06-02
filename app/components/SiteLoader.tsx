@@ -1,6 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 export default function SiteLoader() {
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(false);
+    }, 1800);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!show) return null;
+
   return (
     <div className="fixed inset-0 z-[9999] flex min-h-screen items-center justify-center overflow-hidden bg-[#050511] text-white">
       {/* 背景光暈 */}
@@ -12,29 +26,27 @@ export default function SiteLoader() {
 
       {/* 星星裝飾 */}
       <div className="pointer-events-none absolute inset-0">
-        <span className="absolute left-[17%] top-[23%] text-3xl text-yellow-300/70">
+        <span className="absolute left-[17%] top-[23%] text-3xl text-yellow-300/70 animate-pulse">
           ✦
         </span>
-        <span className="absolute right-[18%] top-[24%] text-xl text-yellow-300/40">
+        <span className="absolute right-[18%] top-[24%] text-xl text-yellow-300/40 animate-pulse">
           ✧
         </span>
-        <span className="absolute bottom-[18%] left-[23%] text-2xl text-yellow-300/60">
+        <span className="absolute bottom-[18%] left-[23%] text-2xl text-yellow-300/60 animate-pulse">
           ✦
         </span>
-        <span className="absolute bottom-[15%] right-[27%] text-3xl text-yellow-300/70">
+        <span className="absolute bottom-[15%] right-[27%] text-3xl text-yellow-300/70 animate-pulse">
           ✧
         </span>
       </div>
 
       {/* 主要內容 */}
       <div className="relative z-10 flex flex-col items-center justify-center">
-        {/* 品牌文字 */}
         <div className="rounded-full border border-yellow-400/70 bg-black/25 px-7 py-2 text-sm font-bold tracking-[0.35em] text-yellow-300 shadow-[0_0_22px_rgba(250,204,21,0.35)]">
           深夜不關燈
         </div>
 
-        {/* icon */}
-        <div className="relative mt-6 h-32 w-32 shrink-0 rounded-[2rem] border border-yellow-400/70 bg-black/40 p-2 shadow-[0_0_35px_rgba(250,204,21,0.45)]">
+        <div className="relative mt-6 h-32 w-32 shrink-0 animate-pulse rounded-[2rem] border border-yellow-400/70 bg-black/40 p-2 shadow-[0_0_35px_rgba(250,204,21,0.45)]">
           <span className="pointer-events-none absolute -right-4 -top-2 text-3xl text-yellow-300 drop-shadow-[0_0_10px_rgba(250,204,21,0.9)]">
             ✦
           </span>
@@ -50,12 +62,10 @@ export default function SiteLoader() {
           />
         </div>
 
-        {/* 文字：放在 icon 下方，不會被擋 */}
         <p className="mt-10 text-center text-base font-medium tracking-[0.2em] text-white/80">
           正在為你點亮深夜燈光...
         </p>
 
-        {/* 小圓點 */}
         <div className="mt-5 flex items-center justify-center gap-3">
           <span className="h-3 w-3 animate-bounce rounded-full bg-yellow-300 shadow-[0_0_12px_rgba(250,204,21,0.9)]" />
           <span className="h-3 w-3 animate-bounce rounded-full bg-yellow-400/70 shadow-[0_0_12px_rgba(250,204,21,0.75)] [animation-delay:120ms]" />

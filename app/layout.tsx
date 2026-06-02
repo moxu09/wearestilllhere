@@ -52,6 +52,7 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant">
       <body>
+        <SiteLoader />
         {children}
       </body>
     </html>
