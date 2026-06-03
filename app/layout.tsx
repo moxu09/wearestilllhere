@@ -21,9 +21,13 @@ export const metadata: Metadata = {
     google: "Ffo_OiPVxlTWWz7YOG-QVUXp4rO3992421osmFC7sPU",
   },
   icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/icon.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   openGraph: {
     title: "深夜不關燈｜We Are Still Here",
