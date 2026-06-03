@@ -620,10 +620,12 @@ export default function HomePage() {
 
           <div className="mt-7 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a
-            href={discordUrl}
-            className="inline-flex w-full items-center justify-center rounded-full bg-yellow-300 px-8 py-3 text-sm font-black text-black shadow-[0_0_25px_rgba(250,204,21,0.35)] transition hover:-translate-y-1 hover:bg-yellow-200 sm:w-auto"
-          >
-           前往 Discord
+            href="https://discord.gg/tXNnXWMHbJ"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full bg-yellow-400 px-8 py-4 font-bold text-black"
+            >
+            前往 Discord
           </a>
 
           <a
