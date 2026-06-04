@@ -197,7 +197,7 @@ export default function HomePage() {
               <p className="text-sm font-bold tracking-[0.25em] text-yellow-300">
                 深夜不關燈
               </p>
-              <p className="text-xs text-white/45">Night Light Service</p>
+              <p className="text-xs text-white/45">We Are Still Here </p>
             </div>
           </div>
 
