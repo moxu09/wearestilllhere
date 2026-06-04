@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const instagramUrl = "https://www.instagram.com/w.a.s.h.co";
 const threadsUrl = "https://www.threads.net/@w.a.s.h.co";
-const discordUrl = "#";
+const discordUrl = "https://discord.gg/tXNnXWMHbJ";
 
 const priceCards = [
   {
@@ -59,12 +59,11 @@ const gameCards = [
   {
     icon: "🔫",
     title: "特戰英豪",
-    desc: "娛樂陪玩、技術陪玩、指定陪玩服務",
+    desc: "娛樂陪玩、指定陪玩服務",
     detailTitle: "特戰英豪",
     detailDesc: "適合想找人一起排位、娛樂、陪打或提升遊戲體驗的闆闆。",
     prices: [
-      "娛樂陪玩：230 / 小時",
-      "技術陪玩：250 / 小時",
+      "娛樂陪玩：280 / 小時",
       "指定陪玩：依人員公告或客服確認",
       "不提供代打服務",
       "以第一把開局時間做計算",
@@ -142,6 +141,9 @@ export default function HomePage() {
 
         {/* 細緻格紋 */}
         <div className="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(rgba(255,255,255,.35)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.35)_1px,transparent_1px)] [background-size:52px_52px]" />
+
+        {/* 柔和星塵紋理 */}
+        <div className="absolute inset-0 opacity-[0.12] [background-image:radial-gradient(circle_at_20%_30%,rgba(254,240,138,.7)_0_1px,transparent_2px),radial-gradient(circle_at_80%_20%,rgba(255,255,255,.55)_0_1px,transparent_2px),radial-gradient(circle_at_45%_75%,rgba(165,243,252,.45)_0_1px,transparent_2px)] [background-size:120px_120px,180px_180px,150px_150px]" />
 
         {/* 深色遮罩 */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,5,17,0.35)_45%,rgba(5,5,17,0.92)_100%)]" />
@@ -262,6 +264,42 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* 深夜氛圍橫幅 */}
+      <section className="relative z-10 px-4 pb-10">
+        <div className="mx-auto max-w-5xl">
+          <div className="night-card relative overflow-hidden rounded-[2rem] border border-yellow-300/25 bg-white/[0.055] p-6 shadow-[0_0_35px_rgba(250,204,21,0.10)] backdrop-blur md:p-8">
+            <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-yellow-300/15 blur-3xl" />
+            <div className="absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-violet-500/15 blur-3xl" />
+
+            <div className="relative grid gap-6 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+              <div>
+                <p className="text-xs font-bold tracking-[0.35em] text-yellow-300/80">
+                  NIGHT MESSAGE
+                </p>
+                <h2 className="mt-3 text-2xl font-black text-white md:text-4xl">
+                  一盞燈，陪你把今晚過完。
+                </h2>
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/58 md:text-base">
+                  不只是下單價目，而是讓想找人陪、想被聽見、想一起玩的人，
+                  在深夜也能找到一點溫柔的光。
+                </p>
+              </div>
+
+              <div className="grid gap-3 text-sm">
+                {["客服協助確認需求", "可指定陪陪", "深夜也能詢問"].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 font-bold text-white/75"
+                  >
+                    ✦ {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 價目探索 */}
       <section id="prices" className="relative z-10 px-4 py-16 md:py-20">
         <div className="mx-auto max-w-5xl">
@@ -288,9 +326,10 @@ export default function HomePage() {
                     setSelectedCard(index);
                     setSelectedGame(null);
                   }}
-                  className="group aspect-square rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 text-left shadow-[0_0_25px_rgba(250,204,21,0.08)] transition duration-300 hover:-translate-y-1 hover:border-yellow-300/50 hover:bg-yellow-300/10 md:p-6"
+                  className="group relative aspect-square overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 text-left shadow-[0_0_25px_rgba(250,204,21,0.08)] backdrop-blur transition duration-300 hover:-translate-y-2 hover:border-yellow-300/55 hover:bg-yellow-300/10 hover:shadow-[0_0_35px_rgba(250,204,21,0.16)] md:p-6"
                 >
-                  <div className="flex h-full flex-col justify-between">
+                  <div className="pointer-events-none absolute -right-12 -top-12 h-28 w-28 rounded-full bg-yellow-300/0 blur-2xl transition group-hover:bg-yellow-300/20" />
+                  <div className="relative flex h-full flex-col justify-between">
                     <div>
                       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-300/15 text-2xl shadow-[0_0_18px_rgba(250,204,21,0.12)] md:h-14 md:w-14 md:text-3xl">
                         {card.icon}
@@ -575,33 +614,53 @@ export default function HomePage() {
 
       {/* 特色 */}
       <section className="relative z-10 px-4 py-16 md:py-20">
-        <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-3">
-          {[
-            {
-              title: "快速回覆",
-              desc: "客服協助確認需求，快速安排適合的陪陪。",
-            },
-            {
-              title: "多元服務",
-              desc: "遊戲、聊天、打賞、儲值與 VIP 服務整合。",
-            },
-            {
-              title: "深夜陪伴",
-              desc: "深夜不關燈，讓想被陪伴的人不再一個人。",
-            },
-          ].map((item) => (
-            <div
-              key={item.title}
-              className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-6"
-            >
-              <h3 className="text-xl font-black text-yellow-300">
-                {item.title}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-white/55">
-                {item.desc}
-              </p>
-            </div>
-          ))}
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-8 text-center">
+            <p className="text-xs font-bold tracking-[0.35em] text-yellow-300/80">
+              WHY CHOOSE US
+            </p>
+            <h2 className="mt-3 text-3xl font-black md:text-5xl">
+              深夜服務小亮點
+            </h2>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              {
+                icon: "⚡",
+                title: "快速回覆",
+                desc: "客服協助確認需求，快速安排適合的陪陪。",
+              },
+              {
+                icon: "🌙",
+                title: "多元服務",
+                desc: "遊戲、聊天、打賞、儲值與 VIP 服務整合。",
+              },
+              {
+                icon: "💡",
+                title: "深夜陪伴",
+                desc: "深夜不關燈，讓想被陪伴的人不再一個人。",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 transition hover:-translate-y-1 hover:border-yellow-300/45 hover:bg-yellow-300/10"
+              >
+                <div className="absolute -right-14 -top-14 h-32 w-32 rounded-full bg-yellow-300/0 blur-2xl transition group-hover:bg-yellow-300/20" />
+                <div className="relative">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-yellow-300/25 bg-yellow-300/10 text-2xl">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-xl font-black text-yellow-300">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-white/55">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -620,7 +679,7 @@ export default function HomePage() {
 
           <div className="mt-7 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a
-            href="https://discord.gg/tXNnXWMHbJ"
+            href={discordUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full bg-yellow-400 px-8 py-4 font-bold text-black"
@@ -651,11 +710,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-white/10 px-4 py-8 text-center text-xs text-white/35">
-        © 深夜不關燈 All Rights Reserved.
+      <footer className="relative z-10 border-t border-white/10 px-4 py-10 text-center">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-sm font-black tracking-[0.28em] text-yellow-300">
+            深夜不關燈
+          </p>
+          <p className="mt-3 text-sm text-white/45">
+            We Are Still Here｜陪你把今晚過完
+          </p>
+          <p className="mt-5 text-xs text-white/30">
+            © 深夜不關燈 All Rights Reserved.
+          </p>
+        </div>
       </footer>
 
       <style jsx>{`
+        .night-card {
+          animation: softBreathe 5.5s ease-in-out infinite;
+        }
+
         .shooting-star {
           animation: shootingStar 4.5s ease-in-out infinite;
         }
@@ -677,6 +750,17 @@ export default function HomePage() {
         .float-light-slow {
           animation: floatLight 5.2s ease-in-out infinite;
           animation-delay: 0.5s;
+        }
+
+        @keyframes softBreathe {
+          0%,
+          100% {
+            box-shadow: 0 0 28px rgba(250, 204, 21, 0.08);
+          }
+
+          50% {
+            box-shadow: 0 0 42px rgba(250, 204, 21, 0.16);
+          }
         }
 
         @keyframes shootingStar {
