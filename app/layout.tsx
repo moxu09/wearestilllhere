@@ -1,70 +1,64 @@
-import type { Metadata } from "next";
-import SiteLoader from "./components/SiteLoader";
+import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
+import OrderChatFloatingWidget from "@/components/OrderChatFloatingWidget";
+import SiteLoader from "./components/SiteLoader";
+import PlatformTopNav from "./components/PlatformTopNav";
+
+// 先不要開全平台禮物播報，避免換頁卡住 / Failed to fetch
+// import GiftBroadcastOverlay from "./components/GiftBroadcastOverlay";
 
 export const metadata: Metadata = {
   title: "深夜不關燈｜We Are Still Here",
-  description:
-    "深夜不關燈官方網站，在這裡，有一盞燈，永遠為你亮著。",
-  keywords: [
-    "深夜",
-    "深夜不關燈",
-    "We Are Still Here",
-    "陪玩",
-    "陪聊",
-    "聊天陪伴",
-    "遊戲陪玩",
-    "Discord 陪玩",
-    "VIP",
-  ],
-  verification: {
-    google: "Ffo_OiPVxlTWWz7YOG-QVUXp4rO3992421osmFC7sPU",
-  },
+  description: "深夜不關燈陪玩平台，找陪玩、下單、送禮、儲值與會員中心。",
   icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
+    icon: "/icon.jpeg",
+    apple: "/icon.jpeg",
   },
   openGraph: {
     title: "深夜不關燈｜We Are Still Here",
-    description:
-      "一個在深夜也有人陪你的地方，讓每一段夜晚都不孤單。",
-    url: "https://wearestilllhere.com",
+    description: "陪你遊戲，快樂翻倍。",
     siteName: "深夜不關燈",
-    type: "website",
-    locale: "zh_TW",
     images: [
       {
-        url: "https://wearestilllhere.com/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "深夜不關燈 We Are Still Here",
+        url: "/icon.jpeg",
+        width: 512,
+        height: 512,
+        alt: "深夜不關燈",
       },
     ],
+    type: "website",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "深夜不關燈｜We Are Still Here",
-    description:
-      "一個在深夜也有人陪你的地方，讓每一段夜晚都不孤單。",
-    images: ["https://wearestilllhere.com/og-image.png"],
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#f7f3ec",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: ReactNode;
+}) {
   return (
-    <html lang="zh-Hant">
-      <body>
+    <html lang="zh-Hant" suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-[#f7f3ec] text-slate-950 antialiased"
+      >
         <SiteLoader />
-        {children}
+
+        {/* 先關掉，最後再修全平台禮物播報 */}
+        {/* <GiftBroadcastOverlay /> */}
+
+        <PlatformTopNav />
+
+        <div className="pt-20">
+          {children}
+          <OrderChatFloatingWidget />
+        </div>
       </body>
     </html>
   );
