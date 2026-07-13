@@ -107,6 +107,15 @@ export async function GET(request: Request) {
             Number(tier.threshold_points) >
               Number(memberResult.data.lifetime_points),
         );
+    const eligibleRewards = (rewardsResult.data || []).filter((reward) => {
+      const eligibleTierKeys = Array.isArray(reward.eligible_tier_keys)
+        ? reward.eligible_tier_keys
+        : [];
+      return (
+        eligibleTierKeys.length === 0 ||
+        eligibleTierKeys.includes(memberResult.data.tier_key)
+      );
+    });
     return Response.json({
       profile: {
         ...discord,
@@ -122,7 +131,7 @@ export async function GET(request: Request) {
       walletBalance: Number(walletResult.data?.coins || 0),
       ledger: ledgerResult.data || [],
       redemptions: redemptionResult.data || [],
-      rewards: rewardsResult.data || [],
+      rewards: eligibleRewards,
       exclusiveInvitation: invitationResult.data || null,
     });
   } catch (error) {

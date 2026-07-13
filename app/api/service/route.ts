@@ -226,6 +226,21 @@ export async function POST(request: Request) {
       return Response.json({ request: data });
     }
     if (body.action === "save_reward") {
+      const eligibleTierKeys = Array.isArray(body.eligibleTierKeys)
+        ? [...new Set(body.eligibleTierKeys.map(String))]
+        : [];
+      if (!eligibleTierKeys.length) {
+        throw new Error("請至少選擇一個可兌換的會員等級");
+      }
+      const { data: validTiers, error: tierError } = await admin
+        .from("alliance_membership_tiers")
+        .select("tier_key")
+        .in("tier_key", eligibleTierKeys)
+        .eq("is_active", true);
+      if (tierError) throw tierError;
+      if ((validTiers || []).length !== eligibleTierKeys.length) {
+        throw new Error("可兌換會員等級包含無效資料");
+      }
       const payload = {
         name: String(body.name),
         description: body.description || null,
@@ -236,6 +251,7 @@ export async function POST(request: Request) {
         coupon_name: body.couponName || null,
         image_url: body.imageUrl || null,
         status: body.status || "active",
+        eligible_tier_keys: eligibleTierKeys,
         updated_at: new Date().toISOString(),
       };
       const result = body.id

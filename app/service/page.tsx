@@ -64,6 +64,14 @@ export default function ServicePage() {
     stock: "",
     status: "active",
     couponName: "",
+    eligibleTierKeys: [
+      "star_traveler",
+      "silver_wing",
+      "gold_wing",
+      "radiant_star",
+      "obsidian",
+      "exclusive",
+    ],
   });
   async function load() {
     setLoading(true);
@@ -745,6 +753,9 @@ export default function ServicePage() {
                     stock: "",
                     status: "active",
                     couponName: "",
+                    eligibleTierKeys: (data.tiers || []).map(
+                      (tier: Row) => tier.tier_key,
+                    ),
                   });
                 }}
                 className="space-y-3 rounded-lg border border-[#d8e3dd] bg-white p-4 shadow-sm"
@@ -812,8 +823,45 @@ export default function ServicePage() {
                     <option value="paused">停換</option>
                   </select>
                 </Field>
+                <div>
+                  <p className="text-sm font-bold text-slate-700">
+                    可兌換會員等級
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {(data.tiers || []).map((tier: Row) => {
+                      const checked = reward.eligibleTierKeys.includes(
+                        tier.tier_key,
+                      );
+                      return (
+                        <label
+                          key={tier.tier_key}
+                          className="flex cursor-pointer items-center gap-2 rounded-md border border-slate-200 bg-[#fbfcfb] px-3 py-2 text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() =>
+                              setReward({
+                                ...reward,
+                                eligibleTierKeys: checked
+                                  ? reward.eligibleTierKeys.filter(
+                                      (key: string) => key !== tier.tier_key,
+                                    )
+                                  : [
+                                      ...reward.eligibleTierKeys,
+                                      tier.tier_key,
+                                    ],
+                              })
+                            }
+                          />
+                          <span>{tier.tier_name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
                 <button
-                  disabled={busy}
+                  disabled={busy || reward.eligibleTierKeys.length === 0}
                   className="w-full rounded-md bg-[#183d32] px-4 py-3 font-bold text-white transition hover:bg-[#102f27] disabled:opacity-50"
                 >
                   {reward.id ? "儲存修改" : "新增商品"}
@@ -849,6 +897,20 @@ export default function ServicePage() {
                     <p className="mt-1 text-xs text-slate-400">
                       庫存：{r.stock == null ? "不限" : r.stock}
                     </p>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {(data.tiers || [])
+                        .filter((tier: Row) =>
+                          (r.eligible_tier_keys || []).includes(tier.tier_key),
+                        )
+                        .map((tier: Row) => (
+                          <span
+                            key={tier.tier_key}
+                            className="rounded-full bg-[#e5f1eb] px-2 py-1 text-[11px] font-bold text-emerald-800"
+                          >
+                            {tier.tier_name}
+                          </span>
+                        ))}
+                    </div>
                     <div className="mt-4 flex gap-2">
                       <button
                         onClick={() =>
@@ -861,6 +923,7 @@ export default function ServicePage() {
                             stock: r.stock == null ? "" : String(r.stock),
                             status: r.status,
                             couponName: r.coupon_name || "",
+                            eligibleTierKeys: r.eligible_tier_keys || [],
                           })
                         }
                         className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-xs font-bold transition hover:bg-slate-50"
