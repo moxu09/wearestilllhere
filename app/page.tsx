@@ -14,12 +14,14 @@ import {
   Gift,
   Headphones,
   MessageCircle,
+  Pause,
+  Play,
   ShieldCheck,
   Sparkles,
   Trophy,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ThanksWall from "./components/ThanksWall";
 
 const instagramUrl = "https://www.instagram.com/w.a.s.h.co";
@@ -75,58 +77,64 @@ const priceCards = [
   },
 ];
 
-const games = [
-  {
-    title: "特戰英豪",
-    desc: "娛樂陪玩、指定陪玩服務",
-    detail: "一起排位、娛樂、陪打，讓遊戲體驗不只剩輸贏。",
-    prices: [
-      "娛樂陪玩：280 / 小時",
-      "指定陪玩：依人員公告或客服確認",
-      "不提供代打服務",
-      "以第一把開局時間做計算",
-    ],
-  },
+const priceSlides = [
   {
     title: "三角洲行動",
-    desc: "機密雙護、猛攻護航與保底方案",
-    detail: "依地圖、護航類型與保底需求安排適合的隊伍。",
-    prices: [
-      "機密雙護｜無保：600 / 小時",
-      "機密雙護｜保底 1000 萬：800 / 小時",
-      "猛攻護航｜無保：700 / 小時",
-      "猛攻護航｜保底 1800 萬：1100 / 小時",
-    ],
+    src: "/home/prices/delta-force.png",
   },
   {
-    title: "PUBG",
-    desc: "娛樂陪玩、場次制或時數制",
-    detail: "可依需求安排單陪、雙陪或多人一起遊玩。",
-    prices: [
-      "單陪：99 / 289 / 459",
-      "雙陪：180 / 499",
-      "特殊方案：888",
-      "指定陪陪費用另計",
-    ],
+    title: "語音聊天",
+    src: "/home/prices/voice-chat.png",
   },
   {
-    title: "其他遊戲",
-    desc: "恐怖遊戲、Steam 與多人派對遊戲",
-    detail: "沒有看到想玩的遊戲，也可以直接詢問客服安排。",
-    prices: [
-      "恐怖遊戲：依遊戲與人數報價",
-      "Steam 遊戲：依內容報價",
-      "多人派對遊戲：依時數報價",
-      "特殊需求可洽客服確認",
-    ],
+    title: "特戰英豪代打",
+    src: "/home/prices/valorant-boost.png",
+  },
+  {
+    title: "Steam 遊戲",
+    src: "/home/prices/steam.png",
+  },
+  {
+    title: "PUBG Mobile",
+    src: "/home/prices/pubg-mobile.png",
+  },
+  {
+    title: "Apex 英雄",
+    src: "/home/prices/apex.png",
+  },
+  {
+    title: "第五人格",
+    src: "/home/prices/identity-v.png",
+  },
+  {
+    title: "英雄聯盟",
+    src: "/home/prices/league-of-legends.png",
+  },
+  {
+    title: "特戰英豪",
+    src: "/home/prices/valorant.png",
+  },
+  {
+    title: "王者榮耀",
+    src: "/home/prices/honor-of-kings.png",
   },
 ];
 
 export default function HomePage() {
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
-  const [selectedGame, setSelectedGame] = useState<number | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
   const currentCard = selectedCard === null ? null : priceCards[selectedCard];
-  const currentGame = selectedGame === null ? null : games[selectedGame];
+
+  useEffect(() => {
+    if (!isPlaying || currentCard?.type !== "games") return;
+
+    const timer = window.setTimeout(() => {
+      setActiveSlide((current) => (current + 1) % priceSlides.length);
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [activeSlide, currentCard?.type, isPlaying]);
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#0d0e10] text-white">
@@ -217,7 +225,7 @@ export default function HomePage() {
                   {priceCards.map((card, index) => {
                     const Icon = card.icon;
                     return (
-                      <button key={card.title} type="button" onClick={() => { setSelectedCard(index); setSelectedGame(null); }} className="group grid w-full grid-cols-[3rem_1fr_auto] items-center gap-4 border-b border-r border-white/10 p-5 text-left transition hover:bg-white/[0.04] sm:grid-cols-[4rem_1fr_auto] sm:p-7">
+                      <button key={card.title} type="button" onClick={() => { setSelectedCard(index); if (card.type === "games") setActiveSlide(0); }} className="group grid w-full grid-cols-[3rem_1fr_auto] items-center gap-4 border-b border-r border-white/10 p-5 text-left transition hover:bg-white/[0.04] sm:grid-cols-[4rem_1fr_auto] sm:p-7">
                         <span className="text-xs font-bold text-[#e7ba67]">{card.index}</span>
                         <span className="min-w-0">
                           <span className="flex items-center gap-3 text-xl font-black sm:text-2xl"><Icon className="h-5 w-5 text-[#5bd6d0]" /> {card.title}</span>
@@ -228,27 +236,23 @@ export default function HomePage() {
                     );
                   })}
                 </div>
-              ) : currentCard?.type === "games" && selectedGame === null ? (
-                <DetailShell title="遊戲陪玩" description="選擇遊戲，查看目前方案與計價方式。" onBack={() => setSelectedCard(null)}>
-                  <div className="grid border-l border-t border-white/10 sm:grid-cols-2">
-                    {games.map((game, index) => (
-                      <button key={game.title} type="button" onClick={() => setSelectedGame(index)} className="group min-h-40 border-b border-r border-white/10 p-5 text-left hover:bg-white/[0.04] sm:p-6">
-                        <Gamepad2 className="h-5 w-5 text-[#5bd6d0]" />
-                        <h3 className="mt-8 text-lg font-black">{game.title}</h3>
-                        <p className="mt-2 text-sm leading-6 text-white/45">{game.desc}</p>
-                      </button>
-                    ))}
-                  </div>
+              ) : currentCard?.type === "games" ? (
+                <DetailShell title="遊戲價目" description="最新遊戲、聊天與陪玩方案會每五秒自動切換。" onBack={() => setSelectedCard(null)}>
+                  <PriceCarousel
+                    activeSlide={activeSlide}
+                    isPlaying={isPlaying}
+                    onSelect={setActiveSlide}
+                    onTogglePlay={() => setIsPlaying((playing) => !playing)}
+                  />
                 </DetailShell>
               ) : (
                 <DetailShell
-                  title={currentGame?.title || currentCard?.title || "服務詳情"}
-                  description={currentGame?.detail || currentCard?.detailDesc || ""}
-                  onBack={() => currentGame ? setSelectedGame(null) : setSelectedCard(null)}
-                  secondaryBack={currentGame ? () => { setSelectedGame(null); setSelectedCard(null); } : undefined}
+                  title={currentCard?.title || "服務詳情"}
+                  description={currentCard?.detailDesc || ""}
+                  onBack={() => setSelectedCard(null)}
                 >
                   <div className="border-l border-t border-white/10">
-                    {(currentGame?.prices || currentCard?.prices || []).map((price) => (
+                    {(currentCard?.prices || []).map((price) => (
                       <div key={price} className="flex items-start gap-3 border-b border-r border-white/10 p-4 text-sm text-white/70 sm:p-5">
                         <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#e7ba67]" /> {price}
                       </div>
@@ -341,6 +345,59 @@ export default function HomePage() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function PriceCarousel({ activeSlide, isPlaying, onSelect, onTogglePlay }: { activeSlide: number; isPlaying: boolean; onSelect: (index: number) => void; onTogglePlay: () => void }) {
+  const slide = priceSlides[activeSlide];
+  const goPrevious = () => onSelect((activeSlide - 1 + priceSlides.length) % priceSlides.length);
+  const goNext = () => onSelect((activeSlide + 1) % priceSlides.length);
+
+  return (
+    <div className="overflow-hidden rounded-md border border-white/10 bg-[#08090b]">
+      <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3 sm:px-5">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-black">{slide.title}</p>
+          <p className="mt-1 text-[11px] text-white/40">{String(activeSlide + 1).padStart(2, "0")} / {String(priceSlides.length).padStart(2, "0")}</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <button type="button" onClick={goPrevious} title="上一張" aria-label="上一張價目表" className="grid h-9 w-9 place-items-center rounded-md border border-white/15 text-white/70 hover:border-white/40 hover:text-white">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <button type="button" onClick={onTogglePlay} title={isPlaying ? "暫停輪播" : "繼續輪播"} aria-label={isPlaying ? "暫停輪播" : "繼續輪播"} className="grid h-9 w-9 place-items-center rounded-md border border-white/15 text-white/70 hover:border-white/40 hover:text-white">
+            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          </button>
+          <button type="button" onClick={goNext} title="下一張" aria-label="下一張價目表" className="grid h-9 w-9 place-items-center rounded-md border border-white/15 text-white/70 hover:border-white/40 hover:text-white">
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="relative aspect-[3/2] w-full bg-[#101319]">
+        <Image
+          key={slide.src}
+          src={slide.src}
+          alt={`${slide.title}價目表`}
+          fill
+          sizes="(max-width: 1024px) 100vw, 1152px"
+          className="object-contain"
+        />
+      </div>
+
+      <div className="flex items-center justify-center gap-2 overflow-x-auto border-t border-white/10 px-4 py-4">
+        {priceSlides.map((item, index) => (
+          <button
+            key={item.src}
+            type="button"
+            onClick={() => onSelect(index)}
+            title={item.title}
+            aria-label={`查看${item.title}價目表`}
+            aria-current={index === activeSlide ? "true" : undefined}
+            className={`h-2.5 shrink-0 rounded-full transition-all ${index === activeSlide ? "w-8 bg-[#e7ba67]" : "w-2.5 bg-white/20 hover:bg-white/50"}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
