@@ -12,6 +12,13 @@ export async function GET(request: Request) {
       .select("role")
       .eq("id", user.id)
       .maybeSingle();
+    const { data: existingMember } = await admin
+      .from("alliance_members")
+      .select("custom_display_name")
+      .eq("discord_user_id", discord.discordId)
+      .maybeSingle();
+    const effectiveDisplayName =
+      existingMember?.custom_display_name || discord.displayName;
     await admin.from("platform_profiles").upsert({
       id: user.id,
       discord_user_id: discord.discordId,
@@ -25,7 +32,7 @@ export async function GET(request: Request) {
       {
         discord_user_id: discord.discordId,
         auth_user_id: user.id,
-        display_name: discord.displayName,
+        display_name: effectiveDisplayName,
         avatar_url: discord.avatarUrl,
         updated_at: new Date().toISOString(),
       },
@@ -89,7 +96,13 @@ export async function GET(request: Request) {
           Number(memberResult.data.lifetime_points),
     );
     return Response.json({
-      profile: { ...discord, role: existingProfile?.role || "customer" },
+      profile: {
+        ...discord,
+        displayName:
+          memberResult.data.custom_display_name || discord.displayName,
+        isCustomName: Boolean(memberResult.data.custom_display_name),
+        role: existingProfile?.role || "customer",
+      },
       member: memberResult.data,
       currentTier,
       nextTier: nextTier || null,
@@ -98,6 +111,49 @@ export async function GET(request: Request) {
       ledger: ledgerResult.data || [],
       redemptions: redemptionResult.data || [],
       rewards: rewardsResult.data || [],
+    });
+  } catch (error) {
+    return apiError(error);
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const { admin, user } = await requireUser(request);
+    const discord = getDiscordProfile(user);
+    if (!discord.discordId)
+      throw new Error("請使用 Discord 登入以連結會員資料");
+
+    const body = await request.json();
+    const reset = Boolean(body.reset);
+    const displayName = String(body.displayName || "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!reset && (displayName.length < 1 || displayName.length > 30)) {
+      throw new Error("會員名稱需為 1 到 30 個字");
+    }
+    if (!reset && /[\u0000-\u001f\u007f]/.test(displayName)) {
+      throw new Error("會員名稱包含不支援的字元");
+    }
+
+    const customDisplayName = reset ? null : displayName;
+    const { data, error } = await admin
+      .from("alliance_members")
+      .update({
+        custom_display_name: customDisplayName,
+        display_name: customDisplayName || discord.displayName,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("discord_user_id", discord.discordId)
+      .eq("auth_user_id", user.id)
+      .select("display_name, custom_display_name")
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error("找不到會員資料，請重新整理後再試");
+
+    return Response.json({
+      displayName: data.custom_display_name || discord.displayName,
+      isCustomName: Boolean(data.custom_display_name),
     });
   } catch (error) {
     return apiError(error);

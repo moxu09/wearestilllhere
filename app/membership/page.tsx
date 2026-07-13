@@ -8,14 +8,18 @@ import { getAuthCallbackUrl } from "@/lib/authRedirect";
 import {
   ArrowRight,
   BadgeCheck,
+  Check,
   Coins,
   Crown,
   Gift,
   Loader2,
   LogOut,
   Moon,
+  Pencil,
+  RotateCcw,
   Sparkles,
   Wallet,
+  X,
 } from "lucide-react";
 
 // API payloads are schema-backed but intentionally heterogeneous across tabs.
@@ -45,6 +49,8 @@ export default function MembershipPage() {
   const [data, setData] = useState<Data | null>(null);
   const [tab, setTab] = useState("overview");
   const [discountPoints, setDiscountPoints] = useState("100");
+  const [memberName, setMemberName] = useState("");
+  const [editingName, setEditingName] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -72,7 +78,9 @@ export default function MembershipPage() {
     }
     setSignedIn(true);
     try {
-      setData(await authFetch("/api/membership/me"));
+      const payload = await authFetch("/api/membership/me");
+      setData(payload);
+      setMemberName(payload.profile.displayName);
     } catch (err) {
       setError(err instanceof Error ? err.message : "讀取失敗");
     } finally {
@@ -112,6 +120,25 @@ export default function MembershipPage() {
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "兌換失敗");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveMemberName(reset = false) {
+    setBusy(true);
+    setMessage("");
+    setError("");
+    try {
+      await authFetch("/api/membership/me", {
+        method: "PATCH",
+        body: JSON.stringify({ displayName: memberName, reset }),
+      });
+      setEditingName(false);
+      setMessage(reset ? "已恢復使用 Discord 名稱。" : "會員名稱已更新。");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "名稱更新失敗");
     } finally {
       setBusy(false);
     }
@@ -204,9 +231,65 @@ export default function MembershipPage() {
               <p className="text-xs font-bold tracking-[0.3em] text-yellow-300/75">
                 MEMBERSHIP CARD
               </p>
-              <p className="mt-5 text-sm text-white/50">
-                {data.profile.displayName}
-              </p>
+              <div className="mt-5 min-h-10">
+                {editingName ? (
+                  <div className="flex max-w-sm items-center gap-2">
+                    <input
+                      autoFocus
+                      maxLength={30}
+                      value={memberName}
+                      onChange={(event) => setMemberName(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") void saveMemberName();
+                      }}
+                      aria-label="會員名稱"
+                      className="min-w-0 flex-1 border border-yellow-300/35 bg-black/25 px-3 py-2 text-sm text-white outline-none focus:border-yellow-300"
+                    />
+                    <button
+                      disabled={busy}
+                      onClick={() => void saveMemberName()}
+                      title="儲存會員名稱"
+                      className="grid h-9 w-9 shrink-0 place-items-center border border-yellow-300/35 text-yellow-200 disabled:opacity-50"
+                    >
+                      <Check size={16} />
+                    </button>
+                    {data.profile.isCustomName && (
+                      <button
+                        disabled={busy}
+                        onClick={() => void saveMemberName(true)}
+                        title="恢復 Discord 名稱"
+                        className="grid h-9 w-9 shrink-0 place-items-center border border-white/15 text-white/65 disabled:opacity-50"
+                      >
+                        <RotateCcw size={16} />
+                      </button>
+                    )}
+                    <button
+                      disabled={busy}
+                      onClick={() => {
+                        setMemberName(data.profile.displayName);
+                        setEditingName(false);
+                      }}
+                      title="取消"
+                      className="grid h-9 w-9 shrink-0 place-items-center border border-white/15 text-white/65 disabled:opacity-50"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-white/50">
+                      {data.profile.displayName}
+                    </p>
+                    <button
+                      onClick={() => setEditingName(true)}
+                      title="修改會員名稱"
+                      className="grid h-8 w-8 place-items-center text-white/40 hover:text-yellow-200"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                  </div>
+                )}
+              </div>
               <h1 className="mt-2 text-4xl font-black text-yellow-200">
                 {data.currentTier?.tier_name}
               </h1>
