@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { getAuthCallbackUrl } from "@/lib/authRedirect";
 import {
+  ArrowRight,
   Boxes,
   ClipboardCheck,
   Loader2,
@@ -42,6 +44,7 @@ export default function ServicePage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
   const [search, setSearch] = useState("");
   const [adjust, setAdjust] = useState({
     discordUserId: "",
@@ -63,11 +66,26 @@ export default function ServicePage() {
     setLoading(true);
     setError("");
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      setHasSession(Boolean(sessionData.session));
+      if (!sessionData.session) throw new Error("請先登入");
       setData(await authFetch());
     } catch (e) {
       setError(e instanceof Error ? e.message : "讀取失敗");
     } finally {
       setLoading(false);
+    }
+  }
+  async function loginWithDiscord() {
+    setBusy(true);
+    setError("");
+    const { error: loginError } = await supabase.auth.signInWithOAuth({
+      provider: "discord",
+      options: { redirectTo: getAuthCallbackUrl("/service") },
+    });
+    if (loginError) {
+      setBusy(false);
+      setError(`Discord 登入失敗：${loginError.message}`);
     }
   }
   useEffect(() => {
@@ -121,14 +139,30 @@ export default function ServicePage() {
       <main className="min-h-screen bg-slate-50 p-8">
         <div className="mx-auto max-w-lg border border-red-200 bg-white p-7 text-center">
           <ShieldCheck className="mx-auto text-red-500" />
-          <h1 className="mt-3 text-xl font-bold">無法進入客服中心</h1>
+          <h1 className="mt-3 text-xl font-bold">
+            {hasSession ? "沒有客服權限" : "星夜聯盟客服登入"}
+          </h1>
           <p className="mt-2 text-sm text-red-600">{error}</p>
-          <a
-            href="/login?next=/service"
-            className="mt-5 inline-block bg-slate-900 px-5 py-3 text-sm font-bold text-white"
-          >
-            客服登入
-          </a>
+          {hasSession ? (
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                location.reload();
+              }}
+              className="mt-5 bg-slate-900 px-5 py-3 text-sm font-bold text-white"
+            >
+              登出並更換 Discord 帳號
+            </button>
+          ) : (
+            <button
+              disabled={busy}
+              onClick={loginWithDiscord}
+              className="mt-5 inline-flex items-center gap-2 bg-indigo-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-60"
+            >
+              {busy ? "前往 Discord 中" : "使用 Discord 登入"}
+              <ArrowRight size={17} />
+            </button>
+          )}
         </div>
       </main>
     );

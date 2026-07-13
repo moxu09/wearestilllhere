@@ -10,7 +10,11 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     async function handleCallback() {
       const params = new URLSearchParams(window.location.search);
-      const next = params.get("next") || "/";
+      const requestedNext = params.get("next") || "/";
+      const next =
+        requestedNext.startsWith("/") && !requestedNext.startsWith("//")
+          ? requestedNext
+          : "/";
       const code = params.get("code");
 
       if (code) {

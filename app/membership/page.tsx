@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { getAuthCallbackUrl } from "@/lib/authRedirect";
 import {
   ArrowRight,
   BadgeCheck,
@@ -51,10 +52,9 @@ export default function MembershipPage() {
   async function loginWithDiscord() {
     setBusy(true);
     setError("");
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent("/membership")}`;
     const { error: loginError } = await supabase.auth.signInWithOAuth({
       provider: "discord",
-      options: { redirectTo },
+      options: { redirectTo: getAuthCallbackUrl("/membership") },
     });
     if (loginError) {
       setBusy(false);
