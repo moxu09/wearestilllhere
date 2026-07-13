@@ -6,14 +6,9 @@ import {
   ArrowRight,
   AtSign,
   Camera,
-  Check,
   Clock3,
   ExternalLink,
-  Gamepad2,
-  Gem,
-  Gift,
   Headphones,
-  MessageCircle,
   Pause,
   Play,
   ShieldCheck,
@@ -27,55 +22,6 @@ import ThanksWall from "./components/ThanksWall";
 const instagramUrl = "https://www.instagram.com/w.a.s.h.co";
 const threadsUrl = "https://www.threads.net/@w.a.s.h.co";
 const discordUrl = "https://discord.gg/tXNnXWMHbJ";
-
-const priceCards = [
-  {
-    icon: Gamepad2,
-    index: "01",
-    title: "遊戲陪玩",
-    desc: "特戰英豪、PUBG、三角洲行動與更多遊戲服務",
-    type: "games",
-  },
-  {
-    icon: MessageCircle,
-    index: "02",
-    title: "聊天陪伴",
-    desc: "深夜聊天、陪伴、出氣與情緒陪伴服務",
-    detailDesc: "適合想找人聊天、放鬆、陪伴，或深夜不想一個人的你。",
-    prices: [
-      "女生陪伴：210 / 350 / 500 / 650",
-      "女生出氣：100 / 250 / 450",
-      "男生出氣：80 / 150 / 280",
-      "實際方案依客服確認為準",
-    ],
-  },
-  {
-    icon: Gift,
-    index: "03",
-    title: "打賞禮物",
-    desc: "浪漫禮物、特殊打賞與專寵獨賞",
-    detailDesc: "送給喜歡的陪陪，讓深夜多一點專屬於你們的儀式感。",
-    prices: [
-      "一般禮物：30 起",
-      "特殊打賞｜明燈千里：1999",
-      "專寵獨賞：16888",
-      "明燈三千：依商品頁為準",
-    ],
-  },
-  {
-    icon: Gem,
-    index: "04",
-    title: "星夜會員",
-    desc: "星夜聯盟會籍、會員積分與專屬福利",
-    detailDesc: "登入會員中心即可查看會籍進度、會員積分與專屬兌換內容。",
-    prices: [
-      "會員積分與專屬兌換",
-      "會員等級與晉升進度",
-      "專屬優惠券與獎勵",
-      "完整資格依會員中心顯示為準",
-    ],
-  },
-];
 
 const priceSlides = [
   {
@@ -121,20 +67,18 @@ const priceSlides = [
 ];
 
 export default function HomePage() {
-  const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const currentCard = selectedCard === null ? null : priceCards[selectedCard];
 
   useEffect(() => {
-    if (!isPlaying || currentCard?.type !== "games") return;
+    if (!isPlaying) return;
 
     const timer = window.setTimeout(() => {
       setActiveSlide((current) => (current + 1) % priceSlides.length);
     }, 5000);
 
     return () => window.clearTimeout(timer);
-  }, [activeSlide, currentCard?.type, isPlaying]);
+  }, [activeSlide, isPlaying]);
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#0d0e10] text-white">
@@ -220,46 +164,15 @@ export default function HomePage() {
             </div>
 
             <div>
-              {selectedCard === null ? (
-                <div className="border-l border-t border-white/10">
-                  {priceCards.map((card, index) => {
-                    const Icon = card.icon;
-                    return (
-                      <button key={card.title} type="button" onClick={() => { setSelectedCard(index); if (card.type === "games") setActiveSlide(0); }} className="group grid w-full grid-cols-[3rem_1fr_auto] items-center gap-4 border-b border-r border-white/10 p-5 text-left transition hover:bg-white/[0.04] sm:grid-cols-[4rem_1fr_auto] sm:p-7">
-                        <span className="text-xs font-bold text-[#e7ba67]">{card.index}</span>
-                        <span className="min-w-0">
-                          <span className="flex items-center gap-3 text-xl font-black sm:text-2xl"><Icon className="h-5 w-5 text-[#5bd6d0]" /> {card.title}</span>
-                          <span className="mt-2 block text-sm leading-6 text-white/45">{card.desc}</span>
-                        </span>
-                        <ArrowRight className="h-5 w-5 text-white/35 transition group-hover:translate-x-1 group-hover:text-[#e7ba67]" />
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : currentCard?.type === "games" ? (
-                <DetailShell title="遊戲價目" description="最新遊戲、聊天與陪玩方案會每五秒自動切換。" onBack={() => setSelectedCard(null)}>
-                  <PriceCarousel
-                    activeSlide={activeSlide}
-                    isPlaying={isPlaying}
-                    onSelect={setActiveSlide}
-                    onTogglePlay={() => setIsPlaying((playing) => !playing)}
-                  />
-                </DetailShell>
-              ) : (
-                <DetailShell
-                  title={currentCard?.title || "服務詳情"}
-                  description={currentCard?.detailDesc || ""}
-                  onBack={() => setSelectedCard(null)}
-                >
-                  <div className="border-l border-t border-white/10">
-                    {(currentCard?.prices || []).map((price) => (
-                      <div key={price} className="flex items-start gap-3 border-b border-r border-white/10 p-4 text-sm text-white/70 sm:p-5">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#e7ba67]" /> {price}
-                      </div>
-                    ))}
-                  </div>
-                </DetailShell>
-              )}
+              <PriceCarousel
+                activeSlide={activeSlide}
+                isPlaying={isPlaying}
+                onSelect={setActiveSlide}
+                onTogglePlay={() => setIsPlaying((playing) => !playing)}
+              />
+              <p className="mt-5 text-xs leading-6 text-white/35">
+                實際價格、接單內容與活動資格，仍以客服確認及官方最新公告為準。
+              </p>
             </div>
           </div>
         </div>
@@ -397,23 +310,6 @@ function PriceCarousel({ activeSlide, isPlaying, onSelect, onTogglePlay }: { act
           />
         ))}
       </div>
-    </div>
-  );
-}
-
-function DetailShell({ title, description, onBack, secondaryBack, children }: { title: string; description: string; onBack: () => void; secondaryBack?: () => void; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="mb-8 flex flex-wrap gap-3">
-        <button type="button" onClick={onBack} className="inline-flex h-9 items-center gap-2 rounded-md border border-white/15 px-4 text-xs font-bold text-white/65 hover:border-white/40 hover:text-white">
-          <ArrowLeft className="h-4 w-4" /> 返回
-        </button>
-        {secondaryBack && <button type="button" onClick={secondaryBack} className="h-9 rounded-md border border-white/15 px-4 text-xs font-bold text-white/65 hover:text-white">所有服務</button>}
-      </div>
-      <h3 className="text-3xl font-black sm:text-4xl">{title}</h3>
-      <p className="mb-8 mt-4 max-w-xl text-sm leading-7 text-white/50">{description}</p>
-      {children}
-      <p className="mt-5 text-xs leading-6 text-white/35">實際價格、接單內容與活動資格，仍以客服確認及官方最新公告為準。</p>
     </div>
   );
 }
