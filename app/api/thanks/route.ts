@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-const GUILD_ID = "1501098191813214312";
+const GUILD_ID = "1501836172199202856";
 const THANKS_ROLE_ID = "1505307437597724762";
 
 type DiscordMember = {
