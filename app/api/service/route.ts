@@ -53,6 +53,7 @@ export async function GET(request: Request) {
         admin
           .from("alliance_members")
           .select("*")
+          .order("lifetime_points", { ascending: false })
           .order("updated_at", { ascending: false }),
         admin.from("alliance_membership_tiers").select("*").order("sort_order"),
         admin
