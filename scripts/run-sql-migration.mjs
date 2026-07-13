@@ -1,6 +1,8 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const { Client } = require("pg");
+import fs from "node:fs";
+import path from "node:path";
+import pg from "pg";
+
+const { Client } = pg;
 
 async function main() {
   const migrationName = process.argv[2];
