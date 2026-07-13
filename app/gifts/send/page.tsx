@@ -255,7 +255,7 @@ function SendGiftPageContent() {
     }
 
     if (insufficient) {
-      setError("ASD 餘額不足，請先儲值。");
+      setError("ASD 餘額不足，請聯絡客服處理。");
       return;
     }
 
@@ -599,19 +599,11 @@ function SendGiftPageContent() {
 
                   {insufficient && (
                     <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-600">
-                      ASD 餘額不足，請先儲值。
+                      ASD 餘額不足，請聯絡客服處理。
                     </div>
                   )}
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <a
-                      href="/wallet/topup"
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-violet-50 hover:text-violet-700"
-                    >
-                      先去儲值
-                      <ArrowRight className="h-4 w-4" />
-                    </a>
-
+                  <div className="mt-4 grid gap-3">
                     <button
                       onClick={sendGift}
                       disabled={submitting || insufficient || !selectedGiftId || !selectedPlayerId}

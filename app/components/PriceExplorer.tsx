@@ -232,27 +232,6 @@ const categories: PriceCategory[] = [
       { name: "小夜燈", price: "149 元 / 月" },
       { name: "星光燈", price: "399 元 / 月" },
       { name: "永夜燈", price: "999 元 / 月" },
-      { name: "終身 VIP", price: "單筆儲值 18000 元" },
-      { name: "VIP+", price: "單筆儲值 50000 元" },
-    ],
-  },
-  {
-    id: "topup",
-    emoji: "🪙",
-    title: "ASD 儲值",
-    subtitle: "一元台幣 = 一枚 ASD",
-    description:
-      "適合想先儲值、之後慢慢使用，或想拿儲值贈送回饋的闆闆。",
-    suitable: ["想先儲值", "想拿贈送回饋", "常常消費", "想方便扣款"],
-    tags: ["ASD", "儲值回饋"],
-    prices: [
-      { name: "儲值比例", price: "1 元台幣 = 1 枚 ASD" },
-      { name: "滿 5000", price: "贈送 300 ASD" },
-      { name: "滿 8000", price: "贈送 700 ASD" },
-      { name: "滿 18000", price: "贈送 1800 ASD" },
-      { name: "滿 30000", price: "贈送 3000 ASD" },
-      { name: "滿 50000", price: "贈送 5000 ASD" },
-      { name: "滿 75000", price: "贈送 8000 ASD" },
     ],
   },
 ];

@@ -242,7 +242,7 @@ function NewOrderContent() {
     }
 
     if (paymentMethod === "wallet" && !walletEnough) {
-      setError("ASD 餘額不足，請先儲值或改用其他付款方式。");
+      setError("ASD 餘額不足，請改用其他付款方式。");
       return;
     }
 
@@ -504,7 +504,7 @@ function NewOrderContent() {
 
                 {paymentMethod === "wallet" && !walletEnough && (
                   <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-700">
-                    ASD 餘額不足，請先儲值或改用其他付款方式。
+                    ASD 餘額不足，請改用其他付款方式。
                   </div>
                 )}
               </Panel>

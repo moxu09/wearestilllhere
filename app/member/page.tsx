@@ -13,7 +13,6 @@ import {
   CalendarClock,
   CheckCircle2,
   Clock,
-  Coins,
   Crown,
   Gamepad2,
   Headphones,
@@ -249,14 +248,6 @@ export default function MemberDashboardPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <a
-                    href="/wallet/topup"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-violet-400"
-                  >
-                    <Coins className="h-4 w-4" />
-                    儲值 ASD
-                  </a>
-
                   <Link
                     href="/players"
                     className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-3 text-sm font-bold text-slate-100 transition hover:bg-white/[0.1]"
@@ -327,13 +318,6 @@ function WalletPanel({ wallet }: { wallet: WalletData | null }) {
         />
       </div>
 
-      <a
-        href="/wallet/topup"
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-yellow-300"
-      >
-        立即儲值
-        <ArrowRight className="h-4 w-4" />
-      </a>
     </div>
   );
 }
@@ -477,12 +461,6 @@ function QuickActions({ role }: { role: string }) {
       desc: "查看 ASD 餘額與交易紀錄。",
       icon: <Wallet />,
       href: "/wallet",
-    },
-    {
-      title: "儲值 ASD",
-      desc: "送出儲值申請，等待管理員確認入帳。",
-      icon: <Coins />,
-      href: "/wallet/topup",
     },
     {
       title: "送禮打賞",

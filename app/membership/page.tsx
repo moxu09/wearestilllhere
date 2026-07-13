@@ -452,14 +452,10 @@ export default function MembershipPage() {
                   style={{ width: `${isExclusive ? 100 : progress}%` }}
                 />
               </div>
-              <div className="mt-4 flex justify-between text-xs text-white/45">
+              <div className="mt-4 text-xs text-white/45">
                 <span>
                   累積消費{" "}
                   {Number(data.member.qualifying_spend).toLocaleString()} ASD
-                </span>
-                <span>
-                  累積儲值{" "}
-                  {Number(data.member.qualifying_topup).toLocaleString()} ASD
                 </span>
               </div>
             </div>

@@ -31,12 +31,12 @@ type Transaction = {
 };
 
 const typeLabel: Record<string, string> = {
-  topup: "儲值",
+  topup: "歷史入帳",
   order_payment: "訂單付款",
   gift_payment: "禮物付款",
   voice_room_entry: "語音廳入場",
   refund: "退款",
-  admin_add: "管理員加值",
+  admin_add: "管理員調整",
   admin_deduct: "管理員扣款",
   player_income: "陪玩收入",
   withdraw: "提領",
@@ -166,14 +166,6 @@ export default function WalletPage() {
             </div>
 
             <div className="flex gap-3 lg:justify-end">
-              <a
-                href="/wallet/topup"
-                className="inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-500"
-              >
-                儲值 ASD
-                <ArrowRight className="h-4 w-4" />
-              </a>
-
               <button
                 onClick={loadWallet}
                 className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
@@ -205,7 +197,7 @@ export default function WalletPage() {
           </div>
 
           <section className="mt-8 rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur-xl">
-            <div className="mb-5 flex items-center justify-between gap-4">
+            <div className="mb-5 flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
                   <ReceiptText className="h-5 w-5" />
@@ -215,12 +207,6 @@ export default function WalletPage() {
                 </h2>
               </div>
 
-              <a
-                href="/wallet/topup"
-                className="text-sm font-bold text-violet-700"
-              >
-                去儲值
-              </a>
             </div>
 
             {transactions.length === 0 ? (

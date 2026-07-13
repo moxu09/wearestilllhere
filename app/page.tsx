@@ -65,13 +65,13 @@ const priceCards = [
   {
     icon: Gem,
     index: "04",
-    title: "儲值會員",
-    desc: "ASD 儲值、星夜聯盟會籍與專屬福利",
-    detailDesc: "儲值後可用於下單、打賞與站內消費，會籍進度可在會員中心查看。",
+    title: "星夜會員",
+    desc: "星夜聯盟會籍、會員積分與專屬福利",
+    detailDesc: "登入會員中心即可查看會籍進度、會員積分與專屬兌換內容。",
     prices: [
-      "1 元台幣 = 1 枚 ASD",
-      "錢包餘額即時連動",
       "會員積分與專屬兌換",
+      "會員等級與晉升進度",
+      "專屬優惠券與獎勵",
       "完整資格依會員中心顯示為準",
     ],
   },
@@ -181,7 +181,7 @@ export default function HomePage() {
               今晚不只在線，也在你身邊。
             </p>
             <p className="mt-5 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
-              遊戲、聊天、打賞、儲值與星夜聯盟會籍，讓每一個晚睡的理由，都有更好的陪伴方式。
+              遊戲、聊天、打賞與星夜聯盟會籍，讓每一個晚睡的理由，都有更好的陪伴方式。
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#services" className="inline-flex h-12 items-center gap-2 rounded-md bg-[#e7ba67] px-6 text-sm font-black text-[#111214] hover:bg-[#f2cf8b]">

@@ -34,7 +34,6 @@ const navItems = [
   { label: "語音廳", href: "/voice-rooms" },
   { label: "送禮打賞", href: "/gifts/send" },
   { label: "我的錢包", href: "/wallet" },
-  { label: "儲值 ASD", href: "/wallet/topup" },
 ];
 
 export default function PlatformTopNav() {
@@ -205,10 +204,6 @@ export default function PlatformTopNav() {
                       我的錢包
                     </MenuLink>
 
-                    <MenuLink href="/wallet/topup" icon={<Coins className="h-4 w-4" />}>
-                      儲值 ASD
-                    </MenuLink>
-
                     <MenuLink href="/gifts/send" icon={<Gift className="h-4 w-4" />}>
                       送禮打賞
                     </MenuLink>
@@ -256,13 +251,6 @@ export default function PlatformTopNav() {
                           icon={<ReceiptText className="h-4 w-4" />}
                         >
                           訂單管理
-                        </MenuLink>
-
-                        <MenuLink
-                          href="/admin/topups"
-                          icon={<Wallet className="h-4 w-4" />}
-                        >
-                          儲值審核
                         </MenuLink>
 
                         <MenuLink
@@ -330,7 +318,6 @@ export default function PlatformTopNav() {
                 <MobileLink href="/member">會員中心</MobileLink>
                 <MobileLink href="/member/orders">我的訂單</MobileLink>
                 <MobileLink href="/wallet">我的錢包</MobileLink>
-                <MobileLink href="/wallet/topup">儲值 ASD</MobileLink>
                 <MobileLink href="/gifts/send">送禮打賞</MobileLink>
 
                 {isPlayer && (
@@ -347,7 +334,6 @@ export default function PlatformTopNav() {
                     <MobileDivider />
                     <MobileLink href="/admin">管理後台</MobileLink>
                     <MobileLink href="/admin/orders">訂單管理</MobileLink>
-                    <MobileLink href="/admin/topups">儲值審核</MobileLink>
                     <MobileLink href="/admin/player-applications">
                       陪玩師審核
                     </MobileLink>

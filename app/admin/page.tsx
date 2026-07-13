@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   Clock,
   Coins,
-  CreditCard,
   Crown,
   Gift,
   Headphones,
@@ -20,7 +19,6 @@ import {
   ShieldCheck,
   Sparkles,
   UserRound,
-  Wallet,
 } from "lucide-react";
 
 type Profile = {
@@ -360,8 +358,8 @@ export default function AdminDashboardPage() {
               </h1>
 
               <p className="mt-5 max-w-2xl text-sm leading-8 text-slate-600 md:text-base">
-                歡迎回來，{profile.display_name || "管理員"}。這裡可以快速查看訂單、儲值審核、PChomePay
-                金流、陪玩師申請、語音廳與平台營收狀態。
+                歡迎回來，{profile.display_name || "管理員"}。這裡可以快速查看訂單、陪玩師申請、
+                語音廳與平台營收狀態。
               </p>
             </div>
 
@@ -371,22 +369,6 @@ export default function AdminDashboardPage() {
                 className="inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-500"
               >
                 訂單管理
-                <ArrowRight className="h-4 w-4" />
-              </a>
-
-              <a
-                href="/admin/topups"
-                className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white/80 px-5 py-3 text-sm font-bold text-violet-700 shadow-sm transition hover:bg-violet-50"
-              >
-                儲值審核
-                <ArrowRight className="h-4 w-4" />
-              </a>
-
-              <a
-                href="/admin/pchomepay"
-                className="inline-flex items-center gap-2 rounded-2xl border border-violet-200 bg-white/80 px-5 py-3 text-sm font-bold text-violet-700 shadow-sm transition hover:bg-violet-50"
-              >
-                PChomePay 金流
                 <ArrowRight className="h-4 w-4" />
               </a>
 
@@ -466,27 +448,6 @@ export default function AdminDashboardPage() {
                 />
 
                 <QuickLink
-                  title="儲值審核"
-                  desc="確認會員人工儲值付款，讓 ASD 入帳。"
-                  href="/admin/topups"
-                  icon={<Wallet />}
-                />
-
-                <QuickLink
-                  title="PChomePay 金流"
-                  desc="查看線上儲值紀錄、同步付款、檢查串接狀態。"
-                  href="/admin/pchomepay"
-                  icon={<CreditCard />}
-                />
-
-                <QuickLink
-                  title="PChomePay 付款紀錄"
-                  desc="直接查看所有 PChomePay 線上付款與入帳狀態。"
-                  href="/admin/pchomepay-payments"
-                  icon={<ReceiptText />}
-                />
-
-                <QuickLink
                   title="陪玩師申請"
                   desc="審核會員申請並建立陪玩師資料。"
                   href="/admin/player-applications"
@@ -522,24 +483,9 @@ export default function AdminDashboardPage() {
             >
               <div className="grid gap-3">
                 <NoticeLine
-                  title="PChomePay 金流檢查"
-                  desc="正式收款前，請先確認 APP ID、SECRET、Notify URL 與資料表狀態。"
-                  href="/admin/pchomepay-health"
-                />
-                <NoticeLine
-                  title="PChomePay 付款紀錄"
-                  desc="可以查看線上儲值是否付款成功，必要時手動同步付款狀態。"
-                  href="/admin/pchomepay-payments"
-                />
-                <NoticeLine
                   title="人工付款需要確認"
                   desc={`目前有 ${stats.pendingPaymentOrders} 筆待付款訂單，需要到訂單管理確認。`}
                   href="/admin/orders"
-                />
-                <NoticeLine
-                  title="會員儲值需要審核"
-                  desc="會員送出 ASD 人工儲值申請後，需要到儲值審核頁確認入帳。"
-                  href="/admin/topups"
                 />
                 <NoticeLine
                   title="陪玩師申請待審核"

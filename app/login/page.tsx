@@ -125,7 +125,7 @@ export default function LoginPage() {
               {mode === "login" ? "會員登入" : "註冊普通會員"}
             </h1>
             <p className="mt-3 text-sm leading-6 text-slate-300">
-              一般會員可以儲值、下單、進語音廳；想成為陪玩師可以登入後申請。
+              一般會員可以下單、送禮、進語音廳；想成為陪玩師可以登入後申請。
             </p>
           </div>
 
