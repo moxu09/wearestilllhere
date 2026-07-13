@@ -433,9 +433,15 @@ export default function MembershipPage() {
             />
             <div className={`col-span-2 rounded-lg border p-5 md:col-span-4 ${surfaceClass}`}>
               <div className="flex justify-between text-sm">
-                <span>晉升 {data.nextTier?.tier_name || "尊享會員"}</span>
+                <span>
+                  {isExclusive
+                    ? "星盟尊享會籍"
+                    : `晉升 ${data.nextTier?.tier_name || "尊享會員"}`}
+                </span>
                 <span className="text-amber-200">
-                  {data.nextTier
+                  {isExclusive
+                    ? "年度專屬審核"
+                    : data.nextTier
                     ? `尚差 ${(Number(data.nextTier.threshold_points) - Number(data.member.lifetime_points)).toFixed(2)} 點`
                     : "邀請制"}
                 </span>
@@ -443,7 +449,7 @@ export default function MembershipPage() {
               <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
                 <div
                   className="h-full rounded-full bg-amber-200"
-                  style={{ width: `${progress}%` }}
+                  style={{ width: `${isExclusive ? 100 : progress}%` }}
                 />
               </div>
               <div className="mt-4 flex justify-between text-xs text-white/45">

@@ -99,12 +99,14 @@ export async function GET(request: Request) {
     const currentTier =
       tiers.find((tier) => tier.tier_key === memberResult.data.tier_key) ||
       tiers[0];
-    const nextTier = tiers.find(
-      (tier) =>
-        !tier.is_invitation_only &&
-        Number(tier.threshold_points) >
-          Number(memberResult.data.lifetime_points),
-    );
+    const nextTier = currentTier?.is_invitation_only
+      ? null
+      : tiers.find(
+          (tier) =>
+            !tier.is_invitation_only &&
+            Number(tier.threshold_points) >
+              Number(memberResult.data.lifetime_points),
+        );
     return Response.json({
       profile: {
         ...discord,
