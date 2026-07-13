@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import {
   ArrowRight,
@@ -19,7 +20,6 @@ import {
   Heart,
   Loader2,
   Lock,
-  Mic2,
   Moon,
   ShieldCheck,
   Sparkles,
@@ -257,13 +257,13 @@ export default function MemberDashboardPage() {
                     儲值 ASD
                   </a>
 
-                  <a
+                  <Link
                     href="/players"
                     className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-3 text-sm font-bold text-slate-100 transition hover:bg-white/[0.1]"
                   >
                     <Gamepad2 className="h-4 w-4 text-violet-200" />
                     找陪玩
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

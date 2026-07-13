@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import {
   ArrowRight,
-  BadgeCheck,
   CheckCircle2,
   Clock,
   Coins,
@@ -16,7 +15,6 @@ import {
   ReceiptText,
   Search,
   ShieldCheck,
-  Sparkles,
   UserRound,
   Wallet,
   XCircle,

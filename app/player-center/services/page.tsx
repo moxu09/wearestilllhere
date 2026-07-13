@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
-  CheckCircle2,
   Gamepad2,
   Headphones,
   Loader2,
@@ -18,7 +17,6 @@ import {
   SlidersHorizontal,
   ToggleLeft,
   ToggleRight,
-  UserRound,
 } from "lucide-react";
 
 type Player = {

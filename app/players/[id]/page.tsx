@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -73,10 +74,9 @@ export default function PlayerProfilePage() {
   const [services, setServices] = useState<PlayerServiceRow[]>([]);
   const [error, setError] = useState("");
 
-  const joinedDate = useMemo(() => {
-    if (!player?.created_at) return "";
-    return new Date(player.created_at).toLocaleDateString("zh-TW");
-  }, [player?.created_at]);
+  const joinedDate = player?.created_at
+    ? new Date(player.created_at).toLocaleDateString("zh-TW")
+    : "";
 
   const totalServiceCount = services.length;
 
@@ -94,11 +94,6 @@ export default function PlayerProfilePage() {
     if (prices.length === 0) return null;
     return Math.min(...prices);
   }, [services]);
-
-  useEffect(() => {
-    if (!playerId) return;
-    loadPlayer(playerId);
-  }, [playerId]);
 
   async function loadPlayer(id: string) {
     setLoading(true);
@@ -176,6 +171,12 @@ export default function PlayerProfilePage() {
     setLoading(false);
   }
 
+  useEffect(() => {
+    if (!playerId) return;
+    const timer = window.setTimeout(() => void loadPlayer(playerId), 0);
+    return () => window.clearTimeout(timer);
+  }, [playerId]);
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#f7f3ec] px-4 py-10 text-slate-950">
@@ -203,13 +204,13 @@ export default function PlayerProfilePage() {
             {error || "這位陪玩師資料不存在，或目前沒有公開。"}
           </p>
 
-          <a
+          <Link
             href="/players"
             className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-200"
           >
             回陪玩師大廳
             <ArrowRight className="h-4 w-4" />
-          </a>
+          </Link>
         </section>
       </main>
     );
@@ -227,13 +228,13 @@ export default function PlayerProfilePage() {
         <div className="absolute bottom-20 left-1/2 h-[420px] w-[420px] rounded-full bg-blue-100/80 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-6 md:py-10">
-          <a
+          <Link
             href="/players"
             className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm font-black text-slate-600 shadow-sm transition hover:bg-white"
           >
             <ArrowLeft className="h-4 w-4" />
             回陪玩師大廳
-          </a>
+          </Link>
 
           <section className="overflow-hidden rounded-[2.4rem] border border-white/70 bg-white/80 shadow-2xl shadow-violet-100/70 backdrop-blur-xl">
             <div className="relative h-48 overflow-hidden bg-gradient-to-br from-violet-100 via-fuchsia-50 to-blue-100 md:h-60">

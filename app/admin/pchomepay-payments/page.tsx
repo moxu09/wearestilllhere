@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -53,6 +53,8 @@ const statusLabel: Record<PaymentStatus, string> = {
   cancelled: "已取消",
 };
 
+const subscribeToHydration = () => () => {};
+
 async function readApiJson<T>(response: Response): Promise<T> {
   const text = await response.text();
 
@@ -73,7 +75,11 @@ async function readApiJson<T>(response: Response): Promise<T> {
 }
 
 export default function AdminPchomePayPaymentsPage() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
 
   const [loading, setLoading] = useState(false);
   const [syncingNo, setSyncingNo] = useState("");
@@ -98,10 +104,6 @@ export default function AdminPchomePayPaymentsPage() {
         .reduce((sum, payment) => sum + Number(payment.amount || 0), 0),
     };
   }, [payments]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!mounted) return;

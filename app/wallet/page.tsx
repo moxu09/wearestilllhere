@@ -11,7 +11,6 @@ import {
   Lock,
   ReceiptText,
   ShieldCheck,
-  Sparkles,
   Wallet,
 } from "lucide-react";
 

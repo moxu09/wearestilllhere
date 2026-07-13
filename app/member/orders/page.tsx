@@ -2,23 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import {
   ArrowRight,
   BadgeCheck,
   CheckCircle2,
   Clock,
-  Coins,
   CreditCard,
   Loader2,
   Lock,
   ReceiptText,
   Search,
   ShieldCheck,
-  Sparkles,
   UserRound,
   Wallet,
-  XCircle,
 } from "lucide-react";
 
 type OrderStatus =
@@ -334,13 +332,13 @@ export default function MemberOrdersPage() {
                 你可以先到陪玩師大廳選擇喜歡的陪玩師並建立訂單。
               </p>
 
-              <a
+              <Link
                 href="/players"
                 className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-500"
               >
                 前往陪玩師大廳
                 <ArrowRight className="h-4 w-4" />
-              </a>
+              </Link>
             </section>
           ) : (
             <div className="grid gap-6">

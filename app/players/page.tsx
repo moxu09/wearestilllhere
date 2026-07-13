@@ -145,10 +145,6 @@ export default function PlayersPage() {
     });
   }, [players, searchText, selectedCategory]);
 
-  useEffect(() => {
-    loadPlayers();
-  }, []);
-
   async function loadPlayers() {
     setLoading(true);
     setError("");
@@ -234,6 +230,11 @@ export default function PlayersPage() {
     setPlayers(nextPlayers);
     setLoading(false);
   }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadPlayers(), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   if (loading) {
     return (

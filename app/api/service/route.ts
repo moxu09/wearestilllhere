@@ -1,4 +1,4 @@
-import { apiError, requireStaff } from "@/lib/serverAuth";
+import { apiError, getDiscordProfile, requireStaff } from "@/lib/serverAuth";
 
 function reportMeta(row: Record<string, unknown>) {
   try {
@@ -36,6 +36,8 @@ export async function GET(request: Request) {
       tiers,
       profiles,
       exclusiveInvitations,
+      deepReviewed,
+      qiunaiReviewed,
     ] =
       await Promise.all([
         admin
@@ -72,6 +74,18 @@ export async function GET(request: Request) {
           .from("alliance_exclusive_invitations")
           .select("*")
           .order("invited_at", { ascending: false }),
+        admin
+          .from("play_orders")
+          .select("*")
+          .not("reviewed_at", "is", null)
+          .order("reviewed_at", { ascending: false })
+          .limit(100),
+        admin
+          .from("qiunai_salary_orders")
+          .select("*")
+          .not("reviewed_at", "is", null)
+          .order("reviewed_at", { ascending: false })
+          .limit(100),
       ]);
     for (const result of [
       deep,
@@ -82,6 +96,8 @@ export async function GET(request: Request) {
       tiers,
       profiles,
       exclusiveInvitations,
+      deepReviewed,
+      qiunaiReviewed,
     ]) {
       if (result.error) throw result.error;
     }
@@ -108,6 +124,24 @@ export async function GET(request: Request) {
       tiers: tiers.data || [],
       profiles: profiles.data || [],
       exclusiveInvitations: exclusiveInvitations.data || [],
+      reviewHistory: [
+        ...(allowedBrands.includes("deepnight")
+          ? (deepReviewed.data || []).map((row) => ({
+              ...row,
+              brand: "deepnight",
+            }))
+          : []),
+        ...(allowedBrands.includes("qiunai")
+          ? (qiunaiReviewed.data || []).map((row) => ({
+              ...row,
+              brand: "qiunai",
+            }))
+          : []),
+      ].sort(
+        (a, b) =>
+          new Date(String(b.reviewed_at)).getTime() -
+          new Date(String(a.reviewed_at)).getTime(),
+      ),
       actorRole: profile.role,
       allowedBrands,
     });
@@ -240,6 +274,15 @@ export async function POST(request: Request) {
         .single();
       if (reportError) throw reportError;
       const meta = reportMeta(report);
+      const reviewer = getDiscordProfile(user);
+      const reviewAudit = {
+        review_decision: body.approved ? "approved" : "rejected",
+        reviewer_auth_user_id: user.id,
+        reviewer_discord_id: reviewer.discordId || null,
+        reviewer_name: profile.display_name || reviewer.displayName,
+        review_reason: body.approved ? null : body.note || "客服駁回",
+        reviewed_at: new Date().toISOString(),
+      };
       if (!body.approved) {
         const payload =
           body.brand === "deepnight"
@@ -249,6 +292,7 @@ export async function POST(request: Request) {
                   ...meta,
                   rejectionReason: body.note || "客服駁回",
                 }),
+                ...reviewAudit,
               }
             : {
                 status: "工時已駁回",
@@ -256,6 +300,7 @@ export async function POST(request: Request) {
                   ...meta,
                   rejectionReason: body.note || "客服駁回",
                 }),
+                ...reviewAudit,
               };
         const { error } = await admin
           .from(table)
@@ -310,6 +355,8 @@ export async function POST(request: Request) {
                 meta.durationMinutes || report.duration_minutes || 0,
               ),
               is_deleted: false,
+              note: JSON.stringify(meta),
+              ...reviewAudit,
             }
           : {
               customer_name:
@@ -330,6 +377,7 @@ export async function POST(request: Request) {
               order_finished_at: endedAt,
               admin_note: `申報時長 ${Number(meta.durationMinutes || 0)} 分鐘`,
               is_deleted: false,
+              ...reviewAudit,
             };
       const { error } = await admin
         .from(table)

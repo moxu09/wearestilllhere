@@ -5,7 +5,6 @@ import type { ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import {
   ArrowRight,
-  BadgeCheck,
   Coins,
   Gift,
   Loader2,

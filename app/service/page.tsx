@@ -356,6 +356,85 @@ export default function ServicePage() {
             ) : (
               <Empty text="目前沒有待審工時報單" />
             )}
+
+            <div className="mt-8">
+              <SectionTitle
+                title="最近審核紀錄"
+                text="核准與駁回都會保留審核人、時間與原因，最近紀錄顯示在這裡。"
+              />
+              {(data.reviewHistory || []).length ? (
+                <div className="overflow-x-auto rounded-lg border border-[#d8e3dd] bg-white shadow-sm">
+                  <table className="w-full min-w-[980px] text-left text-sm">
+                    <thead className="bg-[#f6f9f7] text-xs font-bold text-slate-500">
+                      <tr>
+                        {[
+                          "品牌",
+                          "陪陪",
+                          "類型／項目",
+                          "結果",
+                          "審核人",
+                          "審核時間",
+                          "原因",
+                        ].map((label) => (
+                          <th key={label} className="px-4 py-3">
+                            {label}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {data.reviewHistory.map((review: Row) => (
+                        <tr
+                          key={`${review.brand}-${review.id}`}
+                          className="transition hover:bg-[#f8faf9]"
+                        >
+                          <td className="px-4 py-4 font-bold">
+                            {review.brand === "deepnight" ? "深夜" : "秋奈"}
+                          </td>
+                          <td className="px-4 py-4">
+                            {review.staff_name || review.discord_id}
+                          </td>
+                          <td className="px-4 py-4">
+                            {review.order_type || "訂單"}
+                            <br />
+                            <span className="text-xs text-slate-400">
+                              {review.service_name || review.service || "-"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <span
+                              className={`rounded-full px-2.5 py-1 text-xs font-bold ${review.review_decision === "approved" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}
+                            >
+                              {review.review_decision === "approved"
+                                ? "已核准"
+                                : "已駁回"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4">
+                            <p className="font-semibold">
+                              {review.reviewer_name || "未知審核人"}
+                            </p>
+                            {review.reviewer_discord_id && (
+                              <p className="mt-1 text-xs text-slate-400">
+                                {review.reviewer_discord_id}
+                              </p>
+                            )}
+                          </td>
+                          <td className="px-4 py-4 text-slate-600">
+                            {formatTaipeiDateTime(review.reviewed_at)}
+                          </td>
+                          <td className="max-w-[240px] px-4 py-4 text-slate-500">
+                            {review.review_reason || "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <Empty text="目前尚無審核紀錄" />
+              )}
+            </div>
           </section>
         )}
 
@@ -822,6 +901,13 @@ function genderLabel(value: string | null | undefined) {
       undisclosed: "不公開",
     }[String(value || "undisclosed")] || "不公開"
   );
+}
+function formatTaipeiDateTime(value: string | null | undefined) {
+  if (!value) return "-";
+  return new Date(value).toLocaleString("zh-TW", {
+    timeZone: "Asia/Taipei",
+    hour12: false,
+  });
 }
 function Empty({ text }: { text: string }) {
   return (

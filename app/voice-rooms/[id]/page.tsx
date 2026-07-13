@@ -3,19 +3,18 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import {
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
-  CalendarClock,
   Coins,
   Crown,
   DoorOpen,
   Gift,
   Headphones,
   Loader2,
-  Lock,
   Mic2,
   Moon,
   Radio,
@@ -286,13 +285,13 @@ export default function VoiceRoomDetailPage() {
             這個語音廳可能已關閉、被隱藏，或連結不存在。
           </p>
 
-          <a
+          <Link
             href="/voice-rooms"
             className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 font-bold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-500"
           >
             回語音廳大廳
             <ArrowRight className="h-5 w-5" />
-          </a>
+          </Link>
         </section>
       </main>
     );
@@ -306,13 +305,13 @@ export default function VoiceRoomDetailPage() {
         <div className="absolute bottom-0 left-1/2 h-96 w-96 rounded-full bg-blue-100/70 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-10">
-          <a
+          <Link
             href="/voice-rooms"
             className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm transition hover:bg-white hover:text-violet-700"
           >
             <ArrowLeft className="h-4 w-4" />
             回語音廳大廳
-          </a>
+          </Link>
 
           {message && (
             <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">

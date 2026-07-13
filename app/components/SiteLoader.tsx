@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 export default function SiteLoader() {
   const [show, setShow] = useState(true);
@@ -110,9 +111,11 @@ export default function SiteLoader() {
             ✦
           </span>
 
-          <img
+          <Image
             src="/icon.png"
             alt="深夜不關燈"
+            width={96}
+            height={96}
             className="block h-full w-full rounded-[1.5rem] object-cover"
           />
         </div>

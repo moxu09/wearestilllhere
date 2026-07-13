@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 
 const instagramUrl = "https://www.instagram.com/w.a.s.h.co";
@@ -187,10 +188,12 @@ export default function HomePage() {
       <header className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#050511]/70 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
-            <img
+            <Image
               id="home-logo-icon"
               src="/icon.png"
               alt="深夜不關燈"
+              width={48}
+              height={48}
               className="h-10 w-10 rounded-xl object-cover shadow-[0_0_20px_rgba(250,204,21,0.35)] md:h-12 md:w-12"
             />
             <div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import {
   Bell,
@@ -106,7 +107,7 @@ export default function PlatformTopNav() {
     <header className="fixed left-0 right-0 top-0 z-50 border-b border-slate-200/80 bg-white/80 text-slate-950 shadow-sm backdrop-blur-2xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <a href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="relative">
               <div className="absolute inset-0 rounded-3xl bg-violet-300 opacity-50 blur-lg" />
               <div className="relative flex h-11 w-11 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-lg shadow-violet-200">
@@ -118,7 +119,7 @@ export default function PlatformTopNav() {
               <p className="text-base font-black tracking-wide">深夜不關燈</p>
               <p className="text-xs text-slate-500">We Are Still Here</p>
             </div>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-1 lg:flex">
             {navItems.map((item) => (

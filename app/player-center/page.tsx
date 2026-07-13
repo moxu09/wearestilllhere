@@ -65,10 +65,6 @@ export default function PlayerCenterPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    loadPage();
-  }, []);
-
   async function loadPage() {
     setLoading(true);
     setError("");
@@ -210,6 +206,13 @@ export default function PlayerCenterPage() {
       });
     }
   }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadPage(), 0);
+    return () => window.clearTimeout(timer);
+    // The player dashboard session is loaded once on entry.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function updateOnlineStatus(nextValue: boolean) {
     if (!player) return;

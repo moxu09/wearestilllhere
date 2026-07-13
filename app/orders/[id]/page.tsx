@@ -21,7 +21,6 @@ import {
   ReceiptText,
   ShieldCheck,
   Sparkles,
-  Star,
   UserRound,
   Wallet,
 } from "lucide-react";

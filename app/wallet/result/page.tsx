@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { ArrowRight, CheckCircle2, Clock, Loader2, XCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -13,27 +13,22 @@ type Payment = {
   paid_at: string | null;
 };
 
+const subscribeToLocation = () => () => {};
+
 export default function PchomePayTopupResultPage() {
-  const [paymentNo, setPaymentNo] = useState("");
-  const [failed, setFailed] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const paymentNo = useSyncExternalStore(
+    subscribeToLocation,
+    () => new URLSearchParams(window.location.search).get("payment_no") || "",
+    () => "",
+  );
+  const failed = useSyncExternalStore(
+    subscribeToLocation,
+    () => new URLSearchParams(window.location.search).get("failed") === "1",
+    () => false,
+  );
+  const [loading, setLoading] = useState(false);
   const [payment, setPayment] = useState<Payment | null>(null);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const nextPaymentNo = params.get("payment_no") || "";
-    const nextFailed = params.get("failed") === "1";
-
-    setPaymentNo(nextPaymentNo);
-    setFailed(nextFailed);
-
-    if (nextPaymentNo) {
-      loadPayment(nextPaymentNo);
-    } else {
-      setLoading(false);
-    }
-  }, []);
 
   async function loadPayment(nextPaymentNo: string) {
     setLoading(true);
@@ -53,6 +48,12 @@ export default function PchomePayTopupResultPage() {
 
     setLoading(false);
   }
+
+  useEffect(() => {
+    if (!paymentNo) return;
+    const timer = window.setTimeout(() => void loadPayment(paymentNo), 0);
+    return () => window.clearTimeout(timer);
+  }, [paymentNo]);
 
   const isPaid = payment?.status === "paid";
   const isFailed =

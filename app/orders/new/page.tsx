@@ -105,11 +105,6 @@ function NewOrderContent() {
 
   const walletEnough = (wallet?.balance || 0) >= totalAmount;
 
-  useEffect(() => {
-    loadPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playerId]);
-
   async function loadPage() {
     setLoading(true);
     setError("");
@@ -214,6 +209,13 @@ function NewOrderContent() {
 
     setLoading(false);
   }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadPage(), 0);
+    return () => window.clearTimeout(timer);
+    // Reload when the selected player changes; URL service selection is handled inside.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playerId]);
 
   async function submitOrder() {
     setError("");

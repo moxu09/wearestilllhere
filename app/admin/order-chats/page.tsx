@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -78,8 +78,14 @@ const statusOptions = [
   { value: "completed", label: "已完成" },
 ];
 
+const subscribeToHydration = () => () => {};
+
 export default function AdminOrderChatsPage() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
   const [loading, setLoading] = useState(false);
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -136,13 +142,8 @@ export default function AdminOrderChatsPage() {
   }, [orders]);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
     if (!mounted) return;
     loadOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
 
   async function loadOrders() {

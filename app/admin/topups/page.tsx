@@ -15,7 +15,6 @@ import {
   ReceiptText,
   Search,
   ShieldCheck,
-  Sparkles,
   UserRound,
   Wallet,
   XCircle,

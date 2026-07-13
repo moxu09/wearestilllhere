@@ -11,7 +11,6 @@ import {
   Gamepad2,
   Headphones,
   Loader2,
-  Lock,
   Mic2,
   Moon,
   Plus,
@@ -20,7 +19,6 @@ import {
   Sparkles,
   Users,
   X,
-  Zap,
 } from "lucide-react";
 
 type VoiceRoom = {

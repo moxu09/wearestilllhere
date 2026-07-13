@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase";
 import {
   ArrowRight,
   BadgeCheck,
-  Coins,
   Eye,
   Gift,
   ImageIcon,
@@ -124,10 +123,6 @@ export default function AdminGiftsPage() {
   ).length;
   const bannerCount = gifts.filter((gift) => gift.broadcast_type === "banner").length;
 
-  useEffect(() => {
-    loadPage();
-  }, []);
-
   async function loadPage() {
     setLoading(true);
     setError("");
@@ -204,6 +199,13 @@ export default function AdminGiftsPage() {
 
     setGifts((data || []) as GiftItem[]);
   }
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void loadPage(), 0);
+    return () => window.clearTimeout(timer);
+    // loadPage is intentionally run once for the authenticated admin session.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function updateForm<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({

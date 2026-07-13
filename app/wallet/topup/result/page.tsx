@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -20,33 +20,27 @@ type Payment = {
   paid_at: string | null;
 };
 
+const subscribeToLocation = () => () => {};
+
 export default function PchomePayTopupResultPage() {
   const autoSyncedRef = useRef(false);
 
-  const [paymentNo, setPaymentNo] = useState("");
-  const [failed, setFailed] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const paymentNo = useSyncExternalStore(
+    subscribeToLocation,
+    () => new URLSearchParams(window.location.search).get("payment_no") || "",
+    () => "",
+  );
+  const failed = useSyncExternalStore(
+    subscribeToLocation,
+    () => new URLSearchParams(window.location.search).get("failed") === "1",
+    () => false,
+  );
+  const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
 
   const [payment, setPayment] = useState<Payment | null>(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const nextPaymentNo = params.get("payment_no") || "";
-    const nextFailed = params.get("failed") === "1";
-
-    setPaymentNo(nextPaymentNo);
-    setFailed(nextFailed);
-
-    if (!nextPaymentNo) {
-      setLoading(false);
-      return;
-    }
-
-    initResult(nextPaymentNo, nextFailed);
-  }, []);
 
   async function initResult(nextPaymentNo: string, nextFailed: boolean) {
     const currentPayment = await loadPayment(nextPaymentNo, false);
@@ -62,6 +56,12 @@ export default function PchomePayTopupResultPage() {
       await syncPayment(nextPaymentNo, true);
     }
   }
+
+  useEffect(() => {
+    if (paymentNo) void initResult(paymentNo, failed);
+    // Callback parameters are immutable for the lifetime of this page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [failed, paymentNo]);
 
   async function getFreshAccessToken() {
     const {

@@ -10,7 +10,6 @@ import {
   Clock,
   Coins,
   CreditCard,
-  Gamepad2,
   Headphones,
   Loader2,
   Lock,
@@ -18,8 +17,6 @@ import {
   ReceiptText,
   Search,
   ShieldCheck,
-  Sparkles,
-  UserRound,
   Wallet,
 } from "lucide-react";
 

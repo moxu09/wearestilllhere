@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -126,10 +132,16 @@ function getPaymentStatusLabel(status: string | null) {
   return labels[status] || status;
 }
 
+const subscribeToHydration = () => () => {};
+
 export default function OrderChatFloatingWidget() {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
   const [open, setOpen] = useState(false);
 
   const [loadingOrders, setLoadingOrders] = useState(false);
@@ -151,10 +163,6 @@ export default function OrderChatFloatingWidget() {
   );
 
   const canSend = input.trim().length > 0 && !sending && Boolean(selectedOrderId);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!open) return;

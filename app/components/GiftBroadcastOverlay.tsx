@@ -57,6 +57,8 @@ export default function GiftBroadcastOverlay() {
       if (pollTimerRef.current) clearInterval(pollTimerRef.current);
       supabase.removeChannel(channel);
     };
+    // The realtime subscription and polling loop intentionally share one lifetime.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function checkLatestBroadcast() {

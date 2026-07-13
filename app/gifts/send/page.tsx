@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import {
   ArrowLeft,
@@ -12,7 +13,6 @@ import {
   Gift,
   Loader2,
   Lock,
-  MessageSquareText,
   Search,
   ShieldCheck,
   Sparkles,
@@ -324,13 +324,13 @@ function SendGiftPageContent() {
         <div className="absolute bottom-0 left-1/2 h-96 w-96 rounded-full bg-amber-100/70 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-10">
-          <a
+          <Link
             href="/players"
             className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm transition hover:bg-white hover:text-violet-700"
           >
             <ArrowLeft className="h-4 w-4" />
             回陪玩師大廳
-          </a>
+          </Link>
 
           {message && (
             <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">

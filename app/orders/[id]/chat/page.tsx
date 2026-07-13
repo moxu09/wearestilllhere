@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -117,13 +123,19 @@ function canManageOrder(actorRole: string) {
   return actorRole === "admin" || actorRole === "staff" || actorRole === "player";
 }
 
+const subscribeToHydration = () => () => {};
+
 export default function OrderChatPage() {
   const params = useParams();
   const orderId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [acting, setActing] = useState("");
@@ -203,10 +215,6 @@ export default function OrderChatPage() {
 
     return [];
   }, [order, actorRole]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (!mounted || !orderId) return;
