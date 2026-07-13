@@ -10,9 +10,11 @@ import {
   Crown,
   Loader2,
   LogOut,
+  Moon,
   RefreshCw,
   Search,
   ShieldCheck,
+  Sun,
   Trash2,
   Users,
 } from "lucide-react";
@@ -147,14 +149,16 @@ export default function ServicePage() {
   }, [data, profileByDiscord, search]);
   if (loading)
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#eef3f0] text-[#31463f]">
+      <main className="service-theme flex min-h-screen items-center justify-center bg-[#eef3f0] text-[#31463f]">
+        <ThemeToggle floating />
         <Loader2 className="mr-3 animate-spin text-emerald-700" />
         載入客服中心
       </main>
     );
   if (!data)
     return (
-      <main className="flex min-h-screen items-center bg-[#eef3f0] px-4 py-10">
+      <main className="service-theme flex min-h-screen items-center bg-[#eef3f0] px-4 py-10">
+        <ThemeToggle floating />
         <div className="mx-auto w-full max-w-lg rounded-lg border border-[#d8e3dd] bg-white p-7 text-center shadow-[0_22px_60px_rgba(30,58,48,0.12)] sm:p-10">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#e5f1eb] text-emerald-800">
             <ShieldCheck size={28} />
@@ -188,7 +192,7 @@ export default function ServicePage() {
       </main>
     );
   return (
-    <main className="min-h-screen bg-[#eef3f0] text-[#1f312b]">
+    <main className="service-theme min-h-screen bg-[#eef3f0] text-[#1f312b]">
       <header className="border-b border-white/10 bg-[#152923] text-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6">
           <div>
@@ -198,6 +202,7 @@ export default function ServicePage() {
             <h1 className="mt-1 text-xl font-black sm:text-2xl">星夜聯盟客服中心</h1>
           </div>
           <div className="flex gap-2">
+            <ThemeToggle />
             <button
               onClick={load}
               title="重新整理"
@@ -881,6 +886,33 @@ export default function ServicePage() {
         )}
       </div>
     </main>
+  );
+}
+
+function ThemeToggle({
+  floating = false,
+}: {
+  floating?: boolean;
+}) {
+  function toggleTheme() {
+    const nextTheme =
+      document.documentElement.dataset.serviceTheme === "dark"
+        ? "light"
+        : "dark";
+    document.documentElement.dataset.serviceTheme = nextTheme;
+    localStorage.setItem("service-color-theme", nextTheme);
+  }
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      title="切換深色／淺色模式"
+      aria-label="切換深色／淺色模式"
+      className={`${floating ? "fixed right-4 top-4 z-20 border-[#ccd9d2] bg-white text-[#29443a] shadow-md" : "border-white/15 text-white/75 hover:bg-white/10 hover:text-white"} grid h-10 w-10 shrink-0 place-items-center rounded-full border transition`}
+    >
+      <Moon className="service-theme-icon-light" size={18} />
+      <Sun className="service-theme-icon-dark" size={18} />
+    </button>
   );
 }
 

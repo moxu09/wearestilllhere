@@ -61,7 +61,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-Hant">
+    <html lang="zh-Hant" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var theme=localStorage.getItem("service-color-theme");document.documentElement.dataset.serviceTheme=theme==="dark"?"dark":"light";}catch(_){document.documentElement.dataset.serviceTheme="light";}})();`,
+          }}
+        />
+      </head>
       <body>
         <SiteLoader />
         {children}
