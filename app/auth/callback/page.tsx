@@ -10,7 +10,10 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     async function handleCallback() {
       const params = new URLSearchParams(window.location.search);
-      const requestedNext = params.get("next") || "/";
+      const requestedNext =
+        params.get("next") ||
+        window.sessionStorage.getItem("alliance_auth_next") ||
+        "/";
       const next =
         requestedNext.startsWith("/") && !requestedNext.startsWith("//")
           ? requestedNext
@@ -33,7 +36,8 @@ export default function AuthCallbackPage() {
         }
       }
 
-      window.location.href = next;
+      window.sessionStorage.removeItem("alliance_auth_next");
+      window.location.replace(next);
     }
 
     handleCallback();

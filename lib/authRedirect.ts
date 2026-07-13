@@ -6,5 +6,6 @@ export function getAuthCallbackUrl(nextPath: string) {
     : "/";
   const origin = configuredSiteUrl || window.location.origin;
 
-  return `${origin}/auth/callback?next=${encodeURIComponent(safeNext)}`;
+  window.sessionStorage.setItem("alliance_auth_next", safeNext);
+  return `${origin}/auth/callback`;
 }
