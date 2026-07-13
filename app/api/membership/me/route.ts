@@ -125,6 +125,52 @@ export async function PATCH(request: Request) {
       throw new Error("請使用 Discord 登入以連結會員資料");
 
     const body = await request.json();
+    if (body.action === "update_profile_details") {
+      const gender = String(body.gender || "undisclosed");
+      const allowedGenders = new Set([
+        "undisclosed",
+        "female",
+        "male",
+        "other",
+      ]);
+      if (!allowedGenders.has(gender)) throw new Error("請選擇有效的性別");
+
+      const rawBirthMonth =
+        body.birthMonth == null ? "" : String(body.birthMonth);
+      const rawBirthDay = body.birthDay == null ? "" : String(body.birthDay);
+      const hasBirthday = rawBirthMonth !== "" && rawBirthDay !== "";
+      const birthMonth = hasBirthday ? Number(rawBirthMonth) : null;
+      const birthDay = hasBirthday ? Number(rawBirthDay) : null;
+      if (hasBirthday) {
+        const date = new Date(2000, birthMonth! - 1, birthDay!);
+        const isValid =
+          Number.isInteger(birthMonth) &&
+          Number.isInteger(birthDay) &&
+          date.getMonth() === birthMonth! - 1 &&
+          date.getDate() === birthDay;
+        if (!isValid) throw new Error("請選擇有效的生日月日");
+      }
+      if ((rawBirthMonth === "") !== (rawBirthDay === "")) {
+        throw new Error("生日月份與日期需一起填寫");
+      }
+
+      const { data, error } = await admin
+        .from("alliance_members")
+        .update({
+          gender,
+          birth_month: birthMonth,
+          birth_day: birthDay,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("discord_user_id", discord.discordId)
+        .eq("auth_user_id", user.id)
+        .select("gender, birth_month, birth_day")
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) throw new Error("找不到會員資料，請重新整理後再試");
+      return Response.json(data);
+    }
+
     const reset = Boolean(body.reset);
     const displayName = String(body.displayName || "")
       .replace(/\s+/g, " ")

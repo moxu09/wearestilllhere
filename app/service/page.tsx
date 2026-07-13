@@ -484,7 +484,7 @@ export default function ServicePage() {
                 />
               </div>
               <div className="mt-3 max-h-[560px] overflow-auto rounded-lg border border-[#d8e3dd] bg-white shadow-sm">
-                <table className="w-full min-w-[760px] text-left text-sm">
+                <table className="w-full min-w-[880px] text-left text-sm">
                   <thead className="sticky top-0 bg-[#f3f7f5] text-xs font-bold text-slate-500 shadow-[0_1px_0_#d8e3dd]">
                     <tr>
                       {[
@@ -492,6 +492,7 @@ export default function ServicePage() {
                         "會籍",
                         "會籍積分",
                         "獎勵積分",
+                        "基本資料",
                         "錢包連結",
                         "客服權限",
                       ].map((x) => (
@@ -534,6 +535,15 @@ export default function ServicePage() {
                           </td>
                           <td className="px-4 py-3">
                             {Number(m.reward_points).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-3 text-xs leading-6 text-slate-600">
+                            <span className="font-bold text-slate-800">
+                              {genderLabel(m.gender)}
+                            </span>
+                            <br />
+                            {m.birth_month && m.birth_day
+                              ? `${m.birth_month} 月 ${m.birth_day} 日`
+                              : "生日未填"}
                           </td>
                           <td className="px-4 py-3">
                             {m.auth_user_id ? "已連結" : "首次登入時連結"}
@@ -753,6 +763,16 @@ function SectionTitle({ title, text }: { title: string; text: string }) {
       <h2 className="text-xl font-black text-[#183d32]">{title}</h2>
       <p className="mt-1 text-sm text-slate-500">{text}</p>
     </div>
+  );
+}
+function genderLabel(value: string | null | undefined) {
+  return (
+    {
+      female: "女性",
+      male: "男性",
+      other: "其他",
+      undisclosed: "不公開",
+    }[String(value || "undisclosed")] || "不公開"
   );
 }
 function Empty({ text }: { text: string }) {

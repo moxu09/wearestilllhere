@@ -50,6 +50,9 @@ export default function MembershipPage() {
   const [tab, setTab] = useState("overview");
   const [discountPoints, setDiscountPoints] = useState("100");
   const [memberName, setMemberName] = useState("");
+  const [gender, setGender] = useState("undisclosed");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
   const [editingName, setEditingName] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -81,6 +84,9 @@ export default function MembershipPage() {
       const payload = await authFetch("/api/membership/me");
       setData(payload);
       setMemberName(payload.profile.displayName);
+      setGender(payload.member.gender || "undisclosed");
+      setBirthMonth(payload.member.birth_month ? String(payload.member.birth_month) : "");
+      setBirthDay(payload.member.birth_day ? String(payload.member.birth_day) : "");
     } catch (err) {
       setError(err instanceof Error ? err.message : "讀取失敗");
     } finally {
@@ -143,6 +149,33 @@ export default function MembershipPage() {
       setBusy(false);
     }
   }
+
+  async function saveProfileDetails() {
+    setBusy(true);
+    setMessage("");
+    setError("");
+    try {
+      await authFetch("/api/membership/me", {
+        method: "PATCH",
+        body: JSON.stringify({
+          action: "update_profile_details",
+          gender,
+          birthMonth,
+          birthDay,
+        }),
+      });
+      setMessage("會員基本資料已更新。");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "基本資料更新失敗");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const birthdayDays = birthMonth
+    ? new Date(2000, Number(birthMonth), 0).getDate()
+    : 31;
 
   if (loading)
     return (
@@ -356,6 +389,82 @@ export default function MembershipPage() {
                 </span>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="mt-6 rounded-lg border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+            <div>
+              <h2 className="font-black text-white">會員基本資料</h2>
+              <p className="mt-1 text-sm text-white/45">生日僅保存月份與日期。</p>
+            </div>
+            <button
+              disabled={busy}
+              onClick={() => void saveProfileDetails()}
+              className="rounded-md bg-amber-200 px-5 py-2.5 text-sm font-black text-[#17241f] transition hover:bg-amber-100 disabled:opacity-50"
+            >
+              儲存基本資料
+            </button>
+          </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <label className="text-sm font-bold text-white/70">
+              性別
+              <select
+                value={gender}
+                onChange={(event) => setGender(event.target.value)}
+                className="mt-2 w-full rounded-md border border-white/15 bg-[#14231e] px-3 py-3 text-white outline-none transition focus:border-amber-200"
+              >
+                <option value="undisclosed">不公開</option>
+                <option value="female">女性</option>
+                <option value="male">男性</option>
+                <option value="other">其他</option>
+              </select>
+            </label>
+            <label className="text-sm font-bold text-white/70">
+              生日月份
+              <select
+                value={birthMonth}
+                onChange={(event) => {
+                  const nextMonth = event.target.value;
+                  setBirthMonth(nextMonth);
+                  if (
+                    birthDay &&
+                    Number(birthDay) >
+                      new Date(2000, Number(nextMonth), 0).getDate()
+                  ) {
+                    setBirthDay("");
+                  }
+                }}
+                className="mt-2 w-full rounded-md border border-white/15 bg-[#14231e] px-3 py-3 text-white outline-none transition focus:border-amber-200"
+              >
+                <option value="">不填寫</option>
+                {Array.from({ length: 12 }, (_, index) => index + 1).map(
+                  (month) => (
+                    <option key={month} value={month}>
+                      {month} 月
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+            <label className="text-sm font-bold text-white/70">
+              生日日期
+              <select
+                value={birthDay}
+                disabled={!birthMonth}
+                onChange={(event) => setBirthDay(event.target.value)}
+                className="mt-2 w-full rounded-md border border-white/15 bg-[#14231e] px-3 py-3 text-white outline-none transition focus:border-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <option value="">不填寫</option>
+                {Array.from({ length: birthdayDays }, (_, index) => index + 1).map(
+                  (day) => (
+                    <option key={day} value={day}>
+                      {day} 日
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
           </div>
         </section>
 
