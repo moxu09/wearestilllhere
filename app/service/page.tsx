@@ -7,6 +7,7 @@ import {
   ArrowRight,
   Boxes,
   ClipboardCheck,
+  Crown,
   Loader2,
   LogOut,
   RefreshCw,
@@ -116,6 +117,14 @@ export default function ServicePage() {
       ),
     [data],
   );
+  const invitationByDiscord = useMemo(() => {
+    const map = new Map<string, Row>();
+    for (const invitation of data?.exclusiveInvitations || []) {
+      const discordId = String(invitation.discord_user_id);
+      if (!map.has(discordId)) map.set(discordId, invitation);
+    }
+    return map;
+  }, [data]);
   const members = useMemo(() => {
     const q = search.trim().toLowerCase();
     return (data?.members || [])
@@ -488,7 +497,7 @@ export default function ServicePage() {
                 />
               </div>
               <div className="mt-3 max-h-[560px] overflow-auto rounded-lg border border-[#d8e3dd] bg-white shadow-sm">
-                <table className="w-full min-w-[880px] text-left text-sm">
+                <table className="w-full min-w-[1060px] text-left text-sm">
                   <thead className="sticky top-0 bg-[#f3f7f5] text-xs font-bold text-slate-500 shadow-[0_1px_0_#d8e3dd]">
                     <tr>
                       {[
@@ -498,6 +507,7 @@ export default function ServicePage() {
                         "獎勵積分",
                         "基本資料",
                         "錢包連結",
+                        "尊享邀請",
                         "客服權限",
                       ].map((x) => (
                           <th key={x} className="px-4 py-3">
@@ -515,6 +525,9 @@ export default function ServicePage() {
                       const linkedProfile = profileByDiscord.get(
                         String(m.discord_user_id),
                       ) as Row | undefined;
+                      const invitation = invitationByDiscord.get(
+                        String(m.discord_user_id),
+                      );
                       return (
                         <tr key={m.discord_user_id} className="transition hover:bg-[#f8faf9]">
                           <td className="px-4 py-3">
@@ -554,6 +567,34 @@ export default function ServicePage() {
                           </td>
                           <td className="px-4 py-3">
                             {m.auth_user_id ? "已連結" : "首次登入時連結"}
+                          </td>
+                          <td className="px-4 py-3">
+                            {m.tier_key === "exclusive" ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800">
+                                <Crown size={13} />
+                                尊享會員
+                              </span>
+                            ) : invitation?.status === "pending" ? (
+                              <span className="rounded-full bg-[#e5f1eb] px-2.5 py-1 text-xs font-bold text-emerald-800">
+                                等待回覆
+                              </span>
+                            ) : (
+                              <button
+                                disabled={busy}
+                                onClick={() =>
+                                  action({
+                                    action: "invite_exclusive_member",
+                                    discordUserId: m.discord_user_id,
+                                  })
+                                }
+                                className="inline-flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900 transition hover:bg-amber-100 disabled:opacity-40"
+                              >
+                                <Crown size={14} />
+                                {invitation?.status === "declined"
+                                  ? "再次邀請"
+                                  : "邀請尊享"}
+                              </button>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             {linkedProfile?.role === "admin" ? (

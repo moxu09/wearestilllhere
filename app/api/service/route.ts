@@ -27,7 +27,16 @@ function commissionRate(
 export async function GET(request: Request) {
   try {
     const { admin, profile, allowedBrands } = await requireStaff(request);
-    const [deep, qiunai, redemptions, rewards, members, tiers, profiles] =
+    const [
+      deep,
+      qiunai,
+      redemptions,
+      rewards,
+      members,
+      tiers,
+      profiles,
+      exclusiveInvitations,
+    ] =
       await Promise.all([
         admin
           .from("play_orders")
@@ -59,6 +68,10 @@ export async function GET(request: Request) {
         admin
           .from("platform_profiles")
           .select("id, discord_user_id, display_name, role, status"),
+        admin
+          .from("alliance_exclusive_invitations")
+          .select("*")
+          .order("invited_at", { ascending: false }),
       ]);
     for (const result of [
       deep,
@@ -68,6 +81,7 @@ export async function GET(request: Request) {
       members,
       tiers,
       profiles,
+      exclusiveInvitations,
     ]) {
       if (result.error) throw result.error;
     }
@@ -93,6 +107,7 @@ export async function GET(request: Request) {
       members: members.data || [],
       tiers: tiers.data || [],
       profiles: profiles.data || [],
+      exclusiveInvitations: exclusiveInvitations.data || [],
       actorRole: profile.role,
       allowedBrands,
     });
@@ -105,6 +120,35 @@ export async function POST(request: Request) {
   try {
     const { admin, user, profile, allowedBrands } = await requireStaff(request);
     const body = await request.json();
+    if (body.action === "invite_exclusive_member") {
+      const discordUserId = String(body.discordUserId || "");
+      const { data: member, error: memberError } = await admin
+        .from("alliance_members")
+        .select("discord_user_id, tier_key")
+        .eq("discord_user_id", discordUserId)
+        .single();
+      if (memberError) throw memberError;
+      if (member.tier_key === "exclusive") {
+        throw new Error("此會員已經是尊享會員");
+      }
+      const { data: pending } = await admin
+        .from("alliance_exclusive_invitations")
+        .select("id")
+        .eq("discord_user_id", discordUserId)
+        .eq("status", "pending")
+        .maybeSingle();
+      if (pending) throw new Error("此會員已有尚未回覆的尊享邀請");
+      const { data, error } = await admin
+        .from("alliance_exclusive_invitations")
+        .insert({
+          discord_user_id: discordUserId,
+          invited_by: user.id,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return Response.json({ invitation: data });
+    }
     if (body.action === "set_staff_role") {
       if (profile.role !== "admin")
         throw new Error("只有管理員可以調整客服權限");

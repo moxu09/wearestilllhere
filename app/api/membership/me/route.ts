@@ -49,6 +49,7 @@ export async function GET(request: Request) {
       ledgerResult,
       redemptionResult,
       rewardsResult,
+      invitationResult,
     ] = await Promise.all([
       admin
         .from("alliance_members")
@@ -83,8 +84,17 @@ export async function GET(request: Request) {
         .eq("status", "active")
         .order("sort_order")
         .order("created_at", { ascending: false }),
+      admin
+        .from("alliance_exclusive_invitations")
+        .select("*")
+        .eq("discord_user_id", discord.discordId)
+        .eq("status", "pending")
+        .order("invited_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
     if (memberResult.error) throw memberResult.error;
+    if (invitationResult.error) throw invitationResult.error;
     const tiers = tiersResult.data || [];
     const currentTier =
       tiers.find((tier) => tier.tier_key === memberResult.data.tier_key) ||
@@ -111,6 +121,7 @@ export async function GET(request: Request) {
       ledger: ledgerResult.data || [],
       redemptions: redemptionResult.data || [],
       rewards: rewardsResult.data || [],
+      exclusiveInvitation: invitationResult.data || null,
     });
   } catch (error) {
     return apiError(error);
@@ -125,6 +136,18 @@ export async function PATCH(request: Request) {
       throw new Error("請使用 Discord 登入以連結會員資料");
 
     const body = await request.json();
+    if (body.action === "respond_exclusive_invitation") {
+      const { data, error } = await admin.rpc(
+        "alliance_respond_exclusive_invitation",
+        {
+          p_discord_user_id: discord.discordId,
+          p_auth_user_id: user.id,
+          p_accepted: Boolean(body.accepted),
+        },
+      );
+      if (error) throw error;
+      return Response.json(data);
+    }
     if (body.action === "update_profile_details") {
       const gender = String(body.gender || "undisclosed");
       const allowedGenders = new Set([
