@@ -106,22 +106,6 @@ export default function ServicePage() {
       setBusy(false);
     }
   }
-  const members = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return (data?.members || [])
-      .filter(
-        (m: Row) =>
-          !q ||
-          String(m.display_name || "")
-            .toLowerCase()
-            .includes(q) ||
-          String(m.discord_user_id).includes(q),
-      )
-      .sort(
-        (a: Row, b: Row) =>
-          Number(b.lifetime_points || 0) - Number(a.lifetime_points || 0),
-      );
-  }, [data, search]);
   const profileByDiscord = useMemo(
     () =>
       new Map(
@@ -132,6 +116,26 @@ export default function ServicePage() {
       ),
     [data],
   );
+  const members = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return (data?.members || [])
+      .filter((m: Row) => {
+        const profile = profileByDiscord.get(String(m.discord_user_id)) as
+          | Row
+          | undefined;
+        const displayName =
+          m.custom_display_name || m.display_name || profile?.display_name || "";
+        return (
+          !q ||
+          String(displayName).toLowerCase().includes(q) ||
+          String(m.discord_user_id).includes(q)
+        );
+      })
+      .sort(
+        (a: Row, b: Row) =>
+          Number(b.lifetime_points || 0) - Number(a.lifetime_points || 0),
+      );
+  }, [data, profileByDiscord, search]);
   if (loading)
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#eef3f0] text-[#31463f]">
@@ -515,7 +519,10 @@ export default function ServicePage() {
                         <tr key={m.discord_user_id} className="transition hover:bg-[#f8faf9]">
                           <td className="px-4 py-3">
                             <p className="font-bold">
-                              {m.display_name || "未設定名稱"}
+                              {m.custom_display_name ||
+                                m.display_name ||
+                                linkedProfile?.display_name ||
+                                `Discord ${m.discord_user_id}`}
                             </p>
                             <button
                               onClick={() =>
