@@ -26,7 +26,7 @@ function commissionRate(
 
 export async function GET(request: Request) {
   try {
-    const { admin, profile } = await requireStaff(request);
+    const { admin, profile, allowedBrands } = await requireStaff(request);
     const [deep, qiunai, redemptions, rewards, members, tiers, profiles] =
       await Promise.all([
         admin
@@ -72,16 +72,20 @@ export async function GET(request: Request) {
     }
     return Response.json({
       reports: [
-        ...(deep.data || []).map((row) => ({
-          ...row,
-          brand: "deepnight",
-          meta: reportMeta(row),
-        })),
-        ...(qiunai.data || []).map((row) => ({
-          ...row,
-          brand: "qiunai",
-          meta: reportMeta(row),
-        })),
+        ...(allowedBrands.includes("deepnight")
+          ? (deep.data || []).map((row) => ({
+              ...row,
+              brand: "deepnight",
+              meta: reportMeta(row),
+            }))
+          : []),
+        ...(allowedBrands.includes("qiunai")
+          ? (qiunai.data || []).map((row) => ({
+              ...row,
+              brand: "qiunai",
+              meta: reportMeta(row),
+            }))
+          : []),
       ],
       redemptions: redemptions.data || [],
       rewards: rewards.data || [],
@@ -89,6 +93,7 @@ export async function GET(request: Request) {
       tiers: tiers.data || [],
       profiles: profiles.data || [],
       actorRole: profile.role,
+      allowedBrands,
     });
   } catch (error) {
     return apiError(error);
@@ -97,7 +102,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { admin, user, profile } = await requireStaff(request);
+    const { admin, user, profile, allowedBrands } = await requireStaff(request);
     const body = await request.json();
     if (body.action === "set_staff_role") {
       if (profile.role !== "admin")
@@ -178,6 +183,9 @@ export async function POST(request: Request) {
       return Response.json({ ok: true });
     }
     if (body.action === "review_report") {
+      if (!allowedBrands.includes(body.brand)) {
+        throw new Error("沒有此品牌的訂單審核權限");
+      }
       const table =
         body.brand === "deepnight" ? "play_orders" : "qiunai_salary_orders";
       const { data: report, error: reportError } = await admin
