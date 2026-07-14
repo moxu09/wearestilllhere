@@ -66,6 +66,25 @@ const priceSlides = [
   },
 ];
 
+const prizes = [
+  {
+    name: "iPhone 17 Pro Max 512G",
+    image: "/home/prizes/iphone-17-pro-max.png",
+  },
+  {
+    name: "MacBook Air 512G",
+    image: "/home/prizes/macbook-air.png",
+  },
+  {
+    name: "iPad Air 11 512G",
+    image: "/home/prizes/ipad-air.png",
+  },
+  {
+    name: "AirPods Max / Pro / Nitro",
+    image: "/home/prizes/airpods.png",
+  },
+];
+
 export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -81,13 +100,13 @@ export default function HomePage() {
   }, [activeSlide, isPlaying]);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#0d0e10] text-white">
+    <main className="home-soft-font min-h-screen overflow-hidden bg-[#0d0e10] text-white">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0d0e10]/90 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <a href="#home" className="flex min-w-0 items-center gap-3">
             <Image src="/icon.png" alt="" width={36} height={36} className="h-9 w-9 rounded-md object-cover" />
             <div className="min-w-0">
-              <p className="truncate text-sm font-black">深夜不關燈</p>
+              <p className="truncate text-sm font-bold">深夜不關燈</p>
               <p className="truncate text-[10px] uppercase text-white/40">We are still here</p>
             </div>
           </a>
@@ -97,7 +116,7 @@ export default function HomePage() {
             <a href="#contact" className="hover:text-white">聯絡</a>
             <a href="/membership" className="text-[#e7ba67] hover:text-[#f6d792]">會員登入</a>
           </nav>
-          <a href={discordUrl} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-md bg-[#e7ba67] px-4 text-xs font-black text-[#111214] hover:bg-[#f2cf8b]">
+          <a href={discordUrl} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-md bg-[#e7ba67] px-4 text-xs font-bold text-[#111214] hover:bg-[#f2cf8b]">
             Discord <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>
@@ -118,7 +137,7 @@ export default function HomePage() {
             <p className="inline-flex items-center gap-2 border-l-2 border-[#e7ba67] pl-3 text-xs font-bold uppercase text-[#f2cf8b]">
               <Clock3 className="h-4 w-4" /> Open through the night
             </p>
-            <h1 className="mt-6 text-5xl font-black leading-[1.05] sm:text-7xl lg:text-8xl">
+            <h1 className="mt-6 text-5xl font-bold leading-[1.12] sm:text-7xl lg:text-8xl">
               深夜不關燈
             </h1>
             <p className="mt-5 max-w-xl text-lg font-bold text-white/90 sm:text-2xl">
@@ -128,10 +147,10 @@ export default function HomePage() {
               遊戲、聊天、打賞與星夜聯盟會籍，讓每一個晚睡的理由，都有更好的陪伴方式。
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#services" className="inline-flex h-12 items-center gap-2 rounded-md bg-[#e7ba67] px-6 text-sm font-black text-[#111214] hover:bg-[#f2cf8b]">
+              <a href="#services" className="inline-flex h-12 items-center gap-2 rounded-md bg-[#e7ba67] px-6 text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]">
                 探索服務 <ArrowRight className="h-4 w-4" />
               </a>
-              <a href="/membership" className="inline-flex h-12 items-center gap-2 rounded-md border border-white/30 bg-black/20 px-6 text-sm font-black hover:border-white/70 hover:bg-black/40">
+              <a href="/membership" className="inline-flex h-12 items-center gap-2 rounded-md border border-white/30 bg-black/20 px-6 text-sm font-bold hover:border-white/70 hover:bg-black/40">
                 進入會員中心
               </a>
             </div>
@@ -146,9 +165,9 @@ export default function HomePage() {
 
       <section className="border-b border-white/10 bg-[#e7ba67] text-[#111214]">
         <div className="mx-auto flex max-w-7xl items-center justify-center overflow-hidden py-4 pl-20 pr-5 sm:justify-start sm:px-8 lg:px-12">
-          <p className="shrink-0 text-[10px] font-black uppercase sm:text-xs">Stay late. Stay connected.</p>
+          <p className="shrink-0 text-[10px] font-bold uppercase sm:text-xs">Stay late. Stay connected.</p>
           <div className="mx-6 hidden h-px min-w-16 flex-1 bg-black/30 sm:block" />
-          <p className="hidden shrink-0 text-xs font-black md:block">深夜有人回應，就是一種安心。</p>
+          <p className="hidden shrink-0 text-xs font-bold md:block">深夜有人回應，就是一種安心。</p>
         </div>
       </section>
 
@@ -157,7 +176,7 @@ export default function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr]">
             <div className="lg:sticky lg:top-28 lg:self-start">
               <p className="text-xs font-bold uppercase text-[#5bd6d0]">Service directory</p>
-              <h2 className="mt-4 text-4xl font-black sm:text-5xl">想怎麼過今晚？</h2>
+              <h2 className="mt-4 text-4xl font-bold sm:text-5xl">想怎麼過今晚？</h2>
               <p className="mt-5 max-w-md text-sm leading-7 text-white/55">
                 從一場遊戲到一段對話，選擇你需要的陪伴。我們把價格與服務整理得清楚，客服也會協助確認細節。
               </p>
@@ -184,7 +203,7 @@ export default function HomePage() {
             <div>
               <Trophy className="h-7 w-7 text-[#e7ba67]" />
               <p className="mt-6 text-xs font-bold uppercase text-[#ff806f]">Opening lottery</p>
-              <h2 className="mt-4 text-4xl font-black sm:text-6xl">把今晚的幸運，也一起帶走。</h2>
+              <h2 className="mt-4 text-4xl font-bold leading-tight sm:text-6xl">把今晚的幸運，也一起帶走。</h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-white/55 lg:justify-self-end">
               活動期間每消費滿 1,000 元獲得 1 張抽獎券；前 50 筆滿額訂單抽獎券翻倍，限量 100 張。
@@ -198,17 +217,22 @@ export default function HomePage() {
             ].map(([label, value, desc]) => (
               <div key={label} className="border-b border-r border-white/10 p-6 sm:p-8">
                 <p className="text-xs font-bold text-[#e7ba67]">{label}</p>
-                <p className="mt-5 text-3xl font-black">{value}</p>
+                <p className="mt-5 text-3xl font-bold">{value}</p>
                 <p className="mt-3 text-sm leading-6 text-white/45">{desc}</p>
               </div>
             ))}
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {["iPhone 17 Pro Max 512G", "MacBook Air 512G", "iPad Air 11 512G", "AirPods Max / Pro / Nitro"].map((prize, index) => (
-              <div key={prize} className="rounded-md border border-white/10 bg-[#0d0e10] p-5">
-                <span className="text-xs font-black text-[#5bd6d0]">0{index + 1}</span>
-                <p className="mt-8 text-sm font-bold">{prize}</p>
-              </div>
+            {prizes.map((prize, index) => (
+              <article key={prize.name} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
+                <div className="relative aspect-[16/10] border-b border-white/10 bg-[#f1f2f4]">
+                  <Image src={prize.image} alt={prize.name} fill sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw" className="object-cover" />
+                  <span className="absolute left-3 top-3 rounded-md bg-[#0d0e10]/85 px-2.5 py-1.5 text-xs font-bold text-[#5bd6d0] backdrop-blur">0{index + 1}</span>
+                </div>
+                <div className="p-5">
+                  <p className="text-sm font-semibold leading-6">{prize.name}</p>
+                </div>
+              </article>
             ))}
           </div>
         </div>
@@ -226,7 +250,7 @@ export default function HomePage() {
               return (
                 <div key={title as string} className="min-h-64 border-b border-r border-white/10 p-7 sm:p-8">
                   <FeatureIcon className="h-6 w-6" style={{ color: color as string }} />
-                  <h3 className="mt-20 text-2xl font-black">{title as string}</h3>
+                  <h3 className="mt-20 text-2xl font-bold">{title as string}</h3>
                   <p className="mt-4 text-sm leading-7 text-white/50">{desc as string}</p>
                 </div>
               );
@@ -238,8 +262,8 @@ export default function HomePage() {
       <section id="contact" className="bg-[#e7ba67] px-5 py-20 text-[#111214] sm:px-8 lg:px-12 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
-            <p className="text-xs font-black uppercase">The light is on</p>
-            <h2 className="mt-4 max-w-3xl text-4xl font-black sm:text-6xl">有想法就來，我們替你把今晚安排好。</h2>
+            <p className="text-xs font-bold uppercase">The light is on</p>
+            <h2 className="mt-4 max-w-3xl text-4xl font-bold leading-tight sm:text-6xl">有想法就來，我們替你把今晚安排好。</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
             <SocialLink href={discordUrl} label="前往 Discord" icon={ExternalLink} dark />
@@ -253,7 +277,7 @@ export default function HomePage() {
 
       <footer className="border-t border-white/10 bg-[#090a0c] px-5 py-10 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-black text-white/70">深夜不關燈 · WE ARE STILL HERE</p>
+          <p className="font-bold text-white/70">深夜不關燈 · WE ARE STILL HERE</p>
           <p>© 2026 深夜不關燈 All Rights Reserved.</p>
         </div>
       </footer>
@@ -270,7 +294,7 @@ function PriceCarousel({ activeSlide, isPlaying, onSelect, onTogglePlay }: { act
     <div className="overflow-hidden rounded-md border border-white/10 bg-[#08090b]">
       <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3 sm:px-5">
         <div className="min-w-0">
-          <p className="truncate text-sm font-black">{slide.title}</p>
+          <p className="truncate text-sm font-bold">{slide.title}</p>
           <p className="mt-1 text-[11px] text-white/40">{String(activeSlide + 1).padStart(2, "0")} / {String(priceSlides.length).padStart(2, "0")}</p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -316,7 +340,7 @@ function PriceCarousel({ activeSlide, isPlaying, onSelect, onTogglePlay }: { act
 
 function SocialLink({ href, label, icon: Icon, dark = false }: { href: string; label: string; icon: typeof Sparkles; dark?: boolean }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className={`flex h-12 items-center justify-between rounded-md border px-5 text-sm font-black transition ${dark ? "border-[#111214] bg-[#111214] text-white hover:bg-[#26282b]" : "border-black/30 hover:border-black"}`}>
+    <a href={href} target="_blank" rel="noreferrer" className={`flex h-12 items-center justify-between rounded-md border px-5 text-sm font-bold transition ${dark ? "border-[#111214] bg-[#111214] text-white hover:bg-[#26282b]" : "border-black/30 hover:border-black"}`}>
       {label} <Icon className="h-4 w-4" />
     </a>
   );

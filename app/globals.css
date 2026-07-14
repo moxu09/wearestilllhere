@@ -26,6 +26,11 @@ a {
   text-decoration: none;
 }
 
+.home-soft-font {
+  font-family: "PingFang TC", "Hiragino Sans", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  letter-spacing: 0;
+}
+
 /* 客服中心深色模式，只影響 /service 頁面。 */
 .service-theme {
   transition-property: background-color, border-color, color, box-shadow;
