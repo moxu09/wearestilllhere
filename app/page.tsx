@@ -138,7 +138,7 @@ export default function HomePage() {
             <p className="inline-flex items-center gap-2 border-l-2 border-[#e7ba67] pl-3 text-xs font-bold uppercase text-[#f2cf8b]">
               <Clock3 className="h-4 w-4" /> Open through the night
             </p>
-            <h1 className="mt-6 text-5xl font-semibold leading-[1.12] sm:text-7xl lg:text-8xl">
+            <h1 className="home-title-font mt-6 text-5xl leading-[1.12] sm:text-7xl lg:text-8xl">
               深夜不關燈
             </h1>
             <p className="mt-5 max-w-xl text-lg font-semibold text-white/90 sm:text-2xl">
@@ -177,7 +177,7 @@ export default function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr]">
             <div className="lg:sticky lg:top-28 lg:self-start">
               <p className="text-xs font-bold uppercase text-[#5bd6d0]">Service directory</p>
-              <h2 className="mt-4 text-4xl font-semibold sm:text-5xl">想怎麼過今晚？</h2>
+              <h2 className="home-title-font mt-4 text-4xl sm:text-5xl">想怎麼過今晚？</h2>
               <p className="mt-5 max-w-md text-sm leading-7 text-white/55">
                 從一場遊戲到一段對話，選擇你需要的陪伴。我們把價格與服務整理得清楚，客服也會協助確認細節。
               </p>
@@ -206,7 +206,7 @@ export default function HomePage() {
             <div>
               <Trophy className="h-7 w-7 text-[#e7ba67]" />
               <p className="mt-6 text-xs font-bold uppercase text-[#ff806f]">Opening lottery</p>
-              <h2 className="mt-4 text-4xl font-semibold leading-tight sm:text-6xl">把今晚的幸運，也一起帶走。</h2>
+              <h2 className="home-title-font mt-4 text-4xl leading-tight sm:text-6xl">把今晚的幸運，也一起帶走。</h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-white/55 lg:justify-self-end">
               活動期間每消費滿 1,000 元獲得 1 張抽獎券；前 50 筆滿額訂單抽獎券翻倍，限量 100 張。
@@ -266,7 +266,7 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <p className="text-xs font-bold uppercase">The light is on</p>
-            <h2 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight sm:text-6xl">有想法就來，我們替你把今晚安排好。</h2>
+            <h2 className="home-title-font mt-4 max-w-3xl text-4xl leading-tight sm:text-6xl">有想法就來，我們替你把今晚安排好。</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
             <SocialLink href={discordUrl} label="前往 Discord" icon={ExternalLink} dark />

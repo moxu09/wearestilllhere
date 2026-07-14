@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Open Huninn Titles";
+  src: url("/fonts/open-huninn-titles.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400 900;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -28,6 +36,12 @@ a {
 
 .home-soft-font {
   font-family: "PingFang TC", "Hiragino Sans", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  letter-spacing: 0;
+}
+
+.home-title-font {
+  font-family: "Open Huninn Titles", "Hiragino Maru Gothic ProN", "PingFang TC", sans-serif;
+  font-weight: 700;
   letter-spacing: 0;
 }
 

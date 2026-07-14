@@ -38,7 +38,7 @@ export default function ThanksWall() {
             <p className="text-xs font-semibold uppercase text-[#e7ba67]">
               Hall of gratitude · 1505307437597724762
             </p>
-            <h2 className="mt-4 text-3xl font-black text-white sm:text-5xl">
+            <h2 className="home-title-font mt-4 text-3xl text-white sm:text-5xl">
               謝謝你，讓這盞燈一直亮著。
             </h2>
           </div>

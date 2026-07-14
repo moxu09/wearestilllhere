@@ -62,7 +62,7 @@ export default function HomePlayers() {
             <p className="flex items-center gap-2 text-xs font-semibold uppercase text-[#5bd6d0]">
               <Sparkles className="h-4 w-4" /> Meet the players
             </p>
-            <h2 className="mt-4 text-4xl font-semibold leading-tight sm:text-6xl">
+            <h2 className="home-title-font mt-4 text-4xl leading-tight sm:text-6xl">
               陪陪介紹
             </h2>
           </div>
