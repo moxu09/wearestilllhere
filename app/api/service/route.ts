@@ -8,6 +8,18 @@ function reportMeta(row: Record<string, unknown>) {
   }
 }
 
+function normalizeCompletedAt(value: unknown, reviewedAt: Date) {
+  const completedAt = new Date(String(value || ""));
+  if (Number.isNaN(completedAt.getTime())) return reviewedAt.toISOString();
+  const futureBy = completedAt.getTime() - reviewedAt.getTime();
+  if (futureBy > 5 * 60 * 1000) {
+    completedAt.setUTCDate(
+      completedAt.getUTCDate() - Math.ceil(futureBy / (24 * 60 * 60 * 1000)),
+    );
+  }
+  return completedAt.toISOString();
+}
+
 function commissionRate(
   staff: Record<string, unknown> | null,
   endedAt: string,
@@ -291,13 +303,14 @@ export async function POST(request: Request) {
       if (reportError) throw reportError;
       const meta = reportMeta(report);
       const reviewer = getDiscordProfile(user);
+      const reviewedAt = new Date();
       const reviewAudit = {
         review_decision: body.approved ? "approved" : "rejected",
         reviewer_auth_user_id: user.id,
         reviewer_discord_id: reviewer.discordId || null,
         reviewer_name: profile.display_name || reviewer.displayName,
         review_reason: body.approved ? null : body.note || "客服駁回",
-        reviewed_at: new Date().toISOString(),
+        reviewed_at: reviewedAt.toISOString(),
       };
       if (!body.approved) {
         const payload =
@@ -326,8 +339,9 @@ export async function POST(request: Request) {
         return Response.json({ ok: true });
       }
       const staffId = String(report.discord_id);
-      const endedAt = String(
-        meta.endedAt || report.order_finished_at || new Date().toISOString(),
+      const endedAt = normalizeCompletedAt(
+        meta.endedAt || report.order_finished_at,
+        reviewedAt,
       );
       const isTip = String(
         meta.orderType || report.order_type || report.service_name || "",
