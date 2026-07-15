@@ -1,5 +1,10 @@
 import { apiError, getDiscordProfile, requireUser } from "@/lib/serverAuth";
 
+const EXCLUSIVE_CARD_URLS = {
+  white: "https://www.wearestilllhere.com/membership-cards/exclusive.png",
+  black: "https://www.wearestilllhere.com/membership-cards/exclusive-black.png",
+} as const;
+
 export async function GET(request: Request) {
   try {
     const { admin, user } = await requireUser(request);
@@ -96,9 +101,21 @@ export async function GET(request: Request) {
     if (memberResult.error) throw memberResult.error;
     if (invitationResult.error) throw invitationResult.error;
     const tiers = tiersResult.data || [];
-    const currentTier =
+    const currentTierRecord =
       tiers.find((tier) => tier.tier_key === memberResult.data.tier_key) ||
       tiers[0];
+    const exclusiveCardVariant = memberResult.data.exclusive_card_variant as
+      | keyof typeof EXCLUSIVE_CARD_URLS
+      | null;
+    const currentTier = currentTierRecord
+      ? {
+          ...currentTierRecord,
+          card_image_url:
+            currentTierRecord.tier_key === "exclusive" && exclusiveCardVariant
+              ? EXCLUSIVE_CARD_URLS[exclusiveCardVariant]
+              : currentTierRecord.card_image_url,
+        }
+      : null;
     const nextTier = currentTier?.is_invitation_only
       ? null
       : tiers.find(
@@ -147,6 +164,29 @@ export async function PATCH(request: Request) {
       throw new Error("請使用 Discord 登入以連結會員資料");
 
     const body = await request.json();
+    if (body.action === "select_exclusive_card") {
+      const variant = String(body.variant || "");
+      if (variant !== "white" && variant !== "black") {
+        throw new Error("請選擇有效的尊享會員卡面");
+      }
+      const { data, error } = await admin
+        .from("alliance_members")
+        .update({
+          exclusive_card_variant: variant,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("discord_user_id", discord.discordId)
+        .eq("auth_user_id", user.id)
+        .eq("tier_key", "exclusive")
+        .is("exclusive_card_variant", null)
+        .select("exclusive_card_variant")
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) {
+        throw new Error("尊享會員卡面只能選擇一次，確認後無法更改");
+      }
+      return Response.json(data);
+    }
     if (body.action === "respond_exclusive_invitation") {
       const { data, error } = await admin.rpc(
         "alliance_respond_exclusive_invitation",

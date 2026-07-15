@@ -13,6 +13,7 @@ import {
   Crown,
   Gift,
   Loader2,
+  LockKeyhole,
   LogOut,
   Moon,
   Pencil,
@@ -25,6 +26,7 @@ import {
 // API payloads are schema-backed but intentionally heterogeneous across tabs.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Data = Record<string, any>;
+type ExclusiveCardVariant = "white" | "black";
 
 async function authFetch(url: string, init?: RequestInit) {
   const { data } = await supabase.auth.getSession();
@@ -56,6 +58,9 @@ export default function MembershipPage() {
   const [editingName, setEditingName] = useState(false);
   const [declineConfirm, setDeclineConfirm] = useState(false);
   const [acceptingExclusive, setAcceptingExclusive] = useState(false);
+  const [exclusiveCardChoice, setExclusiveCardChoice] =
+    useState<ExclusiveCardVariant | null>(null);
+  const [confirmingExclusiveCard, setConfirmingExclusiveCard] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -206,6 +211,29 @@ export default function MembershipPage() {
     }
   }
 
+  async function saveExclusiveCardChoice() {
+    if (!exclusiveCardChoice) return;
+    setBusy(true);
+    setMessage("");
+    setError("");
+    try {
+      await authFetch("/api/membership/me", {
+        method: "PATCH",
+        body: JSON.stringify({
+          action: "select_exclusive_card",
+          variant: exclusiveCardChoice,
+        }),
+      });
+      setConfirmingExclusiveCard(false);
+      setMessage("尊享會員卡面已確認。此選擇無法更改。");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "卡面選擇失敗");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const birthdayDays = birthMonth
     ? new Date(2000, Number(birthMonth), 0).getDate()
     : 31;
@@ -275,6 +303,23 @@ export default function MembershipPage() {
           onCancelDecline={() => setDeclineConfirm(false)}
         />
       )}
+      {isExclusive &&
+        !data.member.exclusive_card_variant &&
+        !acceptingExclusive && (
+          <ExclusiveCardChoice
+            value={exclusiveCardChoice}
+            confirming={confirmingExclusiveCard}
+            busy={busy}
+            error={error}
+            onSelect={(value) => {
+              setExclusiveCardChoice(value);
+              setConfirmingExclusiveCard(false);
+            }}
+            onBeginConfirm={() => setConfirmingExclusiveCard(true)}
+            onCancelConfirm={() => setConfirmingExclusiveCard(false)}
+            onConfirm={() => void saveExclusiveCardChoice()}
+          />
+        )}
       {isExclusive && <div className="h-1 bg-[#c7a35c]" />}
       <header
         className={`border-b shadow-lg shadow-black/10 ${isExclusive ? "border-[#a98643]/35 bg-[#0b0b09]/95" : "border-white/10 bg-[#111f1b]/95"}`}
@@ -946,6 +991,175 @@ function ExclusiveInvitation({
           .exclusive-envelope { display: none; }
           .exclusive-letter-panel,
           .exclusive-welcome { animation: none; opacity: 1; transform: none; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function ExclusiveCardChoice({
+  value,
+  confirming,
+  busy,
+  error,
+  onSelect,
+  onBeginConfirm,
+  onCancelConfirm,
+  onConfirm,
+}: {
+  value: ExclusiveCardVariant | null;
+  confirming: boolean;
+  busy: boolean;
+  error: string;
+  onSelect: (value: ExclusiveCardVariant) => void;
+  onBeginConfirm: () => void;
+  onCancelConfirm: () => void;
+  onConfirm: () => void;
+}) {
+  const cards: Array<{
+    key: ExclusiveCardVariant;
+    name: string;
+    description: string;
+    image: string;
+  }> = [
+    {
+      key: "white",
+      name: "月華白",
+      description: "溫潤珠光與細緻金線",
+      image: "/membership-cards/exclusive.png",
+    },
+    {
+      key: "black",
+      name: "永夜黑",
+      description: "深邃黑曜與流動金線",
+      image: "/membership-cards/exclusive-black.png",
+    },
+  ];
+
+  return (
+    <div
+      className="fixed inset-0 z-[110] overflow-y-auto bg-[#050504]/98 px-4 py-8 text-[#f7eed8]"
+      role="dialog"
+      aria-modal="true"
+      aria-label="選擇尊享會員卡面"
+    >
+      <div className="exclusive-card-choice mx-auto flex min-h-full w-full max-w-5xl items-center justify-center">
+        <section className="w-full">
+          <div className="text-center">
+            <p className="text-xs font-bold tracking-[0.3em] text-[#b99855]">
+              PRIVATE RESERVE
+            </p>
+            <h1 className="mt-3 text-3xl font-black sm:text-5xl">
+              選擇您的尊享會員卡
+            </h1>
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#cfc3a7]">
+              這張卡將成為您的專屬尊享識別，請選擇最符合您的卡面風格。
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-5 md:grid-cols-2">
+            {cards.map((card) => {
+              const selected = value === card.key;
+              return (
+                <button
+                  key={card.key}
+                  type="button"
+                  disabled={busy || confirming}
+                  onClick={() => onSelect(card.key)}
+                  className={`overflow-hidden rounded-lg border bg-[#0d0c0a] text-left transition duration-300 disabled:cursor-not-allowed ${selected ? "border-[#e1c77e] shadow-[0_0_0_2px_rgba(225,199,126,0.2),0_22px_70px_rgba(0,0,0,0.55)]" : "border-white/15 hover:-translate-y-1 hover:border-[#b99855]/70"}`}
+                >
+                  <div className="relative aspect-[640/413] overflow-hidden bg-black">
+                    <Image
+                      src={card.image}
+                      alt={`尊享會員${card.name}卡面`}
+                      fill
+                      priority
+                      sizes="(max-width: 767px) 100vw, 50vw"
+                      className="object-cover"
+                    />
+                    {selected && (
+                      <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-[#f1dfad] px-3 py-1.5 text-xs font-black text-[#18130b] shadow-lg">
+                        <Check className="h-3.5 w-3.5" /> 已選擇
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between gap-4 p-4 sm:p-5">
+                    <div>
+                      <p className="font-black text-[#f7eed8]">{card.name}</p>
+                      <p className="mt-1 text-xs text-white/45">{card.description}</p>
+                    </div>
+                    <span
+                      className={`h-5 w-5 shrink-0 rounded-full border ${selected ? "border-[#f1dfad] bg-[#f1dfad] shadow-[inset_0_0_0_4px_#17120a]" : "border-white/30"}`}
+                      aria-hidden="true"
+                    />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mx-auto mt-7 max-w-2xl rounded-lg border border-[#b99855]/35 bg-[#17130d] p-4 text-center">
+            <p className="flex items-center justify-center gap-2 text-sm font-black text-[#ead49a]">
+              <LockKeyhole className="h-4 w-4" /> 會員卡面只能選擇一次
+            </p>
+            <p className="mt-1 text-xs leading-5 text-[#b9ad91]">
+              確認後將永久套用，之後無法自行更改，請確認後再送出。
+            </p>
+          </div>
+
+          {error && (
+            <p className="mx-auto mt-4 max-w-2xl text-center text-sm text-red-200">
+              {error}
+            </p>
+          )}
+
+          {confirming ? (
+            <div className="mx-auto mt-6 max-w-xl rounded-lg border border-[#d3b66d]/55 bg-[#eee4cd] p-5 text-center text-[#1d1810] shadow-2xl">
+              <p className="text-lg font-black">
+                最後確認使用「{cards.find((card) => card.key === value)?.name}」？
+              </p>
+              <p className="mt-2 text-sm text-[#6c5c3d]">送出後無法更改卡面。</p>
+              <div className="mt-5 flex flex-col-reverse justify-center gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={onCancelConfirm}
+                  className="rounded-md border border-[#7b6337]/35 px-6 py-2.5 text-sm font-bold transition hover:bg-white/50 disabled:opacity-50"
+                >
+                  返回重選
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={onConfirm}
+                  className="rounded-md bg-[#241f16] px-7 py-2.5 text-sm font-black text-[#f6e9c9] transition hover:bg-black disabled:opacity-50"
+                >
+                  {busy ? "正在確認" : "確定永久使用"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 text-center">
+              <button
+                type="button"
+                disabled={!value || busy}
+                onClick={onBeginConfirm}
+                className="rounded-md bg-[#c7a35c] px-9 py-3.5 text-sm font-black text-[#17120a] shadow-lg shadow-black/30 transition hover:bg-[#ddc178] disabled:cursor-not-allowed disabled:opacity-35"
+              >
+                確認選擇此卡面
+              </button>
+            </div>
+          )}
+        </section>
+      </div>
+      <style jsx>{`
+        @keyframes exclusive-card-choice-in {
+          from { opacity: 0; transform: translateY(28px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .exclusive-card-choice { animation: exclusive-card-choice-in 0.75s ease-out both; }
+        @media (prefers-reduced-motion: reduce) {
+          .exclusive-card-choice { animation: none; }
         }
       `}</style>
     </div>
