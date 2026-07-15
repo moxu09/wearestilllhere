@@ -107,13 +107,24 @@ export async function GET(request: Request) {
     const exclusiveCardVariant = memberResult.data.exclusive_card_variant as
       | keyof typeof EXCLUSIVE_CARD_URLS
       | null;
+    const personalizedCardAvailable =
+      currentTierRecord?.tier_key !== "exclusive" || Boolean(exclusiveCardVariant);
+    const personalizedCardUrl = new URL(
+      `/api/membership/card/${encodeURIComponent(discord.discordId)}`,
+      request.url,
+    );
+    personalizedCardUrl.searchParams.set(
+      "v",
+      String(memberResult.data.updated_at || Date.now()),
+    );
     const currentTier = currentTierRecord
       ? {
           ...currentTierRecord,
-          card_image_url:
-            currentTierRecord.tier_key === "exclusive" && exclusiveCardVariant
+          card_image_url: personalizedCardAvailable
+            ? personalizedCardUrl.toString()
+            : currentTierRecord.tier_key === "exclusive" && exclusiveCardVariant
               ? EXCLUSIVE_CARD_URLS[exclusiveCardVariant]
-              : currentTierRecord.card_image_url,
+              : null,
         }
       : null;
     const nextTier = currentTier?.is_invitation_only

@@ -16,11 +16,9 @@ import {
   LockKeyhole,
   LogOut,
   Moon,
-  Pencil,
   RotateCcw,
   Sparkles,
   Wallet,
-  X,
 } from "lucide-react";
 
 // API payloads are schema-backed but intentionally heterogeneous across tabs.
@@ -394,81 +392,6 @@ export default function MembershipPage() {
                 </div>
               )}
             </div>
-            <div className="p-5 sm:p-6">
-              <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-white/40">會員名稱</p>
-                  <div className="mt-2 min-h-10">
-                {editingName ? (
-                  <div className="flex max-w-sm items-center gap-2">
-                    <input
-                      autoFocus
-                      maxLength={30}
-                      value={memberName}
-                      onChange={(event) => setMemberName(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") void saveMemberName();
-                      }}
-                      aria-label="會員名稱"
-                      className="min-w-0 flex-1 rounded-md border border-amber-200/30 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-amber-200 focus:ring-2 focus:ring-amber-200/10"
-                    />
-                    <button
-                      disabled={busy}
-                      onClick={() => void saveMemberName()}
-                      title="儲存會員名稱"
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-amber-200/30 text-amber-200 transition hover:bg-amber-200/10 disabled:opacity-50"
-                    >
-                      <Check size={16} />
-                    </button>
-                    {data.profile.isCustomName && (
-                      <button
-                        disabled={busy}
-                        onClick={() => void saveMemberName(true)}
-                        title="恢復 Discord 名稱"
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-white/15 text-white/65 transition hover:bg-white/10 disabled:opacity-50"
-                      >
-                        <RotateCcw size={16} />
-                      </button>
-                    )}
-                    <button
-                      disabled={busy}
-                      onClick={() => {
-                        setMemberName(data.profile.displayName);
-                        setEditingName(false);
-                      }}
-                      title="取消"
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-white/15 text-white/65 transition hover:bg-white/10 disabled:opacity-50"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-base font-bold text-white/80">
-                      {data.profile.displayName}
-                    </p>
-                    <button
-                      onClick={() => setEditingName(true)}
-                      title="修改會員名稱"
-                      className="grid h-8 w-8 place-items-center rounded-full text-white/40 transition hover:bg-white/10 hover:text-amber-200"
-                    >
-                      <Pencil size={15} />
-                    </button>
-                  </div>
-                )}
-                  </div>
-                  <p className="mt-1 text-sm font-bold text-amber-200/80">
-                    {data.currentTier?.tier_name}
-                  </p>
-                </div>
-                <div className="shrink-0 sm:text-right">
-                  <p className="text-xs text-white/40">會員編號</p>
-                  <p className="mt-2 font-mono text-sm text-white/75">
-                    {data.profile.discordId}
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <Stat
@@ -540,7 +463,41 @@ export default function MembershipPage() {
               儲存基本資料
             </button>
           </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="text-sm font-bold text-white/70">
+              會員名稱
+              <div className="mt-2 flex gap-2">
+                <input
+                  maxLength={30}
+                  value={memberName}
+                  onChange={(event) => setMemberName(event.target.value)}
+                  onFocus={() => setEditingName(true)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void saveMemberName();
+                  }}
+                  aria-label="會員名稱"
+                  className={`min-w-0 flex-1 rounded-md border px-3 py-3 outline-none transition ${fieldClass}`}
+                />
+                <button
+                  disabled={busy || (!editingName && memberName === data.profile.displayName)}
+                  onClick={() => void saveMemberName()}
+                  title="儲存會員名稱"
+                  className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-md bg-amber-200 text-[#17241f] transition hover:bg-amber-100 disabled:opacity-40"
+                >
+                  <Check size={17} />
+                </button>
+                {data.profile.isCustomName && (
+                  <button
+                    disabled={busy}
+                    onClick={() => void saveMemberName(true)}
+                    title="恢復 Discord 名稱"
+                    className="grid h-[46px] w-[46px] shrink-0 place-items-center rounded-md border border-white/15 text-white/65 transition hover:bg-white/10 disabled:opacity-40"
+                  >
+                    <RotateCcw size={16} />
+                  </button>
+                )}
+              </div>
+            </label>
             <label className="text-sm font-bold text-white/70">
               性別
               <select
