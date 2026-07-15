@@ -324,13 +324,36 @@ export default function MembershipPage() {
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <div
-            className={`relative flex min-h-[280px] flex-col justify-between overflow-hidden rounded-lg border p-7 shadow-[0_22px_60px_rgba(0,0,0,0.24)] sm:p-8 ${isExclusive ? "border-[#c7a35c]/55 bg-[#0f0e0b] shadow-black/50" : "border-amber-200/25 bg-[#192a25]"}`}
+            className={`overflow-hidden rounded-lg border shadow-[0_22px_60px_rgba(0,0,0,0.24)] ${isExclusive ? "border-[#c7a35c]/55 bg-[#0f0e0b] shadow-black/50" : "border-amber-200/25 bg-[#192a25]"}`}
           >
-            <div>
-              <p className="text-xs font-bold tracking-[0.3em] text-amber-200/75">
-                {isExclusive ? "EXCLUSIVE MEMBERSHIP" : "MEMBERSHIP CARD"}
-              </p>
-              <div className="mt-5 min-h-10">
+            <div className="relative aspect-[640/413] overflow-hidden bg-[#0f1715]">
+              {data.currentTier?.card_image_url ? (
+                <Image
+                  src={data.currentTier.card_image_url}
+                  alt={`${data.currentTier.tier_name}會員卡`}
+                  fill
+                  priority
+                  unoptimized
+                  sizes="(max-width: 1023px) 100vw, 45vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center bg-[#0c0b09] px-6 text-center">
+                  <Crown className="h-14 w-14 text-amber-200/75" />
+                  <p className="mt-5 text-xs font-bold tracking-[0.3em] text-amber-200/60">
+                    EXCLUSIVE MEMBERSHIP
+                  </p>
+                  <p className="mt-3 text-3xl font-black text-amber-100">
+                    {data.currentTier?.tier_name}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="p-5 sm:p-6">
+              <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-white/40">會員名稱</p>
+                  <div className="mt-2 min-h-10">
                 {editingName ? (
                   <div className="flex max-w-sm items-center gap-2">
                     <input
@@ -376,7 +399,7 @@ export default function MembershipPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <p className="text-sm text-white/50">
+                    <p className="truncate text-base font-bold text-white/80">
                       {data.profile.displayName}
                     </p>
                     <button
@@ -388,23 +411,19 @@ export default function MembershipPage() {
                     </button>
                   </div>
                 )}
+                  </div>
+                  <p className="mt-1 text-sm font-bold text-amber-200/80">
+                    {data.currentTier?.tier_name}
+                  </p>
+                </div>
+                <div className="shrink-0 sm:text-right">
+                  <p className="text-xs text-white/40">會員編號</p>
+                  <p className="mt-2 font-mono text-sm text-white/75">
+                    {data.profile.discordId}
+                  </p>
+                </div>
               </div>
-              <h1 className="mt-2 text-4xl font-black text-amber-100">
-                {data.currentTier?.tier_name}
-              </h1>
             </div>
-            <div className="flex items-end justify-between">
-              <div>
-                <p className="text-xs text-white/40">會員編號</p>
-                <p className="mt-1 font-mono text-sm">
-                  {data.profile.discordId}
-                </p>
-              </div>
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-amber-200/10"><Crown className="h-9 w-9 text-amber-200/80" /></span>
-            </div>
-            <p className="absolute bottom-3 right-4 text-[10px] text-white/25">
-              會員卡圖片待上傳
-            </p>
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <Stat
