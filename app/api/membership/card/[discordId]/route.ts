@@ -7,6 +7,10 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const CARD_SCALE = 2;
+const CARD_WIDTH = 640 * CARD_SCALE;
+const CARD_HEIGHT = 413 * CARD_SCALE;
+
 type CardLayout = {
   asset: string;
   position: { top?: number; right?: number; bottom?: number; left?: number };
@@ -19,7 +23,7 @@ type CardLayout = {
 
 const CARD_LAYOUTS: Record<string, CardLayout> = {
   star_traveler: {
-    asset: "star-traveler.jpg",
+    asset: "star-traveler-hq.png",
     position: { right: 36, bottom: 29 },
     align: "right",
     color: "#f0e8df",
@@ -28,7 +32,7 @@ const CARD_LAYOUTS: Record<string, CardLayout> = {
     maxWidth: 245,
   },
   silver_wing: {
-    asset: "silver-wing.jpg",
+    asset: "silver-wing-hq.png",
     position: { right: 34, bottom: 30 },
     align: "right",
     color: "#30343b",
@@ -37,7 +41,7 @@ const CARD_LAYOUTS: Record<string, CardLayout> = {
     maxWidth: 245,
   },
   gold_wing: {
-    asset: "gold-wing.jpg",
+    asset: "gold-wing-hq.png",
     position: { left: 38, top: 30 },
     align: "left",
     color: "#f1d49b",
@@ -46,7 +50,7 @@ const CARD_LAYOUTS: Record<string, CardLayout> = {
     maxWidth: 220,
   },
   radiant_star: {
-    asset: "radiant-star.jpg",
+    asset: "radiant-star-hq.png",
     position: { left: 34, bottom: 47 },
     align: "left",
     color: "#eee9e1",
@@ -55,7 +59,7 @@ const CARD_LAYOUTS: Record<string, CardLayout> = {
     maxWidth: 175,
   },
   obsidian: {
-    asset: "obsidian.jpg",
+    asset: "obsidian-hq.png",
     position: { left: 35, top: 82 },
     align: "left",
     color: "#d7c8b7",
@@ -64,7 +68,7 @@ const CARD_LAYOUTS: Record<string, CardLayout> = {
     maxWidth: 235,
   },
   exclusive_white: {
-    asset: "exclusive.png",
+    asset: "exclusive-white-hq.png",
     position: { right: 34, bottom: 40 },
     align: "right",
     color: "#756e66",
@@ -73,7 +77,7 @@ const CARD_LAYOUTS: Record<string, CardLayout> = {
     maxWidth: 245,
   },
   exclusive_black: {
-    asset: "exclusive-black.png",
+    asset: "exclusive-black-hq.png",
     position: { left: 36, bottom: 37 },
     align: "left",
     color: "#d3bfa5",
@@ -93,6 +97,12 @@ function nameFontSize(name: string, maxWidth: number) {
     0,
   );
   return Math.max(15, Math.min(23, Math.floor(maxWidth / Math.max(units, 1))));
+}
+
+function scaledPosition(position: CardLayout["position"]) {
+  return Object.fromEntries(
+    Object.entries(position).map(([key, value]) => [key, value * CARD_SCALE]),
+  );
 }
 
 export async function GET(
@@ -153,17 +163,22 @@ export async function GET(
         style: {
           position: "relative",
           display: "flex",
-          width: "640px",
-          height: "413px",
+          width: `${CARD_WIDTH}px`,
+          height: `${CARD_HEIGHT}px`,
           overflow: "hidden",
           fontFamily,
         },
       },
       React.createElement("img", {
         src: background,
-        width: 640,
-        height: 413,
-        style: { position: "absolute", inset: 0, width: "640px", height: "413px" },
+        width: CARD_WIDTH,
+        height: CARD_HEIGHT,
+        style: {
+          position: "absolute",
+          inset: 0,
+          width: `${CARD_WIDTH}px`,
+          height: `${CARD_HEIGHT}px`,
+        },
       }),
       React.createElement(
         "div",
@@ -178,9 +193,9 @@ export async function GET(
                 : layout.align === "center"
                   ? "center"
                   : "flex-start",
-            width: `${layout.maxWidth}px`,
+            width: `${layout.maxWidth * CARD_SCALE}px`,
             textAlign: layout.align,
-            ...layout.position,
+            ...scaledPosition(layout.position),
           },
         },
         React.createElement(
@@ -189,7 +204,7 @@ export async function GET(
             style: {
               display: "flex",
               color: layout.color,
-              fontSize: `${fontSize}px`,
+              fontSize: `${fontSize * CARD_SCALE}px`,
               fontWeight: 650,
               lineHeight: 1.2,
               textShadow: layout.shadow,
@@ -203,9 +218,9 @@ export async function GET(
           {
             style: {
               display: "flex",
-              marginTop: "5px",
+              marginTop: `${5 * CARD_SCALE}px`,
               color: layout.muted,
-              fontSize: "11px",
+              fontSize: `${11 * CARD_SCALE}px`,
               fontWeight: 500,
               letterSpacing: "0.08em",
               lineHeight: 1,
@@ -216,7 +231,7 @@ export async function GET(
         ),
       ),
     ),
-    { width: 640, height: 413, fonts },
+    { width: CARD_WIDTH, height: CARD_HEIGHT, fonts },
   );
   response.headers.set(
     "Cache-Control",

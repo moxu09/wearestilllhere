@@ -983,13 +983,13 @@ function ExclusiveCardChoice({
       key: "white",
       name: "月華白",
       description: "溫潤珠光與細緻金線",
-      image: "/membership-cards/exclusive.png",
+      image: "/membership-cards/exclusive-white-hq.png",
     },
     {
       key: "black",
       name: "永夜黑",
       description: "深邃黑曜與流動金線",
-      image: "/membership-cards/exclusive-black.png",
+      image: "/membership-cards/exclusive-black-hq.png",
     },
   ];
 

@@ -1,8 +1,8 @@
 import { apiError, getDiscordProfile, requireUser } from "@/lib/serverAuth";
 
 const EXCLUSIVE_CARD_URLS = {
-  white: "https://www.wearestilllhere.com/membership-cards/exclusive.png",
-  black: "https://www.wearestilllhere.com/membership-cards/exclusive-black.png",
+  white: "https://www.wearestilllhere.com/membership-cards/exclusive-white-hq.png",
+  black: "https://www.wearestilllhere.com/membership-cards/exclusive-black-hq.png",
 } as const;
 
 export async function GET(request: Request) {
