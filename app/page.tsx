@@ -23,6 +23,7 @@ import HomePlayers from "./components/HomePlayers";
 const instagramUrl = "https://www.instagram.com/w.a.s.h.co";
 const threadsUrl = "https://www.threads.net/@w.a.s.h.co";
 const discordUrl = "https://discord.gg/tXNnXWMHbJ";
+const flightSearchUrl = "https://flights.wearestilllhere.com";
 
 const priceSlides = [
   {
@@ -115,6 +116,7 @@ export default function HomePage() {
             <a href="#services" className="hover:text-white">服務</a>
             <a href="#lottery" className="hover:text-white">活動</a>
             <a href="#contact" className="hover:text-white">聯絡</a>
+            <a href={flightSearchUrl} className="text-[#5bd6d0] hover:text-[#8ce8e3]">航空外站票查詢</a>
             <a href="/membership" className="text-[#e7ba67] hover:text-[#f6d792]">會員登入</a>
           </nav>
           <a href={discordUrl} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-md bg-[#e7ba67] px-4 text-xs font-bold text-[#111214] hover:bg-[#f2cf8b]">
@@ -153,6 +155,9 @@ export default function HomePage() {
               </a>
               <a href="/membership" className="inline-flex h-12 items-center gap-2 rounded-md border border-white/30 bg-black/20 px-6 text-sm font-bold hover:border-white/70 hover:bg-black/40">
                 進入會員中心
+              </a>
+              <a href={flightSearchUrl} className="inline-flex h-12 items-center gap-2 rounded-md border border-[#5bd6d0]/60 bg-[#5bd6d0]/10 px-6 text-sm font-bold text-[#8ce8e3] hover:border-[#8ce8e3] hover:bg-[#5bd6d0]/20">
+                航空外站票查詢 <ExternalLink className="h-4 w-4" />
               </a>
             </div>
           </div>
