@@ -111,7 +111,7 @@ export async function GET(request: Request) {
       currentTierRecord?.tier_key !== "exclusive" || Boolean(exclusiveCardVariant);
     const personalizedCardUrl = new URL(
       `/api/membership/card/${encodeURIComponent(discord.discordId)}`,
-      request.url,
+      process.env.NEXT_PUBLIC_SITE_URL || "https://www.wearestilllhere.com",
     );
     personalizedCardUrl.searchParams.set(
       "v",
