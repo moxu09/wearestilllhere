@@ -9,6 +9,8 @@ import {
   Clock3,
   ExternalLink,
   Headphones,
+  Mail,
+  Package,
   Pause,
   Play,
   ShieldCheck,
@@ -19,9 +21,8 @@ import {
 import { useEffect, useState } from "react";
 import ThanksWall from "./components/ThanksWall";
 import HomePlayers from "./components/HomePlayers";
+import { defaultSiteContent, type SiteContentItem } from "@/lib/siteContent";
 
-const instagramUrl = "https://www.instagram.com/w.a.s.h.co";
-const threadsUrl = "https://www.threads.net/@w.a.s.h.co";
 const discordUrl = "https://discord.gg/tXNnXWMHbJ";
 const flightSearchUrl = "https://flights.wearestilllhere.com";
 
@@ -68,28 +69,10 @@ const priceSlides = [
   },
 ];
 
-const prizes = [
-  {
-    name: "iPhone 17 Pro Max 512G",
-    image: "/home/prizes/iphone-17-pro-max.png",
-  },
-  {
-    name: "MacBook Air 512G",
-    image: "/home/prizes/macbook-air.png",
-  },
-  {
-    name: "iPad Air 11 512G",
-    image: "/home/prizes/ipad-air.png",
-  },
-  {
-    name: "AirPods Max / Pro / Nitro",
-    image: "/home/prizes/airpods.png",
-  },
-];
-
 export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [siteContent, setSiteContent] = useState<SiteContentItem[]>(defaultSiteContent);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -100,6 +83,26 @@ export default function HomePage() {
 
     return () => window.clearTimeout(timer);
   }, [activeSlide, isPlaying]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/site-content", { signal: controller.signal })
+      .then((response) => response.json())
+      .then((payload: { items?: SiteContentItem[] }) => {
+        if (payload.items?.length) setSiteContent(payload.items);
+      })
+      .catch((error: unknown) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          console.error("Unable to refresh site content", error);
+        }
+      });
+    return () => controller.abort();
+  }, []);
+
+  const activity = siteContent.find((item) => item.content_type === "activity");
+  const prizes = siteContent.filter((item) => item.content_type === "prize");
+  const merchandise = siteContent.filter((item) => item.content_type === "merchandise");
+  const contacts = siteContent.filter((item) => item.content_type === "contact");
 
   return (
     <main className="home-soft-font min-h-screen overflow-hidden bg-[#0d0e10] text-white">
@@ -203,6 +206,42 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section id="merchandise" className="border-t border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase text-[#5bd6d0]">Official merchandise</p>
+              <h2 className="home-title-font mt-4 text-4xl sm:text-5xl">把深夜的陪伴帶回家。</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/50">官方周邊商品會在這裡更新；庫存、付款與寄送方式以商品頁及客服確認為準。</p>
+            </div>
+            <Package className="hidden h-9 w-9 text-[#e7ba67] sm:block" />
+          </div>
+
+          {merchandise.length ? (
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {merchandise.map((item) => (
+                <article key={item.id} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
+                  <ContentImage src={item.image_url} alt={item.title} aspectClass="aspect-[4/3]" />
+                  <div className="p-6">
+                    {item.subtitle && <p className="text-xs font-bold text-[#5bd6d0]">{item.subtitle}</p>}
+                    <div className="mt-2 flex items-start justify-between gap-4">
+                      <h3 className="text-xl font-bold">{item.title}</h3>
+                      {item.price !== null && <p className="shrink-0 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>}
+                    </div>
+                    {item.description && <p className="mt-4 text-sm leading-7 text-white/50">{item.description}</p>}
+                    {item.link_url && <a href={item.link_url} target="_blank" rel="noreferrer" className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#e7ba67] text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]">查看／購買 <ExternalLink className="h-4 w-4" /></a>}
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-10 flex min-h-44 items-center justify-center rounded-md border border-dashed border-white/15 bg-white/[0.02] px-6 text-center">
+              <div><Package className="mx-auto h-7 w-7 text-white/25" /><p className="mt-4 text-sm font-bold text-white/60">周邊商品準備中</p><p className="mt-2 text-xs text-white/35">新品上架後會第一時間在這裡公布。</p></div>
+            </div>
+          )}
+        </div>
+      </section>
+
       <HomePlayers />
 
       <section id="lottery" className="border-y border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
@@ -210,11 +249,11 @@ export default function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end">
             <div>
               <Trophy className="h-7 w-7 text-[#e7ba67]" />
-              <p className="mt-6 text-xs font-bold uppercase text-[#ff806f]">Opening lottery</p>
-              <h2 className="home-title-font mt-4 text-4xl leading-tight sm:text-6xl">把今晚的幸運，也一起帶走。</h2>
+              <p className="mt-6 text-xs font-bold uppercase text-[#ff806f]">{activity?.subtitle || "Opening lottery"}</p>
+              <h2 className="home-title-font mt-4 text-4xl leading-tight sm:text-6xl">{activity?.title || "把今晚的幸運，也一起帶走。"}</h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-white/55 lg:justify-self-end">
-              活動期間每消費滿 1,000 元獲得 1 張抽獎券；前 50 筆滿額訂單抽獎券翻倍，限量 100 張。
+              {activity?.description || "最新活動辦法請以官方公告為準。"}
             </p>
           </div>
           <div className="mt-12 grid border-l border-t border-white/10 md:grid-cols-3">
@@ -232,13 +271,14 @@ export default function HomePage() {
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {prizes.map((prize, index) => (
-              <article key={prize.name} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
-                <div className="relative aspect-[16/10] border-b border-white/10 bg-[#f1f2f4]">
-                  <Image src={prize.image} alt={prize.name} fill sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw" className="object-cover" />
+              <article key={prize.id} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
+                <div className="relative">
+                  <ContentImage src={prize.image_url} alt={prize.title} aspectClass="aspect-[16/10]" light />
                   <span className="absolute left-3 top-3 rounded-md bg-[#0d0e10]/85 px-2.5 py-1.5 text-xs font-bold text-[#5bd6d0] backdrop-blur">0{index + 1}</span>
                 </div>
                 <div className="p-5">
-                  <p className="text-sm font-semibold leading-6">{prize.name}</p>
+                  <p className="text-sm font-semibold leading-6">{prize.title}</p>
+                  {prize.description && <p className="mt-2 text-xs leading-5 text-white/40">{prize.description}</p>}
                 </div>
               </article>
             ))}
@@ -273,10 +313,17 @@ export default function HomePage() {
             <p className="text-xs font-bold uppercase">The light is on</p>
             <h2 className="home-title-font mt-4 max-w-3xl text-4xl leading-tight sm:text-6xl">有想法就來，我們替你把今晚安排好。</h2>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <SocialLink href={discordUrl} label="前往 Discord" icon={ExternalLink} dark />
-            <SocialLink href={instagramUrl} label="Instagram" icon={Camera} />
-            <SocialLink href={threadsUrl} label="Threads" icon={AtSign} />
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            {contacts.map((item, index) => (
+              <SocialLink
+                key={item.id}
+                href={item.link_url || "#contact"}
+                label={item.title}
+                detail={item.subtitle || item.description || undefined}
+                icon={contactIcon(item)}
+                dark={index === 0}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -346,10 +393,26 @@ function PriceCarousel({ activeSlide, isPlaying, onSelect, onTogglePlay }: { act
   );
 }
 
-function SocialLink({ href, label, icon: Icon, dark = false }: { href: string; label: string; icon: typeof Sparkles; dark?: boolean }) {
+function ContentImage({ src, alt, aspectClass, light = false }: { src: string | null; alt: string; aspectClass: string; light?: boolean }) {
+  const background = light ? "bg-[#f1f2f4]" : "bg-[#17191d]";
+  if (!src) return <div role="img" aria-label={`${alt}尚無圖片`} className={`${aspectClass} grid place-items-center border-b border-white/10 ${background}`}><Package className="h-8 w-8 text-black/20" /></div>;
+  if (src.startsWith("/")) return <div className={`relative ${aspectClass} border-b border-white/10 ${background}`}><Image src={src} alt={alt} fill sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw" className="object-cover" /></div>;
+  return <div role="img" aria-label={alt} className={`${aspectClass} border-b border-white/10 bg-cover bg-center ${background}`} style={{ backgroundImage: `url(${JSON.stringify(src)})` }} />;
+}
+
+function contactIcon(item: SiteContentItem) {
+  const value = `${item.title} ${item.link_url || ""}`.toLowerCase();
+  if (value.includes("mail") || value.includes("信箱") || value.includes("email")) return Mail;
+  if (value.includes("instagram")) return Camera;
+  if (value.includes("threads")) return AtSign;
+  return ExternalLink;
+}
+
+function SocialLink({ href, label, detail, icon: Icon, dark = false }: { href: string; label: string; detail?: string; icon: typeof Sparkles; dark?: boolean }) {
+  const external = href.startsWith("http");
   return (
-    <a href={href} target="_blank" rel="noreferrer" className={`flex h-12 items-center justify-between rounded-md border px-5 text-sm font-bold transition ${dark ? "border-[#111214] bg-[#111214] text-white hover:bg-[#26282b]" : "border-black/30 hover:border-black"}`}>
-      {label} <Icon className="h-4 w-4" />
+    <a href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className={`flex min-h-14 items-center justify-between gap-4 rounded-md border px-5 py-3 text-sm font-bold transition ${dark ? "border-[#111214] bg-[#111214] text-white hover:bg-[#26282b]" : "border-black/30 hover:border-black"}`}>
+      <span>{label}{detail && <span className={`mt-1 block text-[11px] font-medium ${dark ? "text-white/50" : "text-black/55"}`}>{detail}</span>}</span> <Icon className="h-4 w-4 shrink-0" />
     </a>
   );
 }

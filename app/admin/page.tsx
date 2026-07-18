@@ -15,6 +15,7 @@ import {
   Loader2,
   Lock,
   Mic2,
+  Package,
   ReceiptText,
   ShieldCheck,
   Sparkles,
@@ -459,6 +460,13 @@ export default function AdminDashboardPage() {
                   desc="新增禮物、修改價格、設定明燈三千全屏播報。"
                   href="/admin/gifts"
                   icon={<Gift />}
+                />
+
+                <QuickLink
+                  title="官網內容管理"
+                  desc="修改活動、獎品、周邊商品與聯絡方式。"
+                  href="/admin/content"
+                  icon={<Package />}
                 />
 
                 <QuickLink
