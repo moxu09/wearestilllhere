@@ -81,6 +81,7 @@ export default function SiteContentAdminPage() {
     setAuthState("ready");
     const response = await fetch(path, {
       ...init,
+      cache: "no-store",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -97,7 +98,22 @@ export default function SiteContentAdminPage() {
     setError("");
     try {
       const payload = await callApi("/api/admin/site-content");
-      setItems(payload.items || []);
+      let loadedItems = payload.items || [];
+
+      if (loadedItems.length === 0) {
+        const publicResponse = await fetch("/api/site-content?refresh=1", {
+          cache: "no-store",
+        });
+        const publicPayload = (await publicResponse.json()) as {
+          items?: SiteContentItem[];
+        };
+
+        if (publicResponse.ok && publicPayload.items?.length) {
+          loadedItems = publicPayload.items;
+        }
+      }
+
+      setItems(loadedItems);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "讀取內容失敗");
     } finally {

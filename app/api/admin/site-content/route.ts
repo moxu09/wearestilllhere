@@ -4,6 +4,8 @@ import {
   type SiteContentItem,
 } from "@/lib/siteContent";
 
+export const dynamic = "force-dynamic";
+
 const editableFields = [
   "content_type",
   "title",
@@ -61,7 +63,10 @@ export async function GET(request: Request) {
       .order("sort_order")
       .order("created_at");
     if (error) throw error;
-    return Response.json({ items: (data || []) as SiteContentItem[] });
+    return Response.json(
+      { items: (data || []) as SiteContentItem[] },
+      { headers: { "Cache-Control": "no-store, max-age=0" } },
+    );
   } catch (error) {
     return apiError(error);
   }
@@ -115,4 +120,3 @@ export async function DELETE(request: Request) {
     return apiError(error);
   }
 }
-
