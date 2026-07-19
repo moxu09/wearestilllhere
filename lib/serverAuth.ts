@@ -59,6 +59,38 @@ export async function requireUser(request: Request) {
   return { admin, user: data.user };
 }
 
+export function getConfiguredAdminEmails() {
+  return String(process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export async function requireSiteAdmin(request: Request) {
+  const context = await requireUser(request);
+  const { data: profile, error } = await context.admin
+    .from("platform_profiles")
+    .select("id, role, display_name")
+    .eq("id", context.user.id)
+    .maybeSingle();
+  if (error) throw error;
+
+  const configuredAdminEmails = getConfiguredAdminEmails();
+  const userEmail = context.user.email?.trim().toLowerCase() || "";
+  const isConfiguredAdmin =
+    Boolean(userEmail) && configuredAdminEmails.includes(userEmail);
+
+  if (profile?.role !== "admin" && !isConfiguredAdmin) {
+    throw new Error("FORBIDDEN");
+  }
+
+  return {
+    ...context,
+    profile,
+    isConfiguredAdmin,
+  };
+}
+
 async function hasDiscordRole(
   userId: string,
   config: (typeof STAFF_GUILDS)[StaffBrand],

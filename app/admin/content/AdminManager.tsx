@@ -9,6 +9,7 @@ type SiteAdmin = {
   display_name: string | null;
   email: string | null;
   updated_at: string | null;
+  is_configured?: boolean;
 };
 
 type AdminPayload = {
@@ -128,11 +129,10 @@ export default function AdminManager() {
           <h3 className="font-bold">目前管理員</h3>
           {loading ? <div className="grid min-h-32 place-items-center"><Loader2 className="h-5 w-5 animate-spin text-[#e7ba67]" /></div> : <div className="mt-4 grid gap-3">{admins.map((admin) => {
             const isCurrent = admin.id === currentUserId;
-            return <div key={admin.id} className="flex flex-col gap-4 rounded-xl border border-white/10 bg-black/15 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="truncate font-bold">{admin.display_name || "未設定名稱"}</p>{isCurrent && <span className="rounded-full bg-[#5bd6d0]/15 px-2 py-1 text-[10px] font-bold text-[#5bd6d0]">目前帳號</span>}</div><p className="mt-1 truncate text-xs text-white/40">{admin.email || "尚未取得 Email"}</p></div><button type="button" disabled={isCurrent || removingId === admin.id || admins.length <= 1} onClick={() => void removeAdmin(admin)} title={isCurrent ? "不能移除自己的權限" : admins.length <= 1 ? "至少要保留一位管理員" : "移除管理員權限"} className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-red-400/25 px-3 text-xs font-bold text-red-300 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-30">{removingId === admin.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />} 移除權限</button></div>;
+            return <div key={admin.id} className="flex flex-col gap-4 rounded-xl border border-white/10 bg-black/15 p-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="truncate font-bold">{admin.display_name || "未設定名稱"}</p>{isCurrent && <span className="rounded-full bg-[#5bd6d0]/15 px-2 py-1 text-[10px] font-bold text-[#5bd6d0]">目前帳號</span>}{admin.is_configured && <span className="rounded-full bg-[#e7ba67]/15 px-2 py-1 text-[10px] font-bold text-[#e7ba67]">主要管理員</span>}</div><p className="mt-1 truncate text-xs text-white/40">{admin.email || "尚未取得 Email"}</p></div><button type="button" disabled={isCurrent || admin.is_configured || removingId === admin.id || admins.length <= 1} onClick={() => void removeAdmin(admin)} title={isCurrent ? "不能移除自己的權限" : admin.is_configured ? "主要管理員由環境設定管理" : admins.length <= 1 ? "至少要保留一位管理員" : "移除管理員權限"} className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-red-400/25 px-3 text-xs font-bold text-red-300 hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-30">{removingId === admin.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />} 移除權限</button></div>;
           })}</div>}
         </div>
       </div>
     </section>
   );
 }
-

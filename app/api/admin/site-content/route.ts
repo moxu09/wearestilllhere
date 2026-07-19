@@ -1,4 +1,4 @@
-import { apiError, requireStaff } from "@/lib/serverAuth";
+import { apiError, requireSiteAdmin } from "@/lib/serverAuth";
 import {
   isSiteContentType,
   type SiteContentItem,
@@ -55,7 +55,7 @@ function cleanPayload(input: unknown, partial = false) {
 
 export async function GET(request: Request) {
   try {
-    const { admin } = await requireStaff(request);
+    const { admin } = await requireSiteAdmin(request);
     const { data, error } = await admin
       .from("site_content_items")
       .select("*")
@@ -74,7 +74,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { admin } = await requireStaff(request);
+    const { admin } = await requireSiteAdmin(request);
     const payload = cleanPayload(await request.json());
     const { data, error } = await admin
       .from("site_content_items")
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { admin } = await requireStaff(request);
+    const { admin } = await requireSiteAdmin(request);
     const body = (await request.json()) as Record<string, unknown>;
     const id = String(body.id || "").trim();
     if (!id) throw new Error("缺少內容編號");
@@ -110,7 +110,7 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const { admin } = await requireStaff(request);
+    const { admin } = await requireSiteAdmin(request);
     const id = new URL(request.url).searchParams.get("id")?.trim();
     if (!id) throw new Error("缺少內容編號");
     const { error } = await admin.from("site_content_items").delete().eq("id", id);

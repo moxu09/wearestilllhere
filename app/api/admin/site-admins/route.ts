@@ -1,19 +1,11 @@
 import type { User } from "@supabase/supabase-js";
-import { apiError, requireUser } from "@/lib/serverAuth";
+import {
+  apiError,
+  getConfiguredAdminEmails,
+  requireSiteAdmin,
+} from "@/lib/serverAuth";
 
-async function requirePlatformAdmin(request: Request) {
-  const context = await requireUser(request);
-  const { data: profile, error } = await context.admin
-    .from("platform_profiles")
-    .select("id, role, display_name")
-    .eq("id", context.user.id)
-    .maybeSingle();
-  if (error) throw error;
-  if (profile?.role !== "admin") throw new Error("FORBIDDEN");
-  return { ...context, profile };
-}
-
-async function listAuthUsers(admin: Awaited<ReturnType<typeof requirePlatformAdmin>>["admin"]) {
+async function listAuthUsers(admin: Awaited<ReturnType<typeof requireSiteAdmin>>["admin"]) {
   const users: User[] = [];
   for (let page = 1; page <= 20; page += 1) {
     const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
@@ -26,7 +18,7 @@ async function listAuthUsers(admin: Awaited<ReturnType<typeof requirePlatformAdm
 
 export async function GET(request: Request) {
   try {
-    const { admin, user } = await requirePlatformAdmin(request);
+    const { admin, user } = await requireSiteAdmin(request);
     const [{ data: profiles, error }, authUsers] = await Promise.all([
       admin
         .from("platform_profiles")
@@ -37,13 +29,42 @@ export async function GET(request: Request) {
     ]);
     if (error) throw error;
 
+    const configuredAdminEmails = getConfiguredAdminEmails();
     const authById = new Map(authUsers.map((authUser) => [authUser.id, authUser]));
+    const adminById = new Map(
+      (profiles || []).map((profile) => [
+        profile.id,
+        {
+          ...profile,
+          email: authById.get(profile.id)?.email || null,
+          is_configured: false,
+        },
+      ]),
+    );
+
+    for (const authUser of authUsers) {
+      if (
+        authUser.email &&
+        configuredAdminEmails.includes(authUser.email.trim().toLowerCase())
+      ) {
+        adminById.set(authUser.id, {
+          id: authUser.id,
+          display_name: String(
+            authUser.user_metadata?.full_name ||
+              authUser.user_metadata?.name ||
+              authUser.email,
+          ),
+          role: "admin",
+          updated_at: authUser.updated_at || null,
+          email: authUser.email,
+          is_configured: true,
+        });
+      }
+    }
+
     return Response.json({
       currentUserId: user.id,
-      admins: (profiles || []).map((profile) => ({
-        ...profile,
-        email: authById.get(profile.id)?.email || null,
-      })),
+      admins: Array.from(adminById.values()),
     });
   } catch (error) {
     return apiError(error);
@@ -52,7 +73,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { admin } = await requirePlatformAdmin(request);
+    const { admin } = await requireSiteAdmin(request);
     const body = (await request.json()) as { email?: unknown };
     const email = String(body.email || "").trim().toLowerCase();
     if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error("請輸入正確的 Email");
@@ -92,17 +113,38 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const { admin, user } = await requirePlatformAdmin(request);
+    const { admin, user } = await requireSiteAdmin(request);
     const id = new URL(request.url).searchParams.get("id")?.trim();
     if (!id) throw new Error("缺少管理員編號");
     if (id === user.id) throw new Error("不能移除自己的管理員權限");
 
-    const { count, error: countError } = await admin
+    const authUsers = await listAuthUsers(admin);
+    const targetUser = authUsers.find((authUser) => authUser.id === id);
+    const configuredAdminEmails = getConfiguredAdminEmails();
+    if (
+      targetUser?.email &&
+      configuredAdminEmails.includes(targetUser.email.trim().toLowerCase())
+    ) {
+      throw new Error("環境設定的主要管理員不能在這裡移除");
+    }
+
+    const { data: profileAdmins, error: countError } = await admin
       .from("platform_profiles")
-      .select("id", { count: "exact", head: true })
+      .select("id")
       .eq("role", "admin");
     if (countError) throw countError;
-    if ((count || 0) <= 1) throw new Error("至少要保留一位管理員");
+    const configuredAdminIds = authUsers
+      .filter(
+        (authUser) =>
+          authUser.email &&
+          configuredAdminEmails.includes(authUser.email.trim().toLowerCase()),
+      )
+      .map((authUser) => authUser.id);
+    const totalAdminCount = new Set([
+      ...(profileAdmins || []).map((profile) => profile.id),
+      ...configuredAdminIds,
+    ]).size;
+    if (totalAdminCount <= 1) throw new Error("至少要保留一位管理員");
 
     const { data, error } = await admin
       .from("platform_profiles")
@@ -119,4 +161,3 @@ export async function DELETE(request: Request) {
     return apiError(error);
   }
 }
-
