@@ -27,11 +27,13 @@ import { defaultSiteContent, type SiteContentItem } from "@/lib/siteContent";
 import {
   getMerchandiseProduct,
   getMerchandiseSlugFromTitle,
+  isWebsiteDesignTitle,
   type MerchandiseProduct,
 } from "@/lib/merchandiseCatalog";
 
 const discordUrl = "https://discord.gg/tXNnXWMHbJ";
 const flightSearchUrl = "https://flights.wearestilllhere.com";
+const websiteDesignUrl = "https://design.wearestilllhere.com";
 
 const priceSlides = [
   {
@@ -240,6 +242,7 @@ export default function HomePage() {
               {merchandise.map((item) => {
                 const slug = getMerchandiseSlugFromTitle(item.title);
                 const product = slug ? getMerchandiseProduct(slug) : null;
+                const websiteDesign = isWebsiteDesignTitle(item.title);
 
                 return (
                   <article key={item.id} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
@@ -248,10 +251,23 @@ export default function HomePage() {
                       {item.subtitle && <p className="text-xs font-bold text-[#5bd6d0]">{item.subtitle}</p>}
                       <div className="mt-2 flex items-start justify-between gap-4">
                         <h3 className="text-xl font-bold">{item.title}</h3>
-                        {item.price !== null && <p className="shrink-0 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>}
+                        {websiteDesign ? (
+                          <p className="shrink-0 text-right font-bold text-[#e7ba67]">
+                            洽談後報價
+                          </p>
+                        ) : item.price !== null ? (
+                          <p className="shrink-0 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>
+                        ) : null}
                       </div>
                       {item.description && <p className="mt-4 text-sm leading-7 text-white/50">{item.description}</p>}
-                      {product ? (
+                      {websiteDesign ? (
+                        <a
+                          href={websiteDesignUrl}
+                          className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#e7ba67] text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]"
+                        >
+                          輸入詳情 <ArrowRight className="h-4 w-4" />
+                        </a>
+                      ) : product ? (
                         <button
                           type="button"
                           onClick={() => setSelectedMerchandise({ item, product })}

@@ -63,3 +63,12 @@ export function getMerchandiseSlugFromTitle(title: string) {
 
   return null;
 }
+
+export function isWebsiteDesignTitle(title: string) {
+  const normalizedTitle = title.replace(/\s+/g, "").toLowerCase();
+  return (
+    normalizedTitle.includes("網站設計") ||
+    normalizedTitle.includes("webdesign") ||
+    normalizedTitle.includes("website委託")
+  );
+}
