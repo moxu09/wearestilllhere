@@ -8,8 +8,15 @@ export default function SiteLoader() {
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove("site-loader-complete");
+
     const leaveTimer = window.setTimeout(() => setLeaving(true), 650);
-    const hideTimer = window.setTimeout(() => setVisible(false), 1050);
+    const hideTimer = window.setTimeout(() => {
+      setVisible(false);
+      root.classList.add("site-loader-complete");
+    }, 1050);
+
     return () => {
       window.clearTimeout(leaveTimer);
       window.clearTimeout(hideTimer);

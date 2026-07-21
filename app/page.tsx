@@ -118,7 +118,7 @@ export default function HomePage() {
   const contacts = siteContent.filter((item) => item.content_type === "contact");
 
   return (
-    <main className="public-page-enter home-soft-font min-h-screen overflow-hidden bg-[#0d0e10] text-white">
+    <main className="home-intro-sequence home-soft-font min-h-screen overflow-hidden bg-[#0d0e10] text-white">
       <div className="site-scroll-progress" aria-hidden="true"><span /></div>
       <div className="site-grain" aria-hidden="true" />
 
@@ -171,13 +171,13 @@ export default function HomePage() {
             <h1 className="hero-rise hero-title home-title-font mt-6 text-5xl leading-[1.12] sm:text-7xl lg:text-8xl">
               深夜不關燈
             </h1>
-            <p className="hero-rise hero-rise-delay-1 mt-5 max-w-xl text-lg font-semibold text-white/90 sm:text-2xl">
+            <p className="hero-rise hero-copy-primary mt-5 max-w-xl text-lg font-semibold text-white/90 sm:text-2xl">
               今晚不只在線，也在你身邊。
             </p>
-            <p className="hero-rise hero-rise-delay-1 mt-5 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
+            <p className="hero-rise hero-copy-secondary mt-5 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
               遊戲、聊天、打賞與星夜聯盟會籍，讓每一個晚睡的理由，都有更好的陪伴方式。
             </p>
-            <div className="hero-rise hero-rise-delay-2 mt-8 flex flex-wrap gap-3">
+            <div className="hero-rise hero-actions mt-8 flex flex-wrap gap-3">
               <a href="#services" className="premium-button inline-flex h-12 items-center gap-2 rounded-md bg-[#e7ba67] px-6 text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]">
                 探索服務 <ArrowRight className="h-4 w-4" />
               </a>
@@ -190,7 +190,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 right-0 hidden w-[34%] border-l border-t border-white/15 bg-[#0d0e10]/85 p-6 backdrop-blur md:block">
+        <div className="hero-trust-panel absolute bottom-0 right-0 hidden w-[34%] border-l border-t border-white/15 bg-[#0d0e10]/85 p-6 backdrop-blur md:block">
           <div className="grid grid-cols-3 divide-x divide-white/10 text-center">
             {["全年無休", "專人安排", "會員連動"].map((item) => <p key={item} className="text-xs font-bold text-white/65">{item}</p>)}
           </div>

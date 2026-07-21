@@ -87,6 +87,40 @@ a {
   }
 }
 
+@keyframes hero-media-enter {
+  from {
+    opacity: 0;
+    filter: blur(14px) brightness(0.58);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0) brightness(1);
+  }
+}
+
+@keyframes hero-overlay-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-panel-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(34px, 22px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes price-slide-enter {
   from {
     opacity: 0;
@@ -259,6 +293,61 @@ html.site-scrolled .home-header-logo {
 
 .hero-badge {
   animation: hero-rise 820ms 40ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Logo 載入畫面結束後，才依序播放主頁進場。 */
+.home-intro-sequence .home-header,
+.home-intro-sequence .hero-media,
+.home-intro-sequence .hero-vignette,
+.home-intro-sequence .hero-orb,
+.home-intro-sequence .hero-badge,
+.home-intro-sequence .hero-rise,
+.home-intro-sequence .hero-trust-panel {
+  animation: none;
+  opacity: 0;
+}
+
+html.site-loader-complete .home-intro-sequence .home-header {
+  animation: header-enter 760ms 40ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-media {
+  animation: hero-media-enter 1450ms 40ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-vignette,
+html.site-loader-complete .home-intro-sequence .hero-orb {
+  animation: hero-overlay-enter 1050ms 140ms ease-out both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-orb {
+  animation:
+    hero-overlay-enter 1050ms 140ms ease-out both,
+    hero-ambient 8s 1.2s ease-in-out infinite;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-badge {
+  animation: hero-rise 820ms 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-title {
+  animation: hero-rise 980ms 370ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-copy-primary {
+  animation: hero-rise 900ms 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-copy-secondary {
+  animation: hero-rise 900ms 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-actions {
+  animation: hero-rise 900ms 780ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+html.site-loader-complete .home-intro-sequence .hero-trust-panel {
+  animation: hero-panel-enter 900ms 930ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-title {
