@@ -31,9 +31,16 @@ export default function MerchandiseDetailModal({
           <div
             role="img"
             aria-label={item.title}
-            className="aspect-[16/9] border-b border-white/10 bg-[#0d0e10] bg-contain bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${JSON.stringify(item.image_url)})` }}
-          />
+            className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-[#0d0e10]"
+          >
+            <div className="absolute inset-0 grid place-items-center">
+              <Package className="h-10 w-10 text-white/20" />
+            </div>
+            <div
+              className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${JSON.stringify(item.image_url)})` }}
+            />
+          </div>
         ) : (
           <div className="grid aspect-[16/9] place-items-center border-b border-white/10 bg-[#0d0e10]">
             <Package className="h-10 w-10 text-white/20" />

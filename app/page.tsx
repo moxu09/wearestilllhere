@@ -456,7 +456,14 @@ function ContentImage({ src, alt, aspectClass, light = false }: { src: string | 
   const background = light ? "bg-[#f1f2f4]" : "bg-[#17191d]";
   if (!src) return <div role="img" aria-label={`${alt}尚無圖片`} className={`${aspectClass} grid place-items-center border-b border-white/10 ${background}`}><Package className="h-8 w-8 text-black/20" /></div>;
   if (src.startsWith("/")) return <div className={`relative ${aspectClass} border-b border-white/10 ${background}`}><Image src={src} alt={alt} fill sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw" className="object-cover" /></div>;
-  return <div role="img" aria-label={alt} className={`${aspectClass} border-b border-white/10 bg-cover bg-center ${background}`} style={{ backgroundImage: `url(${JSON.stringify(src)})` }} />;
+  return (
+    <div role="img" aria-label={alt} className={`relative ${aspectClass} overflow-hidden border-b border-white/10 ${background}`}>
+      <div className="absolute inset-0 grid place-items-center">
+        <Package className={`h-8 w-8 ${light ? "text-black/20" : "text-white/20"}`} />
+      </div>
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${JSON.stringify(src)})` }} />
+    </div>
+  );
 }
 
 function contactIcon(item: SiteContentItem) {
