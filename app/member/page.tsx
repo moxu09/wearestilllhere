@@ -213,9 +213,9 @@ export default function MemberDashboardPage() {
           )}
 
           <div className="mb-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-7 shadow-2xl backdrop-blur-xl">
+            <div className="min-w-0 rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 shadow-2xl backdrop-blur-xl sm:p-7">
               <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-5">
+                <div className="flex min-w-0 items-center gap-4 sm:gap-5">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-[1.7rem] bg-violet-500 blur-lg opacity-30" />
                     <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.7rem] border border-white/10 bg-[#111827]">
@@ -232,12 +232,12 @@ export default function MemberDashboardPage() {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <p className="mb-2 inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-3 py-1 text-xs font-bold text-violet-100">
                       <Sparkles className="h-3.5 w-3.5" />
                       {roleLabel}
                     </p>
-                    <h1 className="text-3xl font-black md:text-4xl">
+                    <h1 className="break-words text-2xl font-black sm:text-3xl md:text-4xl">
                       歡迎回來，{displayName}
                     </h1>
                     <p className="mt-2 text-sm text-slate-400">
@@ -284,21 +284,21 @@ function WalletPanel({ wallet }: { wallet: WalletData | null }) {
   const frozen = wallet?.frozen_balance || 0;
 
   return (
-    <div className="rounded-[2rem] border border-yellow-300/15 bg-gradient-to-br from-yellow-500/12 via-white/[0.06] to-violet-500/10 p-7 shadow-2xl backdrop-blur-xl">
-      <div className="mb-5 flex items-center justify-between">
-        <div>
+    <div className="min-w-0 overflow-hidden rounded-[2rem] border border-yellow-300/15 bg-gradient-to-br from-yellow-500/12 via-white/[0.06] to-violet-500/10 p-5 shadow-2xl backdrop-blur-xl sm:p-7">
+      <div className="mb-5 flex min-w-0 items-center justify-between gap-3">
+        <div className="min-w-0">
           <p className="text-sm text-yellow-100">ASD 錢包</p>
           <h2 className="mt-1 text-2xl font-black">我的餘額</h2>
         </div>
 
-        <div className="flex h-13 w-13 items-center justify-center rounded-3xl bg-yellow-500/15 text-yellow-100">
+        <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-3xl bg-yellow-500/15 text-yellow-100">
           <Wallet className="h-6 w-6" />
         </div>
       </div>
 
       <div className="rounded-3xl border border-white/10 bg-black/20 p-5">
         <p className="text-sm text-slate-400">可用 ASD</p>
-        <p className="mt-2 text-5xl font-black tracking-tight text-yellow-100">
+        <p className="mt-2 break-all text-4xl font-black tracking-tight text-yellow-100 sm:text-5xl">
           {balance.toLocaleString()}
         </p>
         <p className="mt-3 text-xs text-slate-500">
@@ -306,7 +306,7 @@ function WalletPanel({ wallet }: { wallet: WalletData | null }) {
         </p>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2">
         <MiniWalletMetric label="凍結中" value={`${frozen.toLocaleString()} ASD`} />
         <MiniWalletMetric
           label="最後更新"
@@ -588,9 +588,9 @@ function Panel({
 
 function MiniWalletMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-black/20 p-4">
       <p className="text-xs text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-black text-slate-100">{value}</p>
+      <p className="mt-1 break-words text-sm font-black text-slate-100">{value}</p>
     </div>
   );
 }

@@ -142,7 +142,7 @@ export default function WalletPage() {
         <div className="absolute left-[-120px] top-[-120px] h-80 w-80 rounded-full bg-violet-200/70 blur-3xl" />
         <div className="absolute right-[-120px] top-20 h-96 w-96 rounded-full bg-fuchsia-200/60 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-4 py-10">
+        <div className="relative mx-auto max-w-7xl px-3 py-8 sm:px-4 sm:py-10">
           {error && (
             <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-600">
               {error}
@@ -196,7 +196,7 @@ export default function WalletPage() {
             />
           </div>
 
-          <section className="mt-8 rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur-xl">
+          <section className="mt-8 min-w-0 rounded-[2rem] border border-white/70 bg-white/80 p-4 shadow-xl backdrop-blur-xl sm:p-6">
             <div className="mb-5 flex items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
@@ -231,34 +231,34 @@ function TransactionItem({ tx }: { tx: Transaction }) {
   const positive = tx.amount > 0;
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-3xl border border-slate-100 bg-slate-50/80 p-4">
-      <div className="flex items-center gap-4">
+    <div className="flex min-w-0 flex-col gap-4 rounded-3xl border border-slate-100 bg-slate-50/80 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
         <div
-          className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm ${
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ${
             positive ? "text-emerald-600" : "text-violet-700"
           }`}
         >
           {positive ? <Coins className="h-6 w-6" /> : <CreditCard className="h-6 w-6" />}
         </div>
 
-        <div>
-          <p className="font-black text-slate-950">
+        <div className="min-w-0">
+          <p className="break-words font-black text-slate-950">
             {typeLabel[tx.type] || tx.type}
           </p>
           <p className="mt-1 text-xs text-slate-500">
             {new Date(tx.created_at).toLocaleString("zh-TW")}
           </p>
           {tx.note && (
-            <p className="mt-1 text-xs font-semibold text-slate-400">
+            <p className="mt-1 break-words text-xs font-semibold text-slate-400">
               {tx.note}
             </p>
           )}
         </div>
       </div>
 
-      <div className="text-right">
+      <div className="min-w-0 text-left sm:shrink-0 sm:text-right">
         <p
-          className={`text-lg font-black ${
+          className={`break-all text-lg font-black ${
             positive ? "text-emerald-600" : "text-red-500"
           }`}
         >
@@ -285,12 +285,12 @@ function BalanceCard({
   icon: ReactNode;
 }) {
   return (
-    <section className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur-xl">
+    <section className="min-w-0 rounded-[2rem] border border-white/70 bg-white/80 p-5 shadow-xl backdrop-blur-xl sm:p-6">
       <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-violet-700 [&_svg]:h-6 [&_svg]:w-6">
         {icon}
       </div>
       <p className="text-sm font-bold text-slate-500">{title}</p>
-      <p className="mt-2 text-3xl font-black text-slate-950">{value}</p>
+      <p className="mt-2 break-all text-2xl font-black text-slate-950 sm:text-3xl">{value}</p>
       <p className="mt-2 text-xs leading-5 text-slate-500">{desc}</p>
     </section>
   );
