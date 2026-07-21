@@ -6,6 +6,7 @@ export type MerchandiseProduct = {
   slug: MerchandiseSlug;
   name: string;
   shortName: string;
+  fallbackPrice: number;
   specifications: Array<{
     label: string;
     value: string;
@@ -20,6 +21,7 @@ export const merchandiseCatalog: Record<
     slug: "canvas-bag",
     name: "深夜不關燈帆布袋",
     shortName: "帆布袋",
+    fallbackPrice: 100,
     specifications: [
       { label: "材質", value: "帆布、棉麻" },
       { label: "尺寸", value: "25 × 20 cm" },
@@ -30,6 +32,7 @@ export const merchandiseCatalog: Record<
     slug: "keychain",
     name: "深夜不關燈鑰匙圈",
     shortName: "鑰匙圈",
+    fallbackPrice: 50,
     specifications: [
       { label: "主要材質", value: "壓克力" },
       { label: "鑰匙環材質", value: "鐵、不鏽鋼" },

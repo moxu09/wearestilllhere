@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SiteLoader from "./components/SiteLoader";
+import MerchandiseCartProvider from "./components/MerchandiseCartProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -79,7 +80,7 @@ export default function RootLayout({
       </head>
       <body>
         <SiteLoader />
-        {children}
+        <MerchandiseCartProvider>{children}</MerchandiseCartProvider>
       </body>
     </html>
   );

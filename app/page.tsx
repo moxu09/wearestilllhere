@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import ThanksWall from "./components/ThanksWall";
 import HomePlayers from "./components/HomePlayers";
 import MerchandiseDetailModal from "./components/MerchandiseDetailModal";
+import MerchandiseCart from "./components/MerchandiseCart";
 import { defaultSiteContent, type SiteContentItem } from "@/lib/siteContent";
 import {
   getMerchandiseProduct,
@@ -376,6 +377,8 @@ export default function HomePage() {
           onClose={() => setSelectedMerchandise(null)}
         />
       )}
+
+      <MerchandiseCart />
     </main>
   );
 }
