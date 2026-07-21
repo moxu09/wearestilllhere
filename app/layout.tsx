@@ -46,16 +46,37 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon-gold-v2.ico" },
       {
-        url: "/icon-gold-v2.png",
+        url: "/favicon-brand-16.png",
         type: "image/png",
-        sizes: "512x512",
+        sizes: "16x16",
+      },
+      {
+        url: "/favicon-brand-32.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+      {
+        url: "/favicon-brand-48.png",
+        type: "image/png",
+        sizes: "48x48",
+      },
+      {
+        url: "/favicon-brand-96.png",
+        type: "image/png",
+        sizes: "96x96",
+      },
+    ],
+    shortcut: [
+      {
+        url: "/favicon-brand-32.png",
+        type: "image/png",
+        sizes: "32x32",
       },
     ],
     apple: [
       {
-        url: "/apple-touch-icon-gold-v2.png",
+        url: "/apple-touch-icon-brand.png",
         sizes: "180x180",
         type: "image/png",
       },
