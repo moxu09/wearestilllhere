@@ -11,14 +11,58 @@ export default function MotionEffects() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
     const observed = new WeakSet<Element>();
+    let animationFrame = 0;
 
     root.classList.add("motion-enhanced");
+
+    const updateScrollState = () => {
+      animationFrame = 0;
+      const scrollTop = window.scrollY;
+      const scrollRange = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        1,
+      );
+
+      root.style.setProperty(
+        "--site-scroll-progress",
+        Math.min(scrollTop / scrollRange, 1).toFixed(4),
+      );
+      root.style.setProperty(
+        "--hero-scroll",
+        `${Math.min(scrollTop, window.innerHeight)}px`,
+      );
+      root.classList.toggle("site-scrolled", scrollTop > 28);
+
+      document.querySelectorAll(revealSelector).forEach((element) => {
+        if (element.getBoundingClientRect().top <= window.innerHeight * 0.92) {
+          element.classList.add("is-revealed");
+        }
+      });
+    };
+
+    const scheduleScrollUpdate = () => {
+      if (animationFrame) return;
+      animationFrame = window.requestAnimationFrame(updateScrollState);
+    };
+
+    updateScrollState();
+    window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
+    window.addEventListener("resize", scheduleScrollUpdate);
+
+    const clearScrollEffects = () => {
+      window.removeEventListener("scroll", scheduleScrollUpdate);
+      window.removeEventListener("resize", scheduleScrollUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      root.style.removeProperty("--site-scroll-progress");
+      root.style.removeProperty("--hero-scroll");
+      root.classList.remove("motion-enhanced", "site-scrolled");
+    };
 
     if (reducedMotion || !("IntersectionObserver" in window)) {
       document.querySelectorAll(revealSelector).forEach((element) => {
         element.classList.add("is-revealed");
       });
-      return () => root.classList.remove("motion-enhanced");
+      return clearScrollEffects;
     }
 
     const intersectionObserver = new IntersectionObserver(
@@ -63,7 +107,7 @@ export default function MotionEffects() {
     return () => {
       mutationObserver.disconnect();
       intersectionObserver.disconnect();
-      root.classList.remove("motion-enhanced");
+      clearScrollEffects();
     };
   }, []);
 
