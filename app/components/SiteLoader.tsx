@@ -26,7 +26,7 @@ export default function SiteLoader() {
       <div className="absolute inset-x-0 bottom-0 h-px bg-[#5bd6d0]" />
       <div className="flex flex-col items-center px-6 text-center">
         <Image
-          src="/brand-logo.jpg"
+          src="/brand-logo.png"
           alt="深夜不關燈"
           width={220}
           height={156}
