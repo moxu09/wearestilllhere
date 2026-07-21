@@ -337,6 +337,14 @@ export default function HomePage() {
               </article>
             ))}
           </div>
+          {activity?.responsibility_note && (
+            <div data-reveal className="mt-8 border-l-2 border-[#e7ba67]/55 bg-[#e7ba67]/[0.06] px-5 py-4 sm:px-6">
+              <p className="text-xs font-bold text-[#e7ba67]">權責說明</p>
+              <p className="mt-2 whitespace-pre-line text-xs leading-6 text-white/45">
+                {activity.responsibility_note}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

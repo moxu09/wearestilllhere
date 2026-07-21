@@ -11,6 +11,7 @@ const editableFields = [
   "title",
   "subtitle",
   "description",
+  "responsibility_note",
   "image_url",
   "link_url",
   "price",
@@ -36,7 +37,7 @@ function cleanPayload(input: unknown, partial = false) {
     output.title = title;
   }
 
-  for (const field of ["subtitle", "description", "image_url", "link_url"] as const) {
+  for (const field of ["subtitle", "description", "responsibility_note", "image_url", "link_url"] as const) {
     if (field in output) output[field] = String(output[field] || "").trim() || null;
   }
   if ("price" in output) {

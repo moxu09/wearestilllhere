@@ -26,7 +26,7 @@ const typeDetails: Record<
   SiteContentType,
   { label: string; description: string; icon: typeof Sparkles }
 > = {
-  activity: { label: "活動內容", description: "首頁活動標題與活動說明", icon: Sparkles },
+  activity: { label: "活動內容", description: "首頁活動、抽獎辦法與權責說明", icon: Sparkles },
   prize: { label: "獎品內容", description: "活動獎品名稱與圖片", icon: Trophy },
   merchandise: { label: "周邊商品", description: "販售商品、價格與購買連結", icon: Package },
   contact: { label: "聯絡方式", description: "社群、客服信箱與其他聯絡管道", icon: Mail },
@@ -38,6 +38,7 @@ type FormState = {
   title: string;
   subtitle: string;
   description: string;
+  responsibility_note: string;
   image_url: string;
   link_url: string;
   price: string;
@@ -52,6 +53,7 @@ function emptyForm(type: SiteContentType): FormState {
     title: "",
     subtitle: "",
     description: "",
+    responsibility_note: "",
     image_url: "",
     link_url: "",
     price: "",
@@ -146,6 +148,7 @@ export default function SiteContentAdminPage() {
       title: item.title,
       subtitle: item.subtitle || "",
       description: item.description || "",
+      responsibility_note: item.responsibility_note || "",
       image_url: item.image_url || "",
       link_url: item.link_url || "",
       price: item.price === null ? "" : String(item.price),
@@ -248,6 +251,18 @@ export default function SiteContentAdminPage() {
               <Field label={activeType === "merchandise" ? "商品名稱 *" : "標題／名稱 *"} value={form.title} onChange={(value) => setForm((current) => ({ ...current, title: value }))} />
               <Field label="副標題" value={form.subtitle} onChange={(value) => setForm((current) => ({ ...current, subtitle: value }))} placeholder={activeType === "contact" ? "例如：金流問題專用" : undefined} />
               <label className="grid gap-2 text-sm font-semibold text-white/70">內容說明<textarea value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} rows={4} className="rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-white outline-none focus:border-[#e7ba67]" /></label>
+              {activeType === "activity" && (
+                <label className="grid gap-2 text-sm font-semibold text-white/70">
+                  權責說明
+                  <textarea
+                    value={form.responsibility_note}
+                    onChange={(event) => setForm((current) => ({ ...current, responsibility_note: event.target.value }))}
+                    rows={4}
+                    placeholder="例如：主辦單位保留活動內容調整、變更及最終解釋之權利。"
+                    className="rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-white outline-none placeholder:text-white/20 focus:border-[#e7ba67]"
+                  />
+                </label>
+              )}
               {(activeType === "prize" || activeType === "merchandise" || activeType === "activity") && <Field label="圖片網址" value={form.image_url} onChange={(value) => setForm((current) => ({ ...current, image_url: value }))} placeholder="https://... 或 /images/..." />}
               {(activeType === "merchandise" || activeType === "contact" || activeType === "activity") && <Field label={activeType === "contact" ? "聯絡連結／mailto 信箱" : "連結網址"} value={form.link_url} onChange={(value) => setForm((current) => ({ ...current, link_url: value }))} placeholder={activeType === "contact" ? "mailto:name@example.com 或 https://..." : "https://..."} />}
               <div className="grid gap-4 sm:grid-cols-2">
@@ -264,7 +279,7 @@ export default function SiteContentAdminPage() {
 
           <section>
             <div className="flex items-end justify-between gap-4"><div><p className="text-xs font-bold text-[#e7ba67]">目前內容</p><h2 className="mt-2 text-2xl font-bold">{typeDetails[activeType].label}</h2></div><span className="text-xs text-white/35">共 {visibleItems.length} 筆</span></div>
-            {loading ? <div className="mt-6 grid min-h-48 place-items-center rounded-2xl border border-white/10"><Loader2 className="h-6 w-6 animate-spin text-[#e7ba67]" /></div> : visibleItems.length === 0 ? <div className="mt-6 rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-white/40">目前沒有內容，請從左側新增第一筆。</div> : <div className="mt-6 grid gap-4">{visibleItems.map((item) => <article key={item.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-5"><div className="flex gap-4">{item.image_url && <div className="h-20 w-24 shrink-0 rounded-lg bg-cover bg-center bg-white/10" style={{ backgroundImage: `url(${JSON.stringify(item.image_url).slice(1, -1)})` }} />}<div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-bold">{item.title}</h3><span className={`rounded-full px-2 py-1 text-[10px] font-bold ${item.is_active ? "bg-emerald-500/15 text-emerald-300" : "bg-white/10 text-white/35"}`}>{item.is_active ? "顯示中" : "已隱藏"}</span></div>{item.subtitle && <p className="mt-2 text-xs text-[#5bd6d0]">{item.subtitle}</p>}{item.description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-white/45">{item.description}</p>}{item.price !== null && <p className="mt-3 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>}<p className="mt-3 text-[11px] text-white/25">排序 {item.sort_order}</p></div></div><div className="mt-5 flex justify-end gap-2 border-t border-white/10 pt-4"><button type="button" onClick={() => editItem(item)} className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-xs font-bold hover:border-white/40"><Edit3 className="h-3.5 w-3.5" /> 編輯</button><button type="button" onClick={() => void deleteItem(item)} disabled={deletingId === item.id} className="inline-flex items-center gap-2 rounded-lg border border-red-400/25 px-4 py-2 text-xs font-bold text-red-300 hover:bg-red-500/10 disabled:opacity-50">{deletingId === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />} 刪除</button></div></article>)}</div>}
+            {loading ? <div className="mt-6 grid min-h-48 place-items-center rounded-2xl border border-white/10"><Loader2 className="h-6 w-6 animate-spin text-[#e7ba67]" /></div> : visibleItems.length === 0 ? <div className="mt-6 rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-white/40">目前沒有內容，請從左側新增第一筆。</div> : <div className="mt-6 grid gap-4">{visibleItems.map((item) => <article key={item.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-5"><div className="flex gap-4">{item.image_url && <div className="h-20 w-24 shrink-0 rounded-lg bg-cover bg-center bg-white/10" style={{ backgroundImage: `url(${JSON.stringify(item.image_url).slice(1, -1)})` }} />}<div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-bold">{item.title}</h3><span className={`rounded-full px-2 py-1 text-[10px] font-bold ${item.is_active ? "bg-emerald-500/15 text-emerald-300" : "bg-white/10 text-white/35"}`}>{item.is_active ? "顯示中" : "已隱藏"}</span></div>{item.subtitle && <p className="mt-2 text-xs text-[#5bd6d0]">{item.subtitle}</p>}{item.description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-white/45">{item.description}</p>}{activeType === "activity" && item.responsibility_note && <p className="mt-3 line-clamp-3 border-l-2 border-[#e7ba67]/45 pl-3 text-xs leading-5 text-white/40"><span className="font-bold text-[#e7ba67]">權責說明：</span>{item.responsibility_note}</p>}{item.price !== null && <p className="mt-3 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>}<p className="mt-3 text-[11px] text-white/25">排序 {item.sort_order}</p></div></div><div className="mt-5 flex justify-end gap-2 border-t border-white/10 pt-4"><button type="button" onClick={() => editItem(item)} className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-xs font-bold hover:border-white/40"><Edit3 className="h-3.5 w-3.5" /> 編輯</button><button type="button" onClick={() => void deleteItem(item)} disabled={deletingId === item.id} className="inline-flex items-center gap-2 rounded-lg border border-red-400/25 px-4 py-2 text-xs font-bold text-red-300 hover:bg-red-500/10 disabled:opacity-50">{deletingId === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />} 刪除</button></div></article>)}</div>}
           </section>
         </div>
 
