@@ -135,7 +135,7 @@ export default function HomePage() {
             />
             <div className="min-w-0">
               <p className="truncate text-sm font-bold">深夜不關燈</p>
-              <p className="truncate text-[10px] uppercase text-white/40">We are still here</p>
+              <p className="truncate text-[10px] text-white/40">We Are Still Here</p>
             </div>
           </a>
           <nav className="hidden items-center gap-7 text-xs font-bold text-white/55 md:flex">
@@ -394,8 +394,8 @@ export default function HomePage() {
 
       <footer className="border-t border-white/10 bg-[#090a0c] px-5 py-10 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-bold text-white/70">深夜不關燈 · WE ARE STILL HERE</p>
-          <p>© 2026 深夜不關燈 All Rights Reserved.</p>
+          <p className="font-bold text-white/70">深夜不關燈 · We Are Still Here</p>
+          <p>© 2026 深夜不關燈 · We Are Still Here</p>
         </div>
       </footer>
 

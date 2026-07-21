@@ -35,7 +35,7 @@ export default function SiteLoader() {
         />
         <p className="mt-6 text-lg font-black">深夜不關燈</p>
         <p className="mt-2 text-[10px] font-bold uppercase text-[#e7ba67]">
-          We are still here
+          We Are Still Here
         </p>
         <div className="mt-8 h-px w-40 overflow-hidden bg-white/10">
           <div className="loader-line h-full w-1/2 bg-[#e7ba67]" />
