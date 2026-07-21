@@ -110,7 +110,7 @@ export default function HomePage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <a href="#home" className="flex min-w-0 items-center gap-3">
             <Image
-              src="/brand-logo.png"
+              src="/brand-logo-gold-v2.png"
               alt="深夜不關燈"
               width={68}
               height={48}

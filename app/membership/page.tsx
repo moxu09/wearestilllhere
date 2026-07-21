@@ -325,7 +325,7 @@ export default function MembershipPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/icon.png"
+              src="/icon-gold-v2.png"
               alt="深夜不關燈"
               width={44}
               height={44}
