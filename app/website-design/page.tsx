@@ -5,13 +5,21 @@ import { ArrowLeft } from "lucide-react";
 import WebsiteDesignForm from "./WebsiteDesignForm";
 
 export const metadata: Metadata = {
-  title: "網站設計委託｜深夜不關燈",
+  title: "網站設計委託",
   description: "輸入網站名稱、風格、色調與聯絡方式，洽談網站設計需求。",
+  alternates: {
+    canonical: "https://design.wearestilllhere.com",
+  },
+  openGraph: {
+    title: "網站設計委託｜深夜不關燈",
+    description: "輸入網站名稱、風格、色調與聯絡方式，洽談網站設計需求。",
+    url: "https://design.wearestilllhere.com",
+  },
 };
 
 export default function WebsiteDesignPage() {
   return (
-    <main className="home-soft-font min-h-screen bg-[#0d0e10] text-white">
+    <main className="public-page-enter home-soft-font min-h-screen bg-[#0d0e10] text-white">
       <header className="border-b border-white/10 bg-[#0d0e10]/95">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <Link href="https://www.wearestilllhere.com" className="flex items-center gap-3">
@@ -35,7 +43,7 @@ export default function WebsiteDesignPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
+      <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
         <WebsiteDesignForm />
       </div>
     </main>

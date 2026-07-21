@@ -31,9 +31,9 @@ export default function ThanksWall() {
   }, []);
 
   return (
-    <section className="border-t border-white/10 bg-[#090a0c] px-5 py-20 sm:px-8 lg:px-12">
+    <section className="site-section border-t border-white/10 bg-[#090a0c] px-5 py-20 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 border-b border-white/10 pb-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+        <div data-reveal className="grid gap-8 border-b border-white/10 pb-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <p className="text-xs font-semibold uppercase text-[#e7ba67]">
               Hall of gratitude · 1505307437597724762
@@ -67,7 +67,8 @@ export default function ThanksWall() {
             {members.map((member) => (
               <div
                 key={member.id}
-                className="group flex min-w-0 items-center gap-3 border-b border-r border-white/10 p-4 transition-colors hover:bg-white/[0.04] sm:p-5"
+                data-reveal
+                className="interactive-card group flex min-w-0 items-center gap-3 border-b border-r border-white/10 p-4 hover:bg-white/[0.04] sm:p-5"
               >
                 <Image
                   src={member.avatarUrl}

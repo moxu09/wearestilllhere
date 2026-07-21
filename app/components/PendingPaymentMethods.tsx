@@ -6,7 +6,8 @@ export default function PendingPaymentMethods() {
       {paymentMethods.map((method) => (
         <div
           key={method}
-          className="rounded-md border border-white/10 bg-[#0d0e10] p-3"
+          data-reveal="scale"
+          className="interactive-card rounded-md border border-white/10 bg-[#0d0e10] p-3"
         >
           <button
             type="button"

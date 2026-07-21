@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://wearestilllhere.com/sitemap.xml",
+    sitemap: "https://www.wearestilllhere.com/sitemap.xml",
   };
 }

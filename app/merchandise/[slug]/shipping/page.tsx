@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import {
@@ -14,6 +15,25 @@ export function generateStaticParams() {
   return merchandiseSlugs.map((slug) => ({ slug }));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = getMerchandiseProduct(slug);
+
+  if (!product) return {};
+
+  return {
+    title: `${product.shortName}貨運資料`,
+    description: `填寫${product.name}的商品數量、取貨門市與聯絡資料。`,
+    alternates: {
+      canonical: `/merchandise/${product.slug}/shipping`,
+    },
+  };
+}
+
 export default async function MerchandiseShippingPage({
   params,
 }: {
@@ -25,7 +45,7 @@ export default async function MerchandiseShippingPage({
   if (!product) notFound();
 
   return (
-    <main className="home-soft-font min-h-screen bg-[#0d0e10] text-white">
+    <main className="public-page-enter home-soft-font min-h-screen bg-[#0d0e10] text-white">
       <header className="border-b border-white/10 bg-[#0d0e10]/95">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <Link href="/" className="flex items-center gap-3">
@@ -49,7 +69,7 @@ export default async function MerchandiseShippingPage({
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
+      <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
         <ShippingForm product={product} />
       </div>
     </main>

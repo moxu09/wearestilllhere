@@ -23,7 +23,7 @@ export default function WebsiteDesignForm() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-      <aside className="rounded-md border border-white/10 bg-[#15171a] p-6 sm:p-8 lg:sticky lg:top-8">
+      <aside data-reveal="left" className="interactive-card rounded-md border border-white/10 bg-[#15171a] p-6 sm:p-8 lg:sticky lg:top-8">
         <p className="text-xs font-bold uppercase text-[#5bd6d0]">
           Website commission
         </p>
@@ -42,7 +42,7 @@ export default function WebsiteDesignForm() {
       </aside>
 
       <div className="space-y-8">
-        <section className="rounded-md border border-white/10 bg-[#15171a] p-6 sm:p-8">
+        <section data-reveal="right" className="interactive-card rounded-md border border-white/10 bg-[#15171a] p-6 sm:p-8">
           <div className="flex items-center gap-3">
             <MonitorSmartphone className="h-5 w-5 text-[#e7ba67]" />
             <div>
@@ -120,7 +120,7 @@ export default function WebsiteDesignForm() {
           </form>
         </section>
 
-        <section className="rounded-md border border-white/10 bg-[#15171a] p-6 text-center sm:p-8">
+        <section data-reveal="right" data-reveal-delay="1" className="interactive-card rounded-md border border-white/10 bg-[#15171a] p-6 text-center sm:p-8">
           <CreditCard className="mx-auto h-7 w-7 text-[#e7ba67]" />
           <h2 className="mt-4 text-xl font-bold text-white">選擇付款方式</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/45">

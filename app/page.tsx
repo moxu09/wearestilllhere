@@ -118,7 +118,7 @@ export default function HomePage() {
   const contacts = siteContent.filter((item) => item.content_type === "contact");
 
   return (
-    <main className="home-soft-font min-h-screen overflow-hidden bg-[#0d0e10] text-white">
+    <main className="public-page-enter home-soft-font min-h-screen overflow-hidden bg-[#0d0e10] text-white">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0d0e10]/90 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <a href="#home" className="flex min-w-0 items-center gap-3">
@@ -136,11 +136,11 @@ export default function HomePage() {
             </div>
           </a>
           <nav className="hidden items-center gap-7 text-xs font-bold text-white/55 md:flex">
-            <a href="#services" className="hover:text-white">服務</a>
-            <a href="#lottery" className="hover:text-white">活動</a>
-            <a href="#contact" className="hover:text-white">聯絡</a>
-            <a href={flightSearchUrl} className="text-[#5bd6d0] hover:text-[#8ce8e3]">航空外站票查詢</a>
-            <a href="/membership" className="text-[#e7ba67] hover:text-[#f6d792]">會員登入</a>
+            <a href="#services" className="nav-link hover:text-white">服務</a>
+            <a href="#lottery" className="nav-link hover:text-white">活動</a>
+            <a href="#contact" className="nav-link hover:text-white">聯絡</a>
+            <a href={flightSearchUrl} className="nav-link text-[#5bd6d0] hover:text-[#8ce8e3]">航空外站票查詢</a>
+            <a href="/membership" className="nav-link text-[#e7ba67] hover:text-[#f6d792]">會員登入</a>
           </nav>
           <a href={discordUrl} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-md bg-[#e7ba67] px-4 text-xs font-bold text-[#111214] hover:bg-[#f2cf8b]">
             Discord <ExternalLink className="h-3.5 w-3.5" />
@@ -163,16 +163,16 @@ export default function HomePage() {
             <p className="inline-flex items-center gap-2 border-l-2 border-[#e7ba67] pl-3 text-xs font-bold uppercase text-[#f2cf8b]">
               <Clock3 className="h-4 w-4" /> Open through the night
             </p>
-            <h1 className="home-title-font mt-6 text-5xl leading-[1.12] sm:text-7xl lg:text-8xl">
+            <h1 className="hero-rise home-title-font mt-6 text-5xl leading-[1.12] sm:text-7xl lg:text-8xl">
               深夜不關燈
             </h1>
-            <p className="mt-5 max-w-xl text-lg font-semibold text-white/90 sm:text-2xl">
+            <p className="hero-rise hero-rise-delay-1 mt-5 max-w-xl text-lg font-semibold text-white/90 sm:text-2xl">
               今晚不只在線，也在你身邊。
             </p>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
+            <p className="hero-rise hero-rise-delay-1 mt-5 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
               遊戲、聊天、打賞與星夜聯盟會籍，讓每一個晚睡的理由，都有更好的陪伴方式。
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="hero-rise hero-rise-delay-2 mt-8 flex flex-wrap gap-3">
               <a href="#services" className="inline-flex h-12 items-center gap-2 rounded-md bg-[#e7ba67] px-6 text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]">
                 探索服務 <ArrowRight className="h-4 w-4" />
               </a>
@@ -200,10 +200,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="services" className="px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+      <section id="services" className="site-section px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr]">
-            <div className="lg:sticky lg:top-28 lg:self-start">
+            <div data-reveal="left" className="lg:sticky lg:top-28 lg:self-start">
               <p className="text-xs font-bold uppercase text-[#5bd6d0]">Service directory</p>
               <h2 className="home-title-font mt-4 text-4xl sm:text-5xl">想怎麼過今晚？</h2>
               <p className="mt-5 max-w-md text-sm leading-7 text-white/55">
@@ -211,7 +211,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div>
+            <div data-reveal="right">
               <PriceCarousel
                 activeSlide={activeSlide}
                 isPlaying={isPlaying}
@@ -226,9 +226,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="merchandise" className="border-t border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-24">
+      <section id="merchandise" className="site-section border-t border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div data-reveal className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-bold uppercase text-[#5bd6d0]">Official merchandise</p>
               <h2 className="home-title-font mt-4 text-4xl sm:text-5xl">把深夜的陪伴帶回家。</h2>
@@ -239,13 +239,13 @@ export default function HomePage() {
 
           {merchandise.length ? (
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {merchandise.map((item) => {
+              {merchandise.map((item, index) => {
                 const slug = getMerchandiseSlugFromTitle(item.title);
                 const product = slug ? getMerchandiseProduct(slug) : null;
                 const websiteDesign = isWebsiteDesignTitle(item.title);
 
                 return (
-                  <article key={item.id} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
+                  <article key={item.id} data-reveal="scale" data-reveal-delay={String(Math.min(index + 1, 3))} className="interactive-card overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
                     <ContentImage src={item.image_url} alt={item.title} aspectClass="aspect-[4/3]" />
                     <div className="p-6">
                       {item.subtitle && <p className="text-xs font-bold text-[#5bd6d0]">{item.subtitle}</p>}
@@ -293,9 +293,9 @@ export default function HomePage() {
 
       <HomePlayers />
 
-      <section id="lottery" className="border-y border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+      <section id="lottery" className="site-section border-y border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end">
+          <div data-reveal className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end">
             <div>
               <Trophy className="h-7 w-7 text-[#e7ba67]" />
               <p className="mt-6 text-xs font-bold uppercase text-[#ff806f]">{activity?.subtitle || "Opening lottery"}</p>
@@ -310,8 +310,8 @@ export default function HomePage() {
               ["活動期間", "6/18 - 8/31", "完成消費即可累積抽獎券"],
               ["抽獎規則", "每千元 1 張", "可依消費金額持續累加"],
               ["開獎日期", "9/10", "中獎與領獎方式依官方公告"],
-            ].map(([label, value, desc]) => (
-              <div key={label} className="border-b border-r border-white/10 p-6 sm:p-8">
+            ].map(([label, value, desc], index) => (
+              <div key={label} data-reveal data-reveal-delay={String(Math.min(index + 1, 3))} className="interactive-card border-b border-r border-white/10 p-6 sm:p-8">
                 <p className="text-xs font-bold text-[#e7ba67]">{label}</p>
                 <p className="mt-5 text-3xl font-bold">{value}</p>
                 <p className="mt-3 text-sm leading-6 text-white/45">{desc}</p>
@@ -320,7 +320,7 @@ export default function HomePage() {
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {prizes.map((prize, index) => (
-              <article key={prize.id} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
+              <article key={prize.id} data-reveal="scale" data-reveal-delay={String(Math.min(index + 1, 3))} className="interactive-card overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
                 <div className="relative">
                   <ContentImage src={prize.image_url} alt={prize.title} aspectClass="aspect-[16/10]" light />
                   <span className="absolute left-3 top-3 rounded-md bg-[#0d0e10]/85 px-2.5 py-1.5 text-xs font-bold text-[#5bd6d0] backdrop-blur">0{index + 1}</span>
@@ -335,17 +335,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+      <section className="site-section px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <div className="grid border-l border-t border-white/10 md:grid-cols-3">
             {[
               [Zap, "快速回覆", "客服協助釐清需求，快速安排適合的陪陪。", "#5bd6d0"],
               [ShieldCheck, "透明流程", "訂單、錢包與會員資格都有清楚的查詢入口。", "#e7ba67"],
               [Headphones, "深夜在線", "遊戲、聊天與更多服務，讓晚睡不必只剩自己。", "#ff806f"],
-            ].map(([Icon, title, desc, color]) => {
+            ].map(([Icon, title, desc, color], index) => {
               const FeatureIcon = Icon as typeof Zap;
               return (
-                <div key={title as string} className="min-h-64 border-b border-r border-white/10 p-7 sm:p-8">
+                <div key={title as string} data-reveal data-reveal-delay={String(index + 1)} className="interactive-card min-h-64 border-b border-r border-white/10 p-7 sm:p-8">
                   <FeatureIcon className="h-6 w-6" style={{ color: color as string }} />
                   <h3 className="mt-20 text-2xl font-bold">{title as string}</h3>
                   <p className="mt-4 text-sm leading-7 text-white/50">{desc as string}</p>
@@ -356,8 +356,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="contact" className="bg-[#e7ba67] px-5 py-20 text-[#111214] sm:px-8 lg:px-12 lg:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+      <section id="contact" className="site-section bg-[#e7ba67] px-5 py-20 text-[#111214] sm:px-8 lg:px-12 lg:py-24">
+        <div data-reveal className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
             <p className="text-xs font-bold uppercase">The light is on</p>
             <h2 className="home-title-font mt-4 max-w-3xl text-4xl leading-tight sm:text-6xl">有想法就來，我們替你把今晚安排好。</h2>
@@ -431,7 +431,7 @@ function PriceCarousel({ activeSlide, isPlaying, onSelect, onTogglePlay }: { act
           alt={`${slide.title}價目表`}
           fill
           sizes="(max-width: 1024px) 100vw, 1152px"
-          className="object-contain"
+          className="price-slide-enter object-contain"
         />
       </div>
 

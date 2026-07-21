@@ -54,10 +54,10 @@ export default function HomePlayers() {
   return (
     <section
       id="players"
-      className="border-y border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-28"
+      className="site-section border-y border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-28"
     >
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+        <div data-reveal className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
           <div>
             <p className="flex items-center gap-2 text-xs font-semibold uppercase text-[#5bd6d0]">
               <Sparkles className="h-4 w-4" /> Meet the players
@@ -105,7 +105,8 @@ export default function HomePlayers() {
             {visiblePlayers.slice(0, visibleCount).map((player) => (
               <article
                 key={`${player.app_key}-${player.discord_id}`}
-                className="group overflow-hidden rounded-lg border border-white/10 bg-[#0d0e10] transition hover:-translate-y-1 hover:border-white/25"
+                data-reveal="scale"
+                className="interactive-card group overflow-hidden rounded-lg border border-white/10 bg-[#0d0e10]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-[#22262a]">
                   <div className="absolute inset-0 flex items-center justify-center">
