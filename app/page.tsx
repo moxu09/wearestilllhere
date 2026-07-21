@@ -21,7 +21,13 @@ import {
 import { useEffect, useState } from "react";
 import ThanksWall from "./components/ThanksWall";
 import HomePlayers from "./components/HomePlayers";
+import MerchandiseDetailModal from "./components/MerchandiseDetailModal";
 import { defaultSiteContent, type SiteContentItem } from "@/lib/siteContent";
+import {
+  getMerchandiseProduct,
+  getMerchandiseSlugFromTitle,
+  type MerchandiseProduct,
+} from "@/lib/merchandiseCatalog";
 
 const discordUrl = "https://discord.gg/tXNnXWMHbJ";
 const flightSearchUrl = "https://flights.wearestilllhere.com";
@@ -73,6 +79,10 @@ export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [siteContent, setSiteContent] = useState<SiteContentItem[]>(defaultSiteContent);
+  const [selectedMerchandise, setSelectedMerchandise] = useState<{
+    item: SiteContentItem;
+    product: MerchandiseProduct;
+  } | null>(null);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -226,20 +236,35 @@ export default function HomePage() {
 
           {merchandise.length ? (
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {merchandise.map((item) => (
-                <article key={item.id} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
-                  <ContentImage src={item.image_url} alt={item.title} aspectClass="aspect-[4/3]" />
-                  <div className="p-6">
-                    {item.subtitle && <p className="text-xs font-bold text-[#5bd6d0]">{item.subtitle}</p>}
-                    <div className="mt-2 flex items-start justify-between gap-4">
-                      <h3 className="text-xl font-bold">{item.title}</h3>
-                      {item.price !== null && <p className="shrink-0 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>}
+              {merchandise.map((item) => {
+                const slug = getMerchandiseSlugFromTitle(item.title);
+                const product = slug ? getMerchandiseProduct(slug) : null;
+
+                return (
+                  <article key={item.id} className="overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
+                    <ContentImage src={item.image_url} alt={item.title} aspectClass="aspect-[4/3]" />
+                    <div className="p-6">
+                      {item.subtitle && <p className="text-xs font-bold text-[#5bd6d0]">{item.subtitle}</p>}
+                      <div className="mt-2 flex items-start justify-between gap-4">
+                        <h3 className="text-xl font-bold">{item.title}</h3>
+                        {item.price !== null && <p className="shrink-0 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>}
+                      </div>
+                      {item.description && <p className="mt-4 text-sm leading-7 text-white/50">{item.description}</p>}
+                      {product ? (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedMerchandise({ item, product })}
+                          className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#e7ba67] text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]"
+                        >
+                          查看／購買 <ArrowRight className="h-4 w-4" />
+                        </button>
+                      ) : item.link_url ? (
+                        <a href={item.link_url} target="_blank" rel="noreferrer" className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#e7ba67] text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]">查看／購買 <ExternalLink className="h-4 w-4" /></a>
+                      ) : null}
                     </div>
-                    {item.description && <p className="mt-4 text-sm leading-7 text-white/50">{item.description}</p>}
-                    {item.link_url && <a href={item.link_url} target="_blank" rel="noreferrer" className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#e7ba67] text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]">查看／購買 <ExternalLink className="h-4 w-4" /></a>}
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           ) : (
             <div className="mt-10 flex min-h-44 items-center justify-center rounded-md border border-dashed border-white/15 bg-white/[0.02] px-6 text-center">
@@ -343,6 +368,14 @@ export default function HomePage() {
           <p>© 2026 深夜不關燈 All Rights Reserved.</p>
         </div>
       </footer>
+
+      {selectedMerchandise && (
+        <MerchandiseDetailModal
+          item={selectedMerchandise.item}
+          product={selectedMerchandise.product}
+          onClose={() => setSelectedMerchandise(null)}
+        />
+      )}
     </main>
   );
 }
