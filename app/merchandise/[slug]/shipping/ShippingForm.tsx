@@ -29,6 +29,7 @@ type ShippingProvider = "7-ELEVEN" | "全家";
 
 const inputClassName =
   "h-12 w-full rounded-md border border-white/15 bg-[#0d0e10] px-4 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#e7ba67]";
+const paymentMethods = ["LINE Pay", "街口支付", "PAYUNI", "全支付"];
 
 export default function ShippingForm({ product }: Props) {
   const {
@@ -266,7 +267,7 @@ export default function ShippingForm({ product }: Props) {
 
         <section className="rounded-md border border-white/10 bg-[#15171a] p-6 text-center sm:p-8">
           <CreditCard className="mx-auto h-7 w-7 text-[#e7ba67]" />
-          <h2 className="mt-4 text-xl font-bold text-white">LINE Pay 付款</h2>
+          <h2 className="mt-4 text-xl font-bold text-white">選擇付款方式</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/45">
             貨運資料會在付款功能正式開放後，與付款資訊一併確認送出。
           </p>
@@ -292,17 +293,26 @@ export default function ShippingForm({ product }: Props) {
                 : `再消費 ${money(490 - cartSubtotal)} 即可免運`}
             </p>
           )}
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className="mt-6 inline-flex h-12 w-full cursor-not-allowed items-center justify-center rounded-md bg-white/10 px-5 text-sm font-bold text-white/30"
-          >
-            LINE Pay 付款
-          </button>
-          <p className="mt-3 text-sm font-bold text-[#e7ba67]">
-            LINE Pay 串接申請中，成功後開放
-          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {paymentMethods.map((method) => (
+              <div
+                key={method}
+                className="rounded-md border border-white/10 bg-[#0d0e10] p-3"
+              >
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  className="inline-flex h-12 w-full cursor-not-allowed items-center justify-center rounded-md bg-white/10 px-4 text-sm font-bold text-white/30"
+                >
+                  {method} 付款
+                </button>
+                <p className="mt-2 text-xs font-bold text-[#e7ba67]">
+                  {method} 申請中，待開放
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     </div>
