@@ -126,27 +126,6 @@ a {
   }
 }
 
-@keyframes scroll-cue {
-  0% {
-    opacity: 0;
-    transform: scaleY(0);
-    transform-origin: top;
-  }
-
-  35% {
-    opacity: 1;
-    transform: scaleY(1);
-    transform-origin: top;
-  }
-
-  70%,
-  100% {
-    opacity: 0;
-    transform: scaleY(0);
-    transform-origin: bottom;
-  }
-}
-
 @keyframes strip-sheen {
   from {
     transform: translateX(-130%) skewX(-18deg);
@@ -285,29 +264,6 @@ html.site-scrolled .home-header-logo {
 .hero-title {
   text-wrap: balance;
   text-shadow: 0 16px 60px rgba(0, 0, 0, 0.5);
-}
-
-.hero-scroll-cue {
-  position: absolute;
-  z-index: 2;
-  bottom: 2.15rem;
-  left: max(1.25rem, calc((100vw - 80rem) / 2 + 3rem));
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: rgba(255, 255, 255, 0.42);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  writing-mode: vertical-rl;
-}
-
-.hero-scroll-cue::after {
-  width: 1px;
-  height: 3rem;
-  content: "";
-  background: linear-gradient(180deg, #e7ba67, transparent);
-  animation: scroll-cue 2.2s ease-in-out infinite;
 }
 
 .brand-strip {

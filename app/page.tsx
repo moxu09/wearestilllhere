@@ -190,7 +190,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="hero-scroll-cue hidden md:flex" aria-hidden="true">SCROLL TO EXPLORE</div>
         <div className="absolute bottom-0 right-0 hidden w-[34%] border-l border-t border-white/15 bg-[#0d0e10]/85 p-6 backdrop-blur md:block">
           <div className="grid grid-cols-3 divide-x divide-white/10 text-center">
             {["全年無休", "專人安排", "會員連動"].map((item) => <p key={item} className="text-xs font-bold text-white/65">{item}</p>)}
