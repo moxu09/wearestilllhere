@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
+import { ArrowRight, Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import { useMerchandiseCart } from "./MerchandiseCartProvider";
 
 function money(value: number) {
@@ -144,6 +145,15 @@ export default function MerchandiseCart() {
                 ? "已達滿 NT$ 490 免運門檻"
                 : `再消費 ${money(490 - subtotal)} 即可免運`}
             </p>
+
+            <Link
+              href="/merchandise/checkout"
+              onClick={() => setOpen(false)}
+              className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-[#e7ba67] px-5 text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]"
+            >
+              前往結帳
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       )}
