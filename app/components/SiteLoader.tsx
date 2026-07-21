@@ -31,7 +31,7 @@ export default function SiteLoader() {
           width={220}
           height={156}
           priority
-          className="h-auto w-52 rounded-lg border border-white/15 object-contain"
+          className="h-auto w-52 object-contain"
         />
         <p className="mt-6 text-lg font-black">深夜不關燈</p>
         <p className="mt-2 text-[10px] font-bold uppercase text-[#e7ba67]">
