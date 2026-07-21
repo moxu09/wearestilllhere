@@ -26,11 +26,12 @@ export default function SiteLoader() {
       <div className="absolute inset-x-0 bottom-0 h-px bg-[#5bd6d0]" />
       <div className="flex flex-col items-center px-6 text-center">
         <Image
-          src="/icon.png"
-          alt=""
-          width={64}
-          height={64}
-          className="h-16 w-16 rounded-md border border-white/15 object-cover"
+          src="/brand-logo.jpg"
+          alt="深夜不關燈"
+          width={220}
+          height={156}
+          priority
+          className="h-auto w-52 rounded-lg border border-white/15 object-contain"
         />
         <p className="mt-6 text-lg font-black">深夜不關燈</p>
         <p className="mt-2 text-[10px] font-bold uppercase text-[#e7ba67]">

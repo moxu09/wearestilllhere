@@ -109,7 +109,14 @@ export default function HomePage() {
       <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0d0e10]/90 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <a href="#home" className="flex min-w-0 items-center gap-3">
-            <Image src="/icon.png" alt="" width={36} height={36} className="h-9 w-9 rounded-md object-cover" />
+            <Image
+              src="/brand-logo.jpg"
+              alt="深夜不關燈"
+              width={68}
+              height={48}
+              priority
+              className="h-11 w-auto rounded-md object-contain"
+            />
             <div className="min-w-0">
               <p className="truncate text-sm font-bold">深夜不關燈</p>
               <p className="truncate text-[10px] uppercase text-white/40">We are still here</p>
