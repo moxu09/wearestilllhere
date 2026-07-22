@@ -153,7 +153,7 @@ export default function HomePage() {
               <p className="truncate text-[10px] text-white/40">We Are Still Here</p>
             </div>
           </a>
-          <nav aria-label="主要導覽" className="ml-auto hidden items-center gap-4 whitespace-nowrap text-[11px] font-bold text-white/55 xl:flex 2xl:gap-6 2xl:text-xs">
+          <nav aria-label="主要導覽" className="ml-auto hidden items-center gap-3 whitespace-nowrap text-[10px] font-bold text-white/55 lg:flex xl:gap-4 xl:text-[11px] 2xl:gap-6 2xl:text-xs">
             {headerNavItems.map((item) => (
               <a key={item.href} href={item.href} className="nav-link hover:text-white">
                 {item.label}
@@ -161,7 +161,7 @@ export default function HomePage() {
             ))}
             <a href="/membership" className="nav-link text-[#e7ba67] hover:text-[#f6d792]">會員登入</a>
           </nav>
-          <a href={discordUrl} target="_blank" rel="noreferrer" className="premium-button hidden h-9 shrink-0 items-center gap-2 rounded-md bg-[#e7ba67] px-4 text-xs font-bold text-[#111214] hover:bg-[#f2cf8b] xl:inline-flex">
+          <a href={discordUrl} target="_blank" rel="noreferrer" className="premium-button hidden h-9 shrink-0 items-center gap-2 rounded-md bg-[#e7ba67] px-3 text-xs font-bold text-[#111214] hover:bg-[#f2cf8b] lg:inline-flex xl:px-4">
             Discord <ExternalLink className="h-3.5 w-3.5" />
           </a>
           <button
@@ -170,13 +170,13 @@ export default function HomePage() {
             aria-expanded={mobileNavOpen}
             aria-controls="mobile-navigation"
             onClick={() => setMobileNavOpen((open) => !open)}
-            className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-md border border-white/15 text-white transition hover:border-[#e7ba67]/70 hover:text-[#f2cf8b] xl:hidden"
+            className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-md border border-white/15 text-white transition hover:border-[#e7ba67]/70 hover:text-[#f2cf8b] lg:hidden"
           >
             {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
         {mobileNavOpen && (
-          <nav id="mobile-navigation" aria-label="行動版主要導覽" className="border-t border-white/10 bg-[#0d0e10]/95 px-5 py-4 shadow-2xl xl:hidden">
+          <nav id="mobile-navigation" aria-label="行動版主要導覽" className="border-t border-white/10 bg-[#0d0e10]/95 px-5 py-4 shadow-2xl lg:hidden">
             <div className="mx-auto grid max-w-[1536px] gap-2 sm:grid-cols-2">
               {headerNavItems.map((item) => (
                 <a
