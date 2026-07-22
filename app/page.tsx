@@ -10,12 +10,14 @@ import {
   ExternalLink,
   Headphones,
   Mail,
+  Menu,
   Package,
   Pause,
   Play,
   ShieldCheck,
   Sparkles,
   Trophy,
+  X,
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -35,6 +37,17 @@ import {
 const discordUrl = "https://discord.gg/tXNnXWMHbJ";
 const flightSearchUrl = "https://flights.wearestilllhere.com";
 const websiteDesignUrl = "https://design.wearestilllhere.com";
+
+const headerNavItems = [
+  { label: "服務", href: "#services" },
+  { label: "商品", href: "#merchandise" },
+  { label: "介紹", href: "#players" },
+  { label: "活動", href: "#lottery" },
+  { label: "聯絡", href: "#contact" },
+  { label: "隱私權", href: "/policies/privacy" },
+  { label: "退換貨", href: "/policies/returns" },
+  { label: "付款說明", href: "/policies/payment" },
+] as const;
 
 const priceSlides = [
   {
@@ -82,6 +95,7 @@ const priceSlides = [
 export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [siteContent, setSiteContent] = useState<SiteContentItem[]>(defaultSiteContent);
   const [selectedMerchandise, setSelectedMerchandise] = useState<{
     item: SiteContentItem;
@@ -124,7 +138,7 @@ export default function HomePage() {
       <div className="site-grain" aria-hidden="true" />
 
       <header className="home-header fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#0d0e10]/90 backdrop-blur-lg">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto flex h-16 max-w-[1536px] items-center gap-4 px-5 sm:px-8 lg:px-10">
           <a href="#home" className="flex min-w-0 items-center gap-3">
             <Image
               src="/brand-logo-gold-v2.png"
@@ -139,17 +153,50 @@ export default function HomePage() {
               <p className="truncate text-[10px] text-white/40">We Are Still Here</p>
             </div>
           </a>
-          <nav className="hidden items-center gap-7 text-xs font-bold text-white/55 md:flex">
-            <a href="#services" className="nav-link hover:text-white">服務</a>
-            <a href="#lottery" className="nav-link hover:text-white">活動</a>
-            <a href="#contact" className="nav-link hover:text-white">聯絡</a>
-            <a href={flightSearchUrl} className="nav-link text-[#5bd6d0] hover:text-[#8ce8e3]">航空外站票查詢</a>
+          <nav aria-label="主要導覽" className="ml-auto hidden items-center gap-4 whitespace-nowrap text-[11px] font-bold text-white/55 xl:flex 2xl:gap-6 2xl:text-xs">
+            {headerNavItems.map((item) => (
+              <a key={item.href} href={item.href} className="nav-link hover:text-white">
+                {item.label}
+              </a>
+            ))}
             <a href="/membership" className="nav-link text-[#e7ba67] hover:text-[#f6d792]">會員登入</a>
           </nav>
-          <a href={discordUrl} target="_blank" rel="noreferrer" className="premium-button inline-flex h-9 items-center gap-2 rounded-md bg-[#e7ba67] px-4 text-xs font-bold text-[#111214] hover:bg-[#f2cf8b]">
+          <a href={discordUrl} target="_blank" rel="noreferrer" className="premium-button hidden h-9 shrink-0 items-center gap-2 rounded-md bg-[#e7ba67] px-4 text-xs font-bold text-[#111214] hover:bg-[#f2cf8b] xl:inline-flex">
             Discord <ExternalLink className="h-3.5 w-3.5" />
           </a>
+          <button
+            type="button"
+            aria-label={mobileNavOpen ? "關閉導覽選單" : "開啟導覽選單"}
+            aria-expanded={mobileNavOpen}
+            aria-controls="mobile-navigation"
+            onClick={() => setMobileNavOpen((open) => !open)}
+            className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-md border border-white/15 text-white transition hover:border-[#e7ba67]/70 hover:text-[#f2cf8b] xl:hidden"
+          >
+            {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
+        {mobileNavOpen && (
+          <nav id="mobile-navigation" aria-label="行動版主要導覽" className="border-t border-white/10 bg-[#0d0e10]/95 px-5 py-4 shadow-2xl xl:hidden">
+            <div className="mx-auto grid max-w-[1536px] gap-2 sm:grid-cols-2">
+              {headerNavItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileNavOpen(false)}
+                  className="rounded-md border border-white/[0.08] px-4 py-3 text-sm font-bold text-white/70 transition hover:border-[#e7ba67]/50 hover:bg-white/[0.04] hover:text-white"
+                >
+                  {item.label}
+                </a>
+              ))}
+              <a href="/membership" onClick={() => setMobileNavOpen(false)} className="rounded-md border border-[#e7ba67]/35 px-4 py-3 text-sm font-bold text-[#f2cf8b] transition hover:bg-[#e7ba67]/10">
+                會員登入
+              </a>
+              <a href={discordUrl} target="_blank" rel="noreferrer" onClick={() => setMobileNavOpen(false)} className="flex items-center justify-between rounded-md bg-[#e7ba67] px-4 py-3 text-sm font-bold text-[#111214] transition hover:bg-[#f2cf8b]">
+                Discord <ExternalLink className="h-4 w-4" />
+              </a>
+            </div>
+          </nav>
+        )}
       </header>
 
       <section id="home" className="hero-stage min-h-[92vh] border-b border-white/10 pt-16">
