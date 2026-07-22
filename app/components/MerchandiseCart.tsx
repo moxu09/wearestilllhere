@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
 import { useMerchandiseCart } from "./MerchandiseCartProvider";
+import CommercePolicyLinks from "./CommercePolicyLinks";
 
 function money(value: number) {
   return `NT$ ${value.toLocaleString("zh-TW")}`;
@@ -154,6 +155,7 @@ export default function MerchandiseCart() {
               前往結帳
               <ArrowRight className="h-4 w-4" />
             </Link>
+            <CommercePolicyLinks className="mt-4" />
           </div>
         </div>
       )}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Package, X } from "lucide-react";
 import type { SiteContentItem } from "@/lib/siteContent";
 import type { MerchandiseProduct } from "@/lib/merchandiseCatalog";
+import CommercePolicyLinks from "./CommercePolicyLinks";
 
 type Props = {
   item: SiteContentItem;
@@ -99,6 +100,7 @@ export default function MerchandiseDetailModal({
             輸入貨運資料詳情
             <ArrowRight className="h-4 w-4" />
           </Link>
+          <CommercePolicyLinks className="mt-5" />
         </div>
       </div>
     </div>

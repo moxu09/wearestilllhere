@@ -15,6 +15,7 @@ import {
   UserRound,
 } from "lucide-react";
 import PendingPaymentMethods from "@/app/components/PendingPaymentMethods";
+import CommercePolicyLinks from "@/app/components/CommercePolicyLinks";
 import { useMerchandiseCart } from "@/app/components/MerchandiseCartProvider";
 
 type ShippingProvider = "7-ELEVEN" | "全家";
@@ -196,6 +197,8 @@ export default function CheckoutForm() {
           <div className="mt-6">
             <PendingPaymentMethods />
           </div>
+          <p className="mt-5 text-xs leading-6 text-white/35">付款前請先閱讀下列商品訂購政策。</p>
+          <CommercePolicyLinks className="mt-3" />
         </section>
       </div>
     </div>

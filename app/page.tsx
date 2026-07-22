@@ -23,6 +23,7 @@ import ThanksWall from "./components/ThanksWall";
 import HomePlayers from "./components/HomePlayers";
 import MerchandiseDetailModal from "./components/MerchandiseDetailModal";
 import MerchandiseCart from "./components/MerchandiseCart";
+import CommercePolicyLinks from "./components/CommercePolicyLinks";
 import { defaultSiteContent, type SiteContentItem } from "@/lib/siteContent";
 import {
   getMerchandiseProduct,
@@ -393,9 +394,12 @@ export default function HomePage() {
       <ThanksWall />
 
       <footer className="border-t border-white/10 bg-[#090a0c] px-5 py-10 sm:px-8 lg:px-12">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-bold text-white/70">深夜不關燈 · We Are Still Here</p>
-          <p>© 2026 深夜不關燈 · We Are Still Here</p>
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-bold text-white/70">深夜不關燈 · We Are Still Here</p>
+            <p className="mt-2">© 2026 深夜不關燈 · We Are Still Here</p>
+          </div>
+          <CommercePolicyLinks className="justify-start sm:justify-end" />
         </div>
       </footer>
 

@@ -21,6 +21,7 @@ import {
   useMerchandiseCart,
 } from "@/app/components/MerchandiseCartProvider";
 import PendingPaymentMethods from "@/app/components/PendingPaymentMethods";
+import CommercePolicyLinks from "@/app/components/CommercePolicyLinks";
 
 type Props = {
   product: MerchandiseProduct;
@@ -296,6 +297,8 @@ export default function ShippingForm({ product }: Props) {
           <div className="mt-6">
             <PendingPaymentMethods />
           </div>
+          <p className="mt-5 text-xs leading-6 text-white/35">付款前請先閱讀下列商品訂購政策。</p>
+          <CommercePolicyLinks className="mt-3" />
         </section>
       </div>
     </div>
