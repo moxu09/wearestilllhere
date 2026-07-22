@@ -152,6 +152,13 @@ export default function HomePage() {
     if (!target) return;
 
     event.preventDefault();
+    if (target.matches("[data-reveal]")) {
+      target.classList.add("is-revealed");
+    }
+    target.querySelectorAll("[data-reveal]").forEach((element) => {
+      element.classList.add("is-revealed");
+    });
+
     if (navScrollFrame.current !== null) {
       window.cancelAnimationFrame(navScrollFrame.current);
     }

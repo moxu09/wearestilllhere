@@ -15,6 +15,28 @@ export default function MotionEffects() {
 
     root.classList.add("motion-enhanced");
 
+    const revealHashTarget = () => {
+      let id = window.location.hash.slice(1);
+      try {
+        id = decodeURIComponent(id);
+      } catch {
+        return;
+      }
+      if (!id) return;
+
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      if (target.matches(revealSelector)) {
+        target.classList.add("is-revealed");
+      }
+      target.querySelectorAll(revealSelector).forEach((element) => {
+        element.classList.add("is-revealed");
+      });
+    };
+
+    revealHashTarget();
+
     const updateScrollState = () => {
       animationFrame = 0;
       const scrollTop = window.scrollY;
@@ -42,10 +64,12 @@ export default function MotionEffects() {
     updateScrollState();
     window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
     window.addEventListener("resize", scheduleScrollUpdate);
+    window.addEventListener("hashchange", revealHashTarget);
 
     const clearScrollEffects = () => {
       window.removeEventListener("scroll", scheduleScrollUpdate);
       window.removeEventListener("resize", scheduleScrollUpdate);
+      window.removeEventListener("hashchange", revealHashTarget);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
       root.style.removeProperty("--site-scroll-progress");
       root.style.removeProperty("--hero-scroll");
