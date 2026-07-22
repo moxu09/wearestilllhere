@@ -32,12 +32,6 @@ export default function MotionEffects() {
         `${Math.min(scrollTop, window.innerHeight)}px`,
       );
       root.classList.toggle("site-scrolled", scrollTop > 28);
-
-      document.querySelectorAll(revealSelector).forEach((element) => {
-        if (element.getBoundingClientRect().top <= window.innerHeight * 0.92) {
-          element.classList.add("is-revealed");
-        }
-      });
     };
 
     const scheduleScrollUpdate = () => {

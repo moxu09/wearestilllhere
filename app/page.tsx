@@ -20,7 +20,12 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 import ThanksWall from "./components/ThanksWall";
 import HomePlayers from "./components/HomePlayers";
 import MerchandiseDetailModal from "./components/MerchandiseDetailModal";
@@ -96,6 +101,7 @@ export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const navScrollFrame = useRef<number | null>(null);
   const [siteContent, setSiteContent] = useState<SiteContentItem[]>(defaultSiteContent);
   const [selectedMerchandise, setSelectedMerchandise] = useState<{
     item: SiteContentItem;
@@ -127,6 +133,68 @@ export default function HomePage() {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (navScrollFrame.current !== null) {
+        window.cancelAnimationFrame(navScrollFrame.current);
+      }
+      document.documentElement.classList.remove("site-nav-scrolling");
+    };
+  }, []);
+
+  const navigateToSection = (
+    event: ReactMouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    if (!href.startsWith("#")) return;
+
+    const target = document.querySelector<HTMLElement>(href);
+    if (!target) return;
+
+    event.preventDefault();
+    if (navScrollFrame.current !== null) {
+      window.cancelAnimationFrame(navScrollFrame.current);
+    }
+
+    const root = document.documentElement;
+    const startY = window.scrollY;
+    const targetY = Math.max(
+      0,
+      startY + target.getBoundingClientRect().top - 80,
+    );
+    const distance = targetY - startY;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (reducedMotion || Math.abs(distance) < 12) {
+      window.scrollTo({ top: targetY, behavior: "auto" });
+      window.history.pushState(null, "", href);
+      return;
+    }
+
+    const duration = Math.min(640, Math.max(360, Math.abs(distance) * 0.09));
+    const startedAt = window.performance.now();
+    root.classList.add("site-nav-scrolling");
+
+    const step = (now: number) => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 4);
+      window.scrollTo(0, startY + distance * eased);
+
+      if (progress < 1) {
+        navScrollFrame.current = window.requestAnimationFrame(step);
+        return;
+      }
+
+      navScrollFrame.current = null;
+      root.classList.remove("site-nav-scrolling");
+      window.history.pushState(null, "", href);
+    };
+
+    navScrollFrame.current = window.requestAnimationFrame(step);
+  };
+
   const activity = siteContent.find((item) => item.content_type === "activity");
   const prizes = siteContent.filter((item) => item.content_type === "prize");
   const merchandise = siteContent.filter((item) => item.content_type === "merchandise");
@@ -153,9 +221,9 @@ export default function HomePage() {
               <p className="truncate text-[10px] text-white/40">We Are Still Here</p>
             </div>
           </a>
-          <nav aria-label="主要導覽" className="ml-auto hidden items-center gap-3 whitespace-nowrap text-[10px] font-bold text-white/55 lg:flex xl:gap-4 xl:text-[11px] 2xl:gap-6 2xl:text-xs">
+          <nav aria-label="主要導覽" className="ml-auto hidden items-center gap-3 whitespace-nowrap text-xs font-bold text-white/60 lg:flex xl:gap-4 2xl:gap-6">
             {headerNavItems.map((item) => (
-              <a key={item.href} href={item.href} className="nav-link hover:text-white">
+              <a key={item.href} href={item.href} onClick={(event) => navigateToSection(event, item.href)} className="nav-link hover:text-white">
                 {item.label}
               </a>
             ))}
@@ -182,7 +250,10 @@ export default function HomePage() {
                 <a
                   key={item.href}
                   href={item.href}
-                  onClick={() => setMobileNavOpen(false)}
+                  onClick={(event) => {
+                    setMobileNavOpen(false);
+                    navigateToSection(event, item.href);
+                  }}
                   className="rounded-md border border-white/[0.08] px-4 py-3 text-sm font-bold text-white/70 transition hover:border-[#e7ba67]/50 hover:bg-white/[0.04] hover:text-white"
                 >
                   {item.label}

@@ -13,6 +13,10 @@ html {
   scroll-padding-top: 5rem;
 }
 
+html.site-nav-scrolling {
+  scroll-behavior: auto;
+}
+
 * {
   box-sizing: border-box;
 }
