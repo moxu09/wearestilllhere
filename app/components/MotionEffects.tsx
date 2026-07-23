@@ -11,9 +11,32 @@ export default function MotionEffects() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
     const observed = new WeakSet<Element>();
+    const pendingReveals = new Set<Element>();
     let animationFrame = 0;
+    let intersectionObserver: IntersectionObserver | null = null;
 
     root.classList.add("motion-enhanced");
+
+    const revealElement = (element: Element) => {
+      element.classList.add("is-revealed");
+      pendingReveals.delete(element);
+      intersectionObserver?.unobserve(element);
+    };
+
+    const isInRevealRange = (element: Element) => {
+      const rect = element.getBoundingClientRect();
+      return rect.bottom >= 0 && rect.top <= window.innerHeight * 0.94;
+    };
+
+    const revealPendingInView = () => {
+      pendingReveals.forEach((element) => {
+        if (!element.isConnected) {
+          pendingReveals.delete(element);
+          return;
+        }
+        if (isInRevealRange(element)) revealElement(element);
+      });
+    };
 
     const revealHashTarget = () => {
       let id = window.location.hash.slice(1);
@@ -28,10 +51,10 @@ export default function MotionEffects() {
       if (!target) return;
 
       if (target.matches(revealSelector)) {
-        target.classList.add("is-revealed");
+        revealElement(target);
       }
       target.querySelectorAll(revealSelector).forEach((element) => {
-        element.classList.add("is-revealed");
+        revealElement(element);
       });
     };
 
@@ -54,6 +77,7 @@ export default function MotionEffects() {
         `${Math.min(scrollTop, window.innerHeight)}px`,
       );
       root.classList.toggle("site-scrolled", scrollTop > 28);
+      revealPendingInView();
     };
 
     const scheduleScrollUpdate = () => {
@@ -64,11 +88,13 @@ export default function MotionEffects() {
     updateScrollState();
     window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
     window.addEventListener("resize", scheduleScrollUpdate);
+    window.addEventListener("pageshow", scheduleScrollUpdate);
     window.addEventListener("hashchange", revealHashTarget);
 
     const clearScrollEffects = () => {
       window.removeEventListener("scroll", scheduleScrollUpdate);
       window.removeEventListener("resize", scheduleScrollUpdate);
+      window.removeEventListener("pageshow", scheduleScrollUpdate);
       window.removeEventListener("hashchange", revealHashTarget);
       if (animationFrame) window.cancelAnimationFrame(animationFrame);
       root.style.removeProperty("--site-scroll-progress");
@@ -83,12 +109,11 @@ export default function MotionEffects() {
       return clearScrollEffects;
     }
 
-    const intersectionObserver = new IntersectionObserver(
+    intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-revealed");
-          intersectionObserver.unobserve(entry.target);
+          revealElement(entry.target);
         });
       },
       {
@@ -97,11 +122,22 @@ export default function MotionEffects() {
       },
     );
 
+    const observeElement = (element: Element) => {
+      if (observed.has(element)) return;
+      observed.add(element);
+
+      if (isInRevealRange(element)) {
+        revealElement(element);
+        return;
+      }
+
+      pendingReveals.add(element);
+      intersectionObserver?.observe(element);
+    };
+
     const observe = (scope: ParentNode) => {
       scope.querySelectorAll(revealSelector).forEach((element) => {
-        if (observed.has(element)) return;
-        observed.add(element);
-        intersectionObserver.observe(element);
+        observeElement(element);
       });
     };
 
@@ -111,10 +147,7 @@ export default function MotionEffects() {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (!(node instanceof Element)) return;
-          if (node.matches(revealSelector) && !observed.has(node)) {
-            observed.add(node);
-            intersectionObserver.observe(node);
-          }
+          if (node.matches(revealSelector)) observeElement(node);
           observe(node);
         });
       });
@@ -124,7 +157,8 @@ export default function MotionEffects() {
 
     return () => {
       mutationObserver.disconnect();
-      intersectionObserver.disconnect();
+      intersectionObserver?.disconnect();
+      pendingReveals.clear();
       clearScrollEffects();
     };
   }, []);
