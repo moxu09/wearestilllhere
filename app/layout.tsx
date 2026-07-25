@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import SiteLoader from "./components/SiteLoader";
 import MerchandiseCartProvider from "./components/MerchandiseCartProvider";
 import MotionEffects from "./components/MotionEffects";
+import AppLanguageProvider from "./components/AppLanguageProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -137,6 +138,7 @@ export default function RootLayout({
         <SiteLoader />
         <MotionEffects />
         <MerchandiseCartProvider>{children}</MerchandiseCartProvider>
+        <AppLanguageProvider />
       </body>
     </html>
   );

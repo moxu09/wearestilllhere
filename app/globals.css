@@ -896,3 +896,102 @@ html[data-service-theme="dark"] .service-theme [class~="text-red-700"] {
     transition: none;
   }
 }
+/* Global language selector */
+.app-language {
+  position: fixed;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 2147483000;
+  font-family: inherit;
+}
+
+.app-language__trigger {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(235, 189, 96, 0.42);
+  border-radius: 999px;
+  background: rgba(13, 14, 16, 0.9);
+  padding: 0 15px;
+  color: #f0c66e;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(18px);
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.app-language__trigger:hover {
+  transform: translateY(-2px);
+  border-color: #f0c66e;
+  background: rgba(27, 25, 21, 0.96);
+}
+
+.app-language__trigger .is-open {
+  transform: rotate(180deg);
+}
+
+.app-language__menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: 190px;
+  overflow: hidden;
+  border: 1px solid rgba(235, 189, 96, 0.26);
+  border-radius: 18px;
+  background: rgba(16, 17, 19, 0.97);
+  padding: 8px;
+  color: #fff;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.44);
+  backdrop-filter: blur(22px);
+  animation: languageMenuIn 180ms ease-out both;
+}
+
+.app-language__menu p {
+  margin: 4px 9px 7px;
+  color: #8d8f94;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.app-language__menu button {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  padding: 0 10px;
+  color: #e7e7e7;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.app-language__menu button:hover,
+.app-language__menu button[aria-checked="true"] {
+  background: rgba(240, 198, 110, 0.13);
+  color: #f0c66e;
+}
+
+@keyframes languageMenuIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .app-language {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .app-language__trigger {
+    min-height: 42px;
+    padding: 0 12px;
+  }
+}
