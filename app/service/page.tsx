@@ -54,7 +54,7 @@ export default function ServicePage() {
   const [busy, setBusy] = useState(false);
   const [rejectRequest, setRejectRequest] = useState<RejectRequest | null>(null);
   const [rejectError, setRejectError] = useState("");
-  const rejectNoteRef = useRef<HTMLTextAreaElement>(null);
+  const rejectNoteRef = useRef<HTMLInputElement>(null);
   const [hasSession, setHasSession] = useState(false);
   const [search, setSearch] = useState("");
   const [adjust, setAdjust] = useState({
@@ -977,7 +977,13 @@ export default function ServicePage() {
           aria-labelledby="reject-dialog-title"
           data-no-translate
         >
-          <div className="w-full max-w-md rounded-xl border border-[#d8e3dd] bg-white p-6 shadow-2xl">
+          <form
+            className="w-full max-w-md rounded-xl border border-[#d8e3dd] bg-white p-6 shadow-2xl"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void submitReject();
+            }}
+          >
             <p className="text-xs font-bold text-red-600">客服審核</p>
             <h2
               id="reject-dialog-title"
@@ -987,16 +993,19 @@ export default function ServicePage() {
             </h2>
             <label className="mt-5 block text-sm font-bold text-slate-700">
               駁回原因
-              <textarea
+              <input
+                id="service-rejection-reason"
+                name="rejection_reason"
+                type="text"
                 autoFocus
                 ref={rejectNoteRef}
-                disabled={busy}
                 inputMode="text"
+                autoComplete="off"
                 onInput={() => {
                   if (rejectError) setRejectError("");
                 }}
                 placeholder="請輸入要提供給申請人的駁回原因"
-                className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-200 bg-[#fbfcfb] px-3 py-2 text-slate-900 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:opacity-60"
+                className="mt-2 h-12 w-full rounded-md border border-slate-200 bg-[#fbfcfb] px-3 py-2 text-slate-900 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
               />
             </label>
             {rejectError && (
@@ -1017,9 +1026,8 @@ export default function ServicePage() {
                 取消
               </button>
               <button
-                type="button"
+                type="submit"
                 disabled={busy}
-                onClick={() => void submitReject()}
                 className="inline-flex min-w-24 items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700 disabled:opacity-50"
               >
                 {busy ? (
@@ -1029,7 +1037,7 @@ export default function ServicePage() {
                 )}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
     </main>
