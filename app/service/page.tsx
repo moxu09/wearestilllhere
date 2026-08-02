@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { getAuthCallbackUrl } from "@/lib/authRedirect";
 import {
@@ -53,8 +53,8 @@ export default function ServicePage() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [rejectRequest, setRejectRequest] = useState<RejectRequest | null>(null);
-  const [rejectNote, setRejectNote] = useState("");
   const [rejectError, setRejectError] = useState("");
+  const rejectNoteRef = useRef<HTMLTextAreaElement>(null);
   const [hasSession, setHasSession] = useState(false);
   const [search, setSearch] = useState("");
   const [adjust, setAdjust] = useState({
@@ -129,11 +129,10 @@ export default function ServicePage() {
   }
   function openReject(title: string, payload: Row) {
     setRejectRequest({ title, payload });
-    setRejectNote("");
     setRejectError("");
   }
   async function submitReject() {
-    const note = rejectNote.trim();
+    const note = rejectNoteRef.current?.value.trim() || "";
     if (!note) {
       setRejectError("請輸入駁回原因");
       return;
@@ -142,7 +141,6 @@ export default function ServicePage() {
     const succeeded = await action({ ...rejectRequest.payload, note });
     if (succeeded) {
       setRejectRequest(null);
-      setRejectNote("");
       setRejectError("");
     }
   }
@@ -977,6 +975,7 @@ export default function ServicePage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="reject-dialog-title"
+          data-no-translate
         >
           <div className="w-full max-w-md rounded-xl border border-[#d8e3dd] bg-white p-6 shadow-2xl">
             <p className="text-xs font-bold text-red-600">客服審核</p>
@@ -990,13 +989,14 @@ export default function ServicePage() {
               駁回原因
               <textarea
                 autoFocus
-                value={rejectNote}
-                onChange={(event) => {
-                  setRejectNote(event.target.value);
+                ref={rejectNoteRef}
+                disabled={busy}
+                inputMode="text"
+                onInput={() => {
                   if (rejectError) setRejectError("");
                 }}
                 placeholder="請輸入要提供給申請人的駁回原因"
-                className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-200 bg-[#fbfcfb] px-3 py-2 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+                className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-200 bg-[#fbfcfb] px-3 py-2 text-slate-900 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:opacity-60"
               />
             </label>
             {rejectError && (
@@ -1010,7 +1010,6 @@ export default function ServicePage() {
                 disabled={busy}
                 onClick={() => {
                   setRejectRequest(null);
-                  setRejectNote("");
                   setRejectError("");
                 }}
                 className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
