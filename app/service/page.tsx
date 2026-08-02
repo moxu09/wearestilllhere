@@ -23,6 +23,11 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>;
 
+type RejectRequest = {
+  title: string;
+  payload: Row;
+};
+
 async function authFetch(init?: RequestInit) {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -47,6 +52,9 @@ export default function ServicePage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [rejectRequest, setRejectRequest] = useState<RejectRequest | null>(null);
+  const [rejectNote, setRejectNote] = useState("");
+  const [rejectError, setRejectError] = useState("");
   const [hasSession, setHasSession] = useState(false);
   const [search, setSearch] = useState("");
   const [adjust, setAdjust] = useState({
@@ -111,10 +119,31 @@ export default function ServicePage() {
       await authFetch({ method: "POST", body: JSON.stringify(payload) });
       setMessage("操作已完成");
       await load();
+      return true;
     } catch (e) {
       setError(e instanceof Error ? e.message : "操作失敗");
+      return false;
     } finally {
       setBusy(false);
+    }
+  }
+  function openReject(title: string, payload: Row) {
+    setRejectRequest({ title, payload });
+    setRejectNote("");
+    setRejectError("");
+  }
+  async function submitReject() {
+    const note = rejectNote.trim();
+    if (!note) {
+      setRejectError("請輸入駁回原因");
+      return;
+    }
+    if (!rejectRequest) return;
+    const succeeded = await action({ ...rejectRequest.payload, note });
+    if (succeeded) {
+      setRejectRequest(null);
+      setRejectNote("");
+      setRejectError("");
     }
   }
   const profileByDiscord = useMemo(
@@ -344,17 +373,14 @@ export default function ServicePage() {
                             </button>
                             <button
                               disabled={busy}
-                              onClick={() => {
-                                const note = prompt("請輸入駁回原因");
-                                if (note)
-                                  action({
-                                    action: "review_report",
-                                    brand: r.brand,
-                                    reportId: r.id,
-                                    approved: false,
-                                    note,
-                                  });
-                              }}
+                              onClick={() =>
+                                openReject("駁回工時報單", {
+                                  action: "review_report",
+                                  brand: r.brand,
+                                  reportId: r.id,
+                                  approved: false,
+                                })
+                              }
                             className="rounded-md border border-red-200 bg-white px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
                             >
                               駁回
@@ -495,16 +521,13 @@ export default function ServicePage() {
                         </button>
                         <button
                           disabled={busy}
-                          onClick={() => {
-                            const note = prompt("請輸入駁回原因");
-                            if (note)
-                              action({
-                                action: "review_redemption",
-                                requestId: r.id,
-                                approved: false,
-                                note,
-                              });
-                          }}
+                          onClick={() =>
+                            openReject("駁回兌換申請", {
+                              action: "review_redemption",
+                              requestId: r.id,
+                              approved: false,
+                            })
+                          }
                           className="rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-bold transition hover:bg-slate-50 disabled:opacity-50"
                         >
                           駁回
@@ -948,6 +971,68 @@ export default function ServicePage() {
           </section>
         )}
       </div>
+      {rejectRequest && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-slate-950/50 px-4 py-8"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reject-dialog-title"
+        >
+          <div className="w-full max-w-md rounded-xl border border-[#d8e3dd] bg-white p-6 shadow-2xl">
+            <p className="text-xs font-bold text-red-600">客服審核</p>
+            <h2
+              id="reject-dialog-title"
+              className="mt-1 text-xl font-black text-[#183d32]"
+            >
+              {rejectRequest.title}
+            </h2>
+            <label className="mt-5 block text-sm font-bold text-slate-700">
+              駁回原因
+              <textarea
+                autoFocus
+                value={rejectNote}
+                onChange={(event) => {
+                  setRejectNote(event.target.value);
+                  if (rejectError) setRejectError("");
+                }}
+                placeholder="請輸入要提供給申請人的駁回原因"
+                className="mt-2 min-h-28 w-full resize-y rounded-md border border-slate-200 bg-[#fbfcfb] px-3 py-2 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+              />
+            </label>
+            {rejectError && (
+              <p className="mt-2 text-sm font-semibold text-red-600">
+                {rejectError}
+              </p>
+            )}
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setRejectRequest(null);
+                  setRejectNote("");
+                  setRejectError("");
+                }}
+                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void submitReject()}
+                className="inline-flex min-w-24 items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-700 disabled:opacity-50"
+              >
+                {busy ? (
+                  <Loader2 className="animate-spin" size={17} />
+                ) : (
+                  "確認駁回"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
