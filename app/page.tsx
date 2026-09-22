@@ -528,11 +528,11 @@ export default function HomePage() {
             <div aria-label="合作支付品牌：街口支付、綠界支付">
               <p className="mb-2 font-bold text-white/70">合作支付品牌</p>
               <div className="flex flex-wrap gap-2">
-                <div className="flex h-14 w-28 items-center justify-center overflow-hidden rounded-md bg-white shadow-lg shadow-black/20">
-                  <Image src="/jkopay-logo.png" alt="街口支付 JKOPAY" width={1081} height={552} className="h-full w-full object-contain" />
+                <div className="flex h-14 w-28 items-center justify-center overflow-hidden rounded-md shadow-lg shadow-black/20">
+                  <Image src="/jkopay-logo.png" alt="街口支付 JKOPAY" width={1081} height={552} className="h-full w-full object-cover" />
                 </div>
-                <div className="flex h-14 w-28 items-center justify-center overflow-hidden rounded-md bg-white shadow-lg shadow-black/20">
-                  <Image src="/ecpay-logo.png" alt="綠界支付 ECPay" width={447} height={447} className="h-full w-full object-contain" />
+                <div className="flex h-14 w-28 items-center justify-center overflow-hidden rounded-md bg-[#e4f0e8] shadow-lg shadow-black/20">
+                  <Image src="/ecpay-logo-transparent.png" alt="綠界支付 ECPay" width={300} height={180} className="h-full w-full object-cover" />
                 </div>
               </div>
             </div>
