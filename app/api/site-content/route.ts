@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { defaultSiteContent, type SiteContentItem } from "@/lib/siteContent";
+import type { SiteContentItem } from "@/lib/siteContent";
 
 export const dynamic = "force-dynamic";
 
@@ -17,14 +17,13 @@ export async function GET() {
 
     return Response.json(
       { items: (data || []) as SiteContentItem[] },
-      { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } },
+      { headers: { "Cache-Control": "no-store, max-age=0" } },
     );
   } catch (error) {
-    console.error("Failed to load site content; using defaults", error);
+    console.error("Failed to load site content", error);
     return Response.json(
-      { items: defaultSiteContent, fallback: true },
-      { headers: { "Cache-Control": "public, max-age=30" } },
+      { items: [] },
+      { status: 503, headers: { "Cache-Control": "no-store, max-age=0" } },
     );
   }
 }
-

@@ -31,7 +31,7 @@ import HomePlayers from "./components/HomePlayers";
 import MerchandiseDetailModal from "./components/MerchandiseDetailModal";
 import MerchandiseCart from "./components/MerchandiseCart";
 import CommercePolicyLinks from "./components/CommercePolicyLinks";
-import { defaultSiteContent, type SiteContentItem } from "@/lib/siteContent";
+import type { SiteContentItem } from "@/lib/siteContent";
 import {
   getMerchandiseProduct,
   getMerchandiseSlugFromTitle,
@@ -102,7 +102,7 @@ export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const navScrollFrame = useRef<number | null>(null);
-  const [siteContent, setSiteContent] = useState<SiteContentItem[]>(defaultSiteContent);
+  const [siteContent, setSiteContent] = useState<SiteContentItem[]>([]);
   const [selectedMerchandise, setSelectedMerchandise] = useState<{
     item: SiteContentItem;
     product: MerchandiseProduct;
@@ -120,10 +120,13 @@ export default function HomePage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/site-content", { signal: controller.signal })
-      .then((response) => response.json())
+    fetch("/api/site-content", { cache: "no-store", signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("讀取官網內容失敗");
+        return response.json();
+      })
       .then((payload: { items?: SiteContentItem[] }) => {
-        if (payload.items?.length) setSiteContent(payload.items);
+        if (Array.isArray(payload.items)) setSiteContent(payload.items);
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
@@ -203,6 +206,9 @@ export default function HomePage() {
   };
 
   const activity = siteContent.find((item) => item.content_type === "activity");
+  const visibleHeaderNavItems = activity
+    ? headerNavItems
+    : headerNavItems.filter((item) => item.href !== "#lottery");
   const prizes = siteContent.filter((item) => item.content_type === "prize");
   const merchandise = siteContent.filter((item) => item.content_type === "merchandise");
   const contacts = siteContent.filter((item) => item.content_type === "contact");
@@ -229,7 +235,7 @@ export default function HomePage() {
             </div>
           </a>
           <nav aria-label="主要導覽" className="ml-auto hidden items-center gap-3 whitespace-nowrap text-xs font-bold text-white/60 lg:flex xl:gap-4 2xl:gap-6">
-            {headerNavItems.map((item) => (
+            {visibleHeaderNavItems.map((item) => (
               <a key={item.href} href={item.href} onClick={(event) => navigateToSection(event, item.href)} className="nav-link hover:text-white">
                 {item.label}
               </a>
@@ -253,7 +259,7 @@ export default function HomePage() {
         {mobileNavOpen && (
           <nav id="mobile-navigation" aria-label="行動版主要導覽" className="border-t border-white/10 bg-[#0d0e10]/95 px-5 py-4 shadow-2xl lg:hidden">
             <div className="mx-auto grid max-w-[1536px] gap-2 sm:grid-cols-2">
-              {headerNavItems.map((item) => (
+              {visibleHeaderNavItems.map((item) => (
                 <a
                   key={item.href}
                   href={item.href}
@@ -424,32 +430,17 @@ export default function HomePage() {
 
       <HomePlayers />
 
-      <section id="lottery" className="site-section border-y border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+      {activity && <section id="lottery" className="site-section border-y border-white/10 bg-[#15171a] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <div data-reveal="clip" className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end">
             <div>
               <Trophy className="h-7 w-7 text-[#e7ba67]" />
-              <p className="mt-6 text-xs font-bold uppercase text-[#ff806f]">{activity?.subtitle || "Opening lottery"}</p>
-              <h2 className="home-title-font mt-4 text-4xl leading-tight sm:text-6xl">{activity?.title || "把今晚的幸運，也一起帶走。"}</h2>
+              {activity.subtitle && <p className="mt-6 text-xs font-bold uppercase text-[#ff806f]">{activity.subtitle}</p>}
+              <h2 className="home-title-font mt-4 text-4xl leading-tight sm:text-6xl">{activity.title}</h2>
             </div>
-            <p className="max-w-xl text-sm leading-7 text-white/55 lg:justify-self-end">
-              {activity?.description || "最新活動辦法請以官方公告為準。"}
-            </p>
+            {activity.description && <p className="max-w-xl text-sm leading-7 text-white/55 lg:justify-self-end">{activity.description}</p>}
           </div>
-          <div className="mt-12 grid border-l border-t border-white/10 md:grid-cols-3">
-            {[
-              ["活動期間", "6/18 - 8/31", "完成消費即可累積抽獎券"],
-              ["抽獎規則", "每千元 1 張", "可依消費金額持續累加"],
-              ["開獎日期", "9/10", "中獎與領獎方式依官方公告"],
-            ].map(([label, value, desc], index) => (
-              <div key={label} data-reveal data-reveal-delay={String(Math.min(index + 1, 3))} className="interactive-card border-b border-r border-white/10 p-6 sm:p-8">
-                <p className="text-xs font-bold text-[#e7ba67]">{label}</p>
-                <p className="mt-5 text-3xl font-bold">{value}</p>
-                <p className="mt-3 text-sm leading-6 text-white/45">{desc}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {prizes.length > 0 && <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {prizes.map((prize, index) => (
               <article key={prize.id} data-reveal="scale" data-reveal-delay={String(Math.min(index + 1, 3))} className="interactive-card group overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
                 <div className="relative">
@@ -462,8 +453,8 @@ export default function HomePage() {
                 </div>
               </article>
             ))}
-          </div>
-          {activity?.responsibility_note && (
+          </div>}
+          {activity.responsibility_note && (
             <div data-reveal className="mt-8 border-l-2 border-[#e7ba67]/55 bg-[#e7ba67]/[0.06] px-5 py-4 sm:px-6">
               <p className="text-xs font-bold text-[#e7ba67]">權責聲明</p>
               <p className="mt-2 whitespace-pre-line text-xs leading-6 text-white/45">
@@ -472,7 +463,7 @@ export default function HomePage() {
             </div>
           )}
         </div>
-      </section>
+      </section>}
 
       <section className="site-section px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-7xl">
