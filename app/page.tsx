@@ -8,9 +8,11 @@ import {
   Camera,
   Clock3,
   ExternalLink,
+  Gamepad2,
   Headphones,
   Mail,
   Menu,
+  MessageCircle,
   Package,
   Pause,
   Play,
@@ -18,7 +20,6 @@ import {
   Sparkles,
   Trophy,
   X,
-  Zap,
 } from "lucide-react";
 import {
   useEffect,
@@ -298,42 +299,69 @@ export default function HomePage() {
         <div className="relative z-[2] mx-auto flex min-h-[calc(92vh-4rem)] max-w-7xl items-end px-5 pb-16 pt-24 sm:px-8 sm:pb-20 lg:px-12">
           <div className="max-w-3xl">
             <p className="hero-badge inline-flex items-center gap-2 border-l-2 border-[#e7ba67] pl-3 text-xs font-bold uppercase text-[#f2cf8b]">
-              <Clock3 className="h-4 w-4" /> Open through the night
+              <Clock3 className="h-4 w-4" /> WE ARE STILL HERE · 深夜不關燈
             </p>
             <h1 className="hero-rise hero-title home-title-font mt-6 text-5xl leading-[1.12] sm:text-7xl lg:text-8xl">
               深夜不關燈
             </h1>
             <p className="hero-rise hero-copy-primary mt-5 max-w-xl text-lg font-semibold text-white/90 sm:text-2xl">
-              今晚不只在線，也在你身邊。
+              把今晚，交給懂你節奏的人。
             </p>
             <p className="hero-rise hero-copy-secondary mt-5 max-w-xl text-sm leading-7 text-white/65 sm:text-base">
-              遊戲、聊天、打賞與星夜聯盟會籍，讓每一個晚睡的理由，都有更好的陪伴方式。
+              想認真玩一場、輕鬆聊一晚，或找位合拍的隊友？從服務價目到陪陪介紹，都可以在這裡慢慢挑選，再透過官方入口確認安排。
             </p>
             <div className="hero-rise hero-actions mt-8 flex flex-wrap gap-3">
               <a href="#services" className="premium-button inline-flex h-12 items-center gap-2 rounded-md bg-[#e7ba67] px-6 text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]">
-                探索服務 <ArrowRight className="h-4 w-4" />
+                查看服務價目 <ArrowRight className="h-4 w-4" />
               </a>
-              <a href="/membership" className="premium-button inline-flex h-12 items-center gap-2 rounded-md border border-white/30 bg-black/20 px-6 text-sm font-bold hover:border-white/70 hover:bg-black/40">
-                進入會員中心
-              </a>
-              <a href={flightSearchUrl} className="premium-button inline-flex h-12 items-center gap-2 rounded-md border border-[#5bd6d0]/60 bg-[#5bd6d0]/10 px-6 text-sm font-bold text-[#8ce8e3] hover:border-[#8ce8e3] hover:bg-[#5bd6d0]/20">
-                航空外站票查詢 <ExternalLink className="h-4 w-4" />
+              <a href="#players" className="premium-button inline-flex h-12 items-center gap-2 rounded-md border border-white/30 bg-black/20 px-6 text-sm font-bold hover:border-white/70 hover:bg-black/40">
+                認識陪陪
               </a>
             </div>
           </div>
         </div>
         <div className="hero-trust-panel absolute bottom-0 right-0 hidden w-[34%] border-l border-t border-white/15 bg-[#0d0e10]/85 p-6 backdrop-blur md:block">
           <div className="grid grid-cols-3 divide-x divide-white/10 text-center">
-            {["全年無休", "專人安排", "會員連動"].map((item) => <p key={item} className="text-xs font-bold text-white/65">{item}</p>)}
+            {["遊戲陪玩", "語音聊天", "會員服務"].map((item) => <p key={item} className="text-xs font-bold text-white/65">{item}</p>)}
           </div>
         </div>
       </section>
 
-      <section className="brand-strip border-b border-white/10 bg-[#e7ba67] text-[#111214]">
-        <div className="mx-auto flex max-w-7xl items-center justify-center overflow-hidden py-4 pl-20 pr-5 sm:justify-start sm:px-8 lg:px-12">
-          <p className="shrink-0 text-[10px] font-bold uppercase sm:text-xs">Stay late. Stay connected.</p>
-          <div className="mx-6 hidden h-px min-w-16 flex-1 bg-black/30 sm:block" />
-          <p className="hidden shrink-0 text-xs font-bold md:block">深夜有人回應，就是一種安心。</p>
+      <section className="night-directory border-b border-white/10" aria-labelledby="night-directory-heading">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+          <div className="night-directory-heading">
+            <div>
+              <p className="night-directory-kicker">START YOUR NIGHT / 從這裡開始</p>
+              <h2 id="night-directory-heading" className="home-title-font mt-4 text-3xl sm:text-4xl">今晚想找什麼？</h2>
+            </div>
+            <p>先看服務、認識陪陪，再決定今晚適合怎麼玩。</p>
+          </div>
+          <div className="night-directory-grid">
+            <a href="#services" className="night-directory-card">
+              <span className="night-directory-number">01 / SERVICE</span>
+              <Gamepad2 aria-hidden="true" />
+              <strong>遊戲與聊天服務</strong>
+              <span>查看玩法與價目，找到適合自己的節奏。</span>
+              <span className="night-directory-link">探索服務 <ArrowRight aria-hidden="true" /></span>
+            </a>
+            <a href="#players" className="night-directory-card">
+              <span className="night-directory-number">02 / PLAYERS</span>
+              <Headphones aria-hidden="true" />
+              <strong>認識深夜陪陪</strong>
+              <span>依遊戲分類與介紹，選擇想一起玩的隊友。</span>
+              <span className="night-directory-link">查看陪陪 <ArrowRight aria-hidden="true" /></span>
+            </a>
+            <a href="/membership" className="night-directory-card">
+              <span className="night-directory-number">03 / MEMBERSHIP</span>
+              <ShieldCheck aria-hidden="true" />
+              <strong>會員與訂單</strong>
+              <span>進入會員中心，查看自己的相關服務資訊。</span>
+              <span className="night-directory-link">進入會員中心 <ArrowRight aria-hidden="true" /></span>
+            </a>
+          </div>
+          <a className="night-directory-extra" href={flightSearchUrl}>
+            航空外站票查詢 <ExternalLink aria-hidden="true" />
+          </a>
         </div>
       </section>
 
@@ -465,23 +493,32 @@ export default function HomePage() {
         </div>
       </section>}
 
-      <section className="site-section px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+      <section className="site-section service-assurance px-5 py-20 sm:px-8 lg:px-12 lg:py-28" aria-labelledby="service-assurance-heading">
         <div className="mx-auto max-w-7xl">
-          <div className="grid border-l border-t border-white/10 md:grid-cols-3">
-            {[
-              [Zap, "快速回覆", "客服協助釐清需求，快速安排適合的陪陪。", "#5bd6d0"],
-              [ShieldCheck, "透明流程", "訂單、錢包與會員資格都有清楚的查詢入口。", "#e7ba67"],
-              [Headphones, "深夜在線", "遊戲、聊天與更多服務，讓晚睡不必只剩自己。", "#ff806f"],
-            ].map(([Icon, title, desc, color], index) => {
-              const FeatureIcon = Icon as typeof Zap;
-              return (
-                <div key={title as string} data-reveal data-reveal-delay={String(index + 1)} className="interactive-card min-h-64 border-b border-r border-white/10 p-7 sm:p-8">
-                  <FeatureIcon className="h-6 w-6" style={{ color: color as string }} />
-                  <h3 className="mt-20 text-2xl font-bold">{title as string}</h3>
-                  <p className="mt-4 text-sm leading-7 text-white/50">{desc as string}</p>
-                </div>
-              );
-            })}
+          <div className="service-assurance-heading" data-reveal>
+            <p>HOW IT WORKS / 官方服務流程</p>
+            <h2 id="service-assurance-heading" className="home-title-font">從心動，到正式開局。</h2>
+            <span>每一步都有明確入口，服務細節與價格以官方確認為準。</span>
+          </div>
+          <div className="service-assurance-grid">
+            <article data-reveal>
+              <span>01</span>
+              <Gamepad2 aria-hidden="true" />
+              <h3>挑選服務</h3>
+              <p>先查看遊戲、聊天項目與價目，確認你想要的玩法。</p>
+            </article>
+            <article data-reveal>
+              <span>02</span>
+              <MessageCircle aria-hidden="true" />
+              <h3>找到合拍陪陪</h3>
+              <p>瀏覽陪陪介紹與遊戲分類，透過提供的官方入口提出需求。</p>
+            </article>
+            <article data-reveal>
+              <span>03</span>
+              <ShieldCheck aria-hidden="true" />
+              <h3>確認後再開始</h3>
+              <p>服務內容與付款方式經官方流程確認後，再安心開始遊戲。</p>
+            </article>
           </div>
         </div>
       </section>
