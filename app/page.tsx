@@ -32,17 +32,14 @@ import HomePlayers from "./components/HomePlayers";
 import MerchandiseDetailModal from "./components/MerchandiseDetailModal";
 import MerchandiseCart from "./components/MerchandiseCart";
 import CommercePolicyLinks from "./components/CommercePolicyLinks";
-import type { SiteContentItem } from "@/lib/siteContent";
+import { isRetiredMainSiteOffering, type SiteContentItem } from "@/lib/siteContent";
 import {
   getMerchandiseProduct,
   getMerchandiseSlugFromTitle,
-  isWebsiteDesignTitle,
   type MerchandiseProduct,
 } from "@/lib/merchandiseCatalog";
 
 const discordUrl = "https://discord.gg/tXNnXWMHbJ";
-const flightSearchUrl = "https://flights.wearestilllhere.com";
-const websiteDesignUrl = "https://design.wearestilllhere.com";
 
 const headerNavItems = [
   { label: "服務", href: "#services" },
@@ -127,7 +124,11 @@ export default function HomePage() {
         return response.json();
       })
       .then((payload: { items?: SiteContentItem[] }) => {
-        if (Array.isArray(payload.items)) setSiteContent(payload.items);
+        if (Array.isArray(payload.items)) {
+          setSiteContent(
+            payload.items.filter((item) => !isRetiredMainSiteOffering(item)),
+          );
+        }
       })
       .catch((error: unknown) => {
         if (!(error instanceof DOMException && error.name === "AbortError")) {
@@ -211,7 +212,11 @@ export default function HomePage() {
     ? headerNavItems
     : headerNavItems.filter((item) => item.href !== "#lottery");
   const prizes = siteContent.filter((item) => item.content_type === "prize");
-  const merchandise = siteContent.filter((item) => item.content_type === "merchandise");
+  const merchandise = siteContent.filter(
+    (item) =>
+      item.content_type === "merchandise" &&
+      !isRetiredMainSiteOffering(item),
+  );
   const contacts = siteContent.filter((item) => item.content_type === "contact");
 
   return (
@@ -359,9 +364,6 @@ export default function HomePage() {
               <span className="night-directory-link">進入會員中心 <ArrowRight aria-hidden="true" /></span>
             </a>
           </div>
-          <a className="night-directory-extra" href={flightSearchUrl}>
-            航空外站票查詢 <ExternalLink aria-hidden="true" />
-          </a>
         </div>
       </section>
 
@@ -407,7 +409,6 @@ export default function HomePage() {
               {merchandise.map((item, index) => {
                 const slug = getMerchandiseSlugFromTitle(item.title);
                 const product = slug ? getMerchandiseProduct(slug) : null;
-                const websiteDesign = isWebsiteDesignTitle(item.title);
 
                 return (
                   <article key={item.id} data-reveal="scale" data-reveal-delay={String(Math.min(index + 1, 3))} className="interactive-card group overflow-hidden rounded-md border border-white/10 bg-[#0d0e10]">
@@ -416,23 +417,12 @@ export default function HomePage() {
                       {item.subtitle && <p className="text-xs font-bold text-[#5bd6d0]">{item.subtitle}</p>}
                       <div className="mt-2 flex items-start justify-between gap-4">
                         <h3 className="text-xl font-bold">{item.title}</h3>
-                        {websiteDesign ? (
-                          <p className="shrink-0 text-right font-bold text-[#e7ba67]">
-                            洽談後報價
-                          </p>
-                        ) : item.price !== null ? (
+                        {item.price !== null ? (
                           <p className="shrink-0 font-bold text-[#e7ba67]">NT$ {Number(item.price).toLocaleString("zh-TW")}</p>
                         ) : null}
                       </div>
                       {item.description && <p className="mt-4 text-sm leading-7 text-white/50">{item.description}</p>}
-                      {websiteDesign ? (
-                        <a
-                          href={websiteDesignUrl}
-                          className="premium-button mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-[#e7ba67] text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]"
-                        >
-                          輸入詳情 <ArrowRight className="h-4 w-4" />
-                        </a>
-                      ) : product ? (
+                      {product ? (
                         <button
                           type="button"
                           onClick={() => setSelectedMerchandise({ item, product })}

@@ -17,6 +17,15 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(target);
   }
 
+  if (
+    request.nextUrl.pathname === "/website-design" &&
+    hostname !== websiteDesignHost
+  ) {
+    const target = request.nextUrl.clone();
+    target.pathname = "/";
+    return NextResponse.redirect(target, 308);
+  }
+
   if (hostname !== contentAdminHost) return NextResponse.next();
 
   if (

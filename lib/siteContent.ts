@@ -147,3 +147,22 @@ export const defaultSiteContent: SiteContentItem[] = [
 export function isSiteContentType(value: unknown): value is SiteContentType {
   return siteContentTypes.includes(value as SiteContentType);
 }
+
+export function isRetiredMainSiteOffering(item: SiteContentItem) {
+  const label = [item.title, item.subtitle, item.link_url]
+    .filter(Boolean)
+    .join(" ")
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/\s+/g, "");
+
+  return (
+    label.includes("網站設計") ||
+    label.includes("websitedesign") ||
+    label.includes("webdesign") ||
+    label.includes("航空外站") ||
+    label.includes("外站票") ||
+    label.includes("design.wearestilllhere.com") ||
+    label.includes("flights.wearestilllhere.com")
+  );
+}

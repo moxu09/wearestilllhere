@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import type { SiteContentItem } from "@/lib/siteContent";
+import { isRetiredMainSiteOffering, type SiteContentItem } from "@/lib/siteContent";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,11 @@ export async function GET() {
     if (error) throw error;
 
     return Response.json(
-      { items: (data || []) as SiteContentItem[] },
+      {
+        items: ((data || []) as SiteContentItem[]).filter(
+          (item) => !isRetiredMainSiteOffering(item),
+        ),
+      },
       { headers: { "Cache-Control": "no-store, max-age=0" } },
     );
   } catch (error) {

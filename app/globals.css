@@ -435,8 +435,7 @@ html.site-loader-complete .home-intro-sequence .hero-trust-panel {
   background-color: rgba(231, 186, 103, 0.055);
 }
 
-.night-directory-card:focus-visible,
-.night-directory-extra:focus-visible {
+.night-directory-card:focus-visible {
   outline: 2px solid #f2cf8b;
   outline-offset: 4px;
 }
@@ -478,20 +477,9 @@ html.site-loader-complete .home-intro-sequence .hero-trust-panel {
   font-weight: 800;
 }
 
-.night-directory-link svg,
-.night-directory-extra svg {
+.night-directory-link svg {
   width: 1rem;
   height: 1rem;
-}
-
-.night-directory-extra {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.4rem;
-  color: #b3d8d5;
-  font-size: 0.85rem;
-  font-weight: 700;
 }
 
 .service-assurance {
