@@ -519,12 +519,25 @@ export default function HomePage() {
       <ThanksWall />
 
       <footer className="border-t border-white/10 bg-[#090a0c] px-5 py-10 sm:px-8 lg:px-12">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 text-xs text-white/35 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="font-bold text-white/70">深夜不關燈 · We Are Still Here</p>
             <p className="mt-2">© 2026 深夜不關燈 · We Are Still Here</p>
           </div>
-          <CommercePolicyLinks className="justify-start sm:justify-end" />
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center lg:justify-end">
+            <div aria-label="合作支付品牌：街口支付、綠界支付">
+              <p className="mb-2 font-bold text-white/70">合作支付品牌</p>
+              <div className="flex flex-wrap gap-2">
+                <div className="flex h-14 w-28 items-center justify-center overflow-hidden rounded-md bg-white shadow-lg shadow-black/20">
+                  <Image src="/jkopay-logo.png" alt="街口支付 JKOPAY" width={1081} height={552} className="h-full w-full object-contain" />
+                </div>
+                <div className="flex h-14 w-28 items-center justify-center overflow-hidden rounded-md bg-white shadow-lg shadow-black/20">
+                  <Image src="/ecpay-logo.png" alt="綠界支付 ECPay" width={447} height={447} className="h-full w-full object-contain" />
+                </div>
+              </div>
+            </div>
+            <CommercePolicyLinks className="justify-start lg:justify-end" />
+          </div>
         </div>
       </footer>
 
