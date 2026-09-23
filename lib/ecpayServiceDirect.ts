@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { getEcpayConfig } from "@/lib/ecpay";
-import { isEcpayAtmAvailable } from "@/lib/ecpayAtmSchedule";
+import { isEcpayAtmAvailableForPayment } from "@/lib/ecpayAtmSchedule";
 import { decryptEcpayInSiteData, encryptEcpayInSiteData } from "@/lib/ecpayInSite";
 import { getEcpayInstructions, type EcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
@@ -51,16 +51,17 @@ function normalizedInstructions(method: Method, result: Json, order: string, amo
 
 // Sources: https://developers.ecpay.com.tw/27995/ , /28000/ , /28005/ (live checked 2026-09-23).
 export async function issueServiceDirect(order: string, method: Method): Promise<EcpayInstructions> {
-  if (method === "ATM" && !isEcpayAtmAvailable()) throw new Error("綠界虛擬 ATM 將於 9 月 28 日開放");
   const gateway = getEcpayConfig();
   if (!gateway.nonCreditAvailable) throw new Error("綠界 ATM／超商付款尚未開放");
   if (!/^[A-Za-z0-9]{1,20}$/.test(order) || !["ATM", "CVS", "BARCODE"].includes(method))
     throw new Error("付款方式或編號錯誤");
   const admin = getSupabaseAdmin();
   const { data: payment, error } = await admin.from("ecpay_service_payments")
-    .select("amount,status,created_at,payment_kind,description,organization_code,raw_result")
+    .select("amount,status,created_at,payment_kind,description,organization_code,metadata,raw_result")
     .eq("merchant_trade_no", order).maybeSingle();
   if (error || !payment || payment.status !== "pending") throw new Error("付款單不存在或已完成");
+  if (method === "ATM" && !isEcpayAtmAvailableForPayment(payment))
+    throw new Error("綠界虛擬 ATM 將於 9 月 28 日開放");
   if (Date.now() - Date.parse(payment.created_at) > 24 * 60 * 60 * 1000) throw new Error("付款單已過期");
   const amount = Number(payment.amount);
   if (!amountAllowed(method, amount)) throw new Error("此金額不適用所選的綠界付款方式");
