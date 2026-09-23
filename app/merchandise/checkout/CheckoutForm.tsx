@@ -216,7 +216,7 @@ export default function CheckoutForm({ ecpayAvailable, ecpayAioAvailable, ecpayN
               { method: "ATM" as const, min: 16, max: 49_999 },
               { method: "CVS" as const, min: 34, max: 20_000 },
               { method: "BARCODE" as const, min: 18, max: 20_000 },
-            ].filter(option => total >= option.min && total <= option.max &&
+            ].filter(option => (option.method === "Credit" || (total >= option.min && total <= option.max)) &&
               (option.method !== "ATM" || ecpayAtmAvailable) &&
               (option.method === "Credit" ? ecpayAvailable : ecpayAioAvailable && ecpayNonCreditAvailable)).map(option =>
               <EcpayCheckoutButton
@@ -227,7 +227,7 @@ export default function CheckoutForm({ ecpayAvailable, ecpayAioAvailable, ecpayN
                 shippingProvider={form.provider}
                 storeName={form.storeName}
                 items={items}
-                disabled={form.name.trim().length < 2 || !/^09\d{8}$/.test(form.phone.replace(/[\s-]/g, "")) || form.storeName.trim().length < 2}
+                disabled={total < option.min || total > option.max || form.name.trim().length < 2 || !/^09\d{8}$/.test(form.phone.replace(/[\s-]/g, "")) || form.storeName.trim().length < 2}
               />
             )) : (
               <p className="rounded-md border border-white/10 bg-[#0d0e10] px-4 py-3 text-sm text-white/50">綠界付款準備中</p>

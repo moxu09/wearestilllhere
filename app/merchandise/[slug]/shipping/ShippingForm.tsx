@@ -322,7 +322,7 @@ export default function ShippingForm({ product, ecpayAvailable, ecpayAioAvailabl
                 { method: "ATM" as const, min: 16, max: 49_999 },
                 { method: "CVS" as const, min: 34, max: 20_000 },
                 { method: "BARCODE" as const, min: 18, max: 20_000 },
-              ].filter(option => cartTotal >= option.min && cartTotal <= option.max &&
+              ].filter(option => (option.method === "Credit" || (cartTotal >= option.min && cartTotal <= option.max)) &&
                 (option.method !== "ATM" || ecpayAtmAvailable) &&
                 (option.method === "Credit" ? ecpayAvailable : ecpayAioAvailable && ecpayNonCreditAvailable)).map(option => <EcpayCheckoutButton
                 key={option.method}
@@ -332,7 +332,7 @@ export default function ShippingForm({ product, ecpayAvailable, ecpayAioAvailabl
                 shippingProvider={form.provider}
                 storeName={form.storeName}
                 items={items}
-                disabled={itemCount === 0 || form.name.trim().length < 2 || !/^09\d{8}$/.test(form.phone.replace(/[\s-]/g, "")) || form.storeName.trim().length < 2}
+                disabled={cartTotal < option.min || cartTotal > option.max || itemCount === 0 || form.name.trim().length < 2 || !/^09\d{8}$/.test(form.phone.replace(/[\s-]/g, "")) || form.storeName.trim().length < 2}
               />)
             ) : (
               <p className="rounded-md border border-white/10 bg-[#0d0e10] px-4 py-3 text-sm text-white/50">綠界付款準備中</p>
