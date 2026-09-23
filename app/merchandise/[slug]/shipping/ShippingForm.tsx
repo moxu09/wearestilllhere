@@ -12,19 +12,21 @@ import {
   UserRound,
 } from "lucide-react";
 import {
+  calculateShippingFee,
   getMerchandiseSlugFromTitle,
   type MerchandiseProduct,
 } from "@/lib/merchandiseCatalog";
 import type { SiteContentItem } from "@/lib/siteContent";
-import {
-  calculateShippingFee,
-  useMerchandiseCart,
-} from "@/app/components/MerchandiseCartProvider";
+import { useMerchandiseCart } from "@/app/components/MerchandiseCartProvider";
 import PendingPaymentMethods from "@/app/components/PendingPaymentMethods";
 import CommercePolicyLinks from "@/app/components/CommercePolicyLinks";
+import JkopayCheckoutButton from "@/app/components/JkopayCheckoutButton";
+import EcpayCheckoutButton from "@/app/components/EcpayCheckoutButton";
 
 type Props = {
   product: MerchandiseProduct;
+  ecpayAvailable: boolean;
+  jkopayAvailable: boolean;
 };
 
 type ShippingProvider = "7-ELEVEN" | "全家";
@@ -32,8 +34,9 @@ type ShippingProvider = "7-ELEVEN" | "全家";
 const inputClassName =
   "h-12 w-full rounded-md border border-white/15 bg-[#0d0e10] px-4 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#e7ba67]";
 
-export default function ShippingForm({ product }: Props) {
+export default function ShippingForm({ product, ecpayAvailable, jkopayAvailable }: Props) {
   const {
+    items,
     itemCount,
     subtotal: cartSubtotal,
     shippingFee: cartShippingFee,
@@ -270,7 +273,7 @@ export default function ShippingForm({ product }: Props) {
           <CreditCard className="mx-auto h-7 w-7 text-[#e7ba67]" />
           <h2 className="mt-4 text-xl font-bold text-white">選擇付款方式</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/45">
-            貨運資料會在付款功能正式開放後，與付款資訊一併確認送出。
+            確認貨運資料與購物車內容後，選擇街口支付或綠界信用卡安全付款頁。
           </p>
           <div className="mt-6 space-y-3 rounded-md bg-[#0d0e10] p-4 text-left text-sm">
             <PriceRow label={`購物車商品（${itemCount} 件）`} value={money(cartSubtotal)} />
@@ -294,6 +297,35 @@ export default function ShippingForm({ product }: Props) {
                 : `再消費 ${money(490 - cartSubtotal)} 即可免運`}
             </p>
           )}
+          <div className="mt-6">
+            {jkopayAvailable ? <JkopayCheckoutButton
+              customerName={form.name}
+              phone={form.phone}
+              shippingProvider={form.provider}
+              storeName={form.storeName}
+              items={items}
+              disabled={
+                itemCount === 0 ||
+                form.name.trim().length < 2 ||
+                !/^09\d{8}$/.test(form.phone.replace(/[\s-]/g, "")) ||
+                form.storeName.trim().length < 2
+              }
+            /> : <p className="rounded-md border border-white/10 bg-[#0d0e10] px-4 py-3 text-sm text-white/50">街口付款準備中</p>}
+          </div>
+          <div className="mt-3">
+            {ecpayAvailable ? (
+              <EcpayCheckoutButton
+                customerName={form.name}
+                phone={form.phone}
+                shippingProvider={form.provider}
+                storeName={form.storeName}
+                items={items}
+                disabled={itemCount === 0 || form.name.trim().length < 2 || !/^09\d{8}$/.test(form.phone.replace(/[\s-]/g, "")) || form.storeName.trim().length < 2}
+              />
+            ) : (
+              <p className="rounded-md border border-white/10 bg-[#0d0e10] px-4 py-3 text-sm text-white/50">綠界信用卡付款準備中</p>
+            )}
+          </div>
           <div className="mt-6">
             <PendingPaymentMethods />
           </div>

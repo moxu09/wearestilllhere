@@ -7,7 +7,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { MerchandiseSlug } from "@/lib/merchandiseCatalog";
+import {
+  calculateShippingFee,
+  type MerchandiseSlug,
+} from "@/lib/merchandiseCatalog";
 
 export type MerchandiseCartItem = {
   slug: MerchandiseSlug;
@@ -30,11 +33,6 @@ type MerchandiseCartContextValue = {
 const MerchandiseCartContext = createContext<
   MerchandiseCartContextValue | undefined
 >(undefined);
-
-export function calculateShippingFee(subtotal: number) {
-  if (subtotal <= 0 || subtotal >= 490) return 0;
-  return 60;
-}
 
 export default function MerchandiseCartProvider({
   children,

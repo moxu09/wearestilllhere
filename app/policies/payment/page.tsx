@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import PolicyShell, { PolicySection } from "../PolicyShell";
+import { getEcpayConfig } from "@/lib/ecpay";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "付款說明",
@@ -8,10 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default function PaymentPolicyPage() {
+  const ecpayAvailable = getEcpayConfig().available;
   return (
-    <PolicyShell eyebrow="Payment information" title="付款說明" intro="商品頁顯示的金額以新臺幣計價。付款功能正式開放前，網站不會要求你輸入支付帳號或完成扣款。">
+    <PolicyShell eyebrow="Payment information" title="付款說明" intro="商品頁顯示的金額以新臺幣計價，實際可用方式以結帳頁為準。">
       <PolicySection title="一、目前付款狀態">
-        <p>LINE Pay、街口支付、PAYUNi 與全支付目前皆為串接申請中，因此按鈕為停用狀態。功能開放後，結帳頁會清楚顯示可使用的方式、應付金額與付款結果。</p>
+        <p>街口支付已開放使用；{ecpayAvailable ? "綠界信用卡亦可於結帳頁選用；" : "綠界信用卡準備中；"}LINE Pay、PAYUNi 與全支付仍在申請中。結帳頁會顯示實際應付金額，選擇付款方式後將前往相應的安全付款頁。</p>
       </PolicySection>
 
       <PolicySection title="二、商品、運費與應付總額">
@@ -23,7 +27,7 @@ export default function PaymentPolicyPage() {
       </PolicySection>
 
       <PolicySection title="四、付款資料與安全">
-        <p>付款功能開放後，支付帳號、卡片或金融驗證資料會由選定的支付服務商依其流程處理；本網站僅接收完成訂單與對帳所需的交易狀態或識別資訊。請勿透過 Discord 私訊或一般電子郵件傳送完整卡號、密碼或驗證碼。</p>
+        <p>支付帳號、卡號或金融驗證資料由選用的支付服務商處理；本網站僅接收完成訂單與對帳所需的交易狀態或識別資訊。請勿透過 Discord 私訊或一般電子郵件傳送密碼或驗證碼。</p>
       </PolicySection>
 
       <PolicySection title="五、重複扣款、付款異常與退款">

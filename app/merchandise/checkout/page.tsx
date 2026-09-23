@@ -3,6 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import CheckoutForm from "./CheckoutForm";
+import { getEcpayConfig } from "@/lib/ecpay";
+import { getJkopayConfig } from "@/lib/jkopay";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "購物車結帳",
@@ -43,7 +47,7 @@ export default function MerchandiseCheckoutPage() {
       </header>
 
       <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-        <CheckoutForm />
+        <CheckoutForm ecpayAvailable={getEcpayConfig().available} jkopayAvailable={getJkopayConfig().available} />
       </div>
     </main>
   );

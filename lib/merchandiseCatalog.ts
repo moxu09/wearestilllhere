@@ -1,5 +1,10 @@
 export const merchandiseSlugs = ["canvas-bag", "keychain"] as const;
 
+export function calculateShippingFee(subtotal: number) {
+  if (subtotal <= 0 || subtotal >= 490) return 0;
+  return 60;
+}
+
 export type MerchandiseSlug = (typeof merchandiseSlugs)[number];
 
 export type MerchandiseProduct = {

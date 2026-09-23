@@ -1,4 +1,4 @@
-const paymentMethods = ["LINE Pay", "街口支付", "PAYUNI", "全支付"];
+const paymentMethods = ["LINE Pay", "PAYUNi", "全支付"];
 
 export default function PendingPaymentMethods() {
   return (

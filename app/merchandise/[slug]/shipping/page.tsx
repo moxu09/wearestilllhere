@@ -8,7 +8,10 @@ import {
   merchandiseSlugs,
 } from "@/lib/merchandiseCatalog";
 import ShippingForm from "./ShippingForm";
+import { getEcpayConfig } from "@/lib/ecpay";
+import { getJkopayConfig } from "@/lib/jkopay";
 
+export const dynamic = "force-dynamic";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -70,7 +73,7 @@ export default async function MerchandiseShippingPage({
       </header>
 
       <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-        <ShippingForm product={product} />
+        <ShippingForm product={product} ecpayAvailable={getEcpayConfig().available} jkopayAvailable={getJkopayConfig().available} />
       </div>
     </main>
   );
