@@ -47,12 +47,6 @@ export default function CheckoutForm({ ecpayAvailable, ecpayAioAvailable, ecpayN
       <section className="mx-auto max-w-2xl rounded-md border border-white/10 bg-[#15171a] px-6 py-14 text-center sm:px-10">
         <Package className="mx-auto h-10 w-10 text-[#e7ba67]" />
         <h1 className="home-title-font mt-5 text-4xl">購物車目前是空的</h1>
-        <p className="mt-4 text-sm leading-7 text-white/45">
-          請先選擇帆布袋或鑰匙圈並加入購物車，再回來填寫貨運資料。
-        </p>
-        {ecpayAvailable && <p className="mt-3 text-sm font-semibold text-emerald-300">
-          加入商品後，可選「綠界站內刷卡」，在本站直接輸入卡號付款。
-        </p>}
         <Link
           href="/#merchandise"
           className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-md bg-[#e7ba67] px-6 text-sm font-bold text-[#111214] hover:bg-[#f2cf8b]"
