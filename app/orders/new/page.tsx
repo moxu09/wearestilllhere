@@ -306,7 +306,7 @@ function NewOrderContent() {
           <p className="text-sm font-bold text-violet-600">ORDER</p>
           <h1 className="mt-2 text-3xl font-black">請先登入後下單</h1>
           <p className="mt-4 text-sm leading-7 text-slate-500">
-            登入會員後可以使用 ASD 錢包付款、建立訂單、查看訂單進度。
+            登入會員後可以使用 ASD 錢包{cardAvailable ? "或綠界站內刷卡（直接輸入卡號）" : ""}付款、建立訂單、查看訂單進度。
           </p>
 
           <a
