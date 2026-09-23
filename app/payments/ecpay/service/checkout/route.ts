@@ -28,8 +28,7 @@ export async function GET(request: Request) {
       ].filter(item => amount >= item.min && amount <= item.max &&
         (item.value !== "ATM" || isEcpayAtmAvailable()) &&
         (gateway.available || (gateway.inSiteAvailable && item.value === "Credit")) &&
-        (item.value === "Credit" || gateway.nonCreditAvailable) &&
-        (data.payment_kind !== "topup" || (item.value !== "CVS" && item.value !== "BARCODE")));
+        (item.value === "Credit" || gateway.nonCreditAvailable));
       const links = methods.map(item => {
         const target = item.value === "Credit" && process.env.ECPAY_INSITE_ACCEPT_PAYMENTS === "true"
           ? `/payments/ecpay/service/insite?order=${encodeURIComponent(order)}`

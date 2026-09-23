@@ -189,8 +189,6 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string, select
   if (attemptError || attempt) throw new Error("此付款單已開始建立付款資料，請勿重複付款");
   const amount = Number(payment.amount);
   assertPaymentAmount(method, amount);
-  if (payment.payment_kind === "topup" && (method === "CVS" || method === "BARCODE"))
-    throw new Error("儲值不提供超商代碼或條碼付款");
   const description = cleanTradeText(String(payment.description || "服務付款"), 100);
   const fields: Record<string, string> = {
     MerchantID: config.merchantId,

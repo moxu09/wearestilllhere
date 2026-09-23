@@ -65,7 +65,6 @@ export async function issueServiceDirect(order: string, method: Method): Promise
   if (Date.now() - Date.parse(payment.created_at) > 24 * 60 * 60 * 1000) throw new Error("付款單已過期");
   const amount = Number(payment.amount);
   if (!amountAllowed(method, amount)) throw new Error("此金額不適用所選的綠界付款方式");
-  if (payment.payment_kind === "topup" && method !== "ATM") throw new Error("儲值僅開放信用卡或 ATM");
   const prior = getEcpayInstructions(payment.raw_result);
   if (prior) {
     if (prior.method !== method) throw new Error("此付款單已選擇其他繳費方式，請使用原資訊");
