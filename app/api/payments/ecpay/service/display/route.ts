@@ -1,4 +1,5 @@
-import { getEcpayConfig } from "@/lib/ecpay";
+import { getEcpayConfig, verifyEcpayCallback } from "@/lib/ecpay";
+import { isEcpayFailedResultCode } from "@/lib/ecpayResult";
 
 export async function POST(request: Request) {
   const body = await request.text();
@@ -7,7 +8,11 @@ export async function POST(request: Request) {
   // Source: ECPay AIO OrderResultURL (https://developers.ecpay.com.tw/2862/), checked 2026-09-23.
   // The request origin may be Railway's internal localhost; browser navigation must use the public site.
   const url = new URL("/payments/ecpay/service/status", getEcpayConfig().baseUrl);
-  if (/^[A-Za-z0-9]{1,20}$/.test(fields.MerchantTradeNo || ""))
+  if (verifyEcpayCallback(fields) && /^[A-Za-z0-9]{1,20}$/.test(fields.MerchantTradeNo || "")) {
     url.searchParams.set("order", fields.MerchantTradeNo);
+    // Source: https://developers.ecpay.com.tw/2878/ — only RtnCode=1 is paid;
+    // OrderResultURL is a display hint, never a reason to mark the order paid.
+    if (isEcpayFailedResultCode(fields.RtnCode)) url.searchParams.set("result", "failed");
+  }
   return Response.redirect(url, 303);
 }

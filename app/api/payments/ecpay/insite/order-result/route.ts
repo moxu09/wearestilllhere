@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { parseInSiteResultOrder } from "@/lib/ecpayInSite";
+import { parseInSiteResult } from "@/lib/ecpayInSite";
 import { getEcpayConfig } from "@/lib/ecpay";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const outer: unknown = JSON.parse(resultData);
     // This browser redirect is navigation only. Never settle an order from ResultData.
     const gateway = getEcpayConfig();
-    const merchantTradeNo = parseInSiteResultOrder(outer, gateway.merchantId, gateway.hashKey, gateway.hashIv);
+    const { merchantTradeNo, failed } = parseInSiteResult(outer, gateway.merchantId, gateway.hashKey, gateway.hashIv);
     const { data: attempt } = await getSupabaseAdmin().from("ecpay_insite_attempts")
       .select("payment_kind").eq("merchant_trade_no", merchantTradeNo).maybeSingle();
     if (!attempt) throw new Error("找不到付款單");
@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     if (!path) throw new Error("站內付交易類別錯誤");
     const destination = new URL(path, gateway.baseUrl);
     destination.searchParams.set("order", merchantTradeNo);
+    if (failed) destination.searchParams.set("result", "failed");
     return Response.redirect(destination, 303);
   } catch (error) {
     console.error("ECPay in-site OrderResultURL failed", error);

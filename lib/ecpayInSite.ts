@@ -1,4 +1,5 @@
 import { createCipheriv, createDecipheriv } from "node:crypto";
+import { isEcpayFailedResultCode } from "./ecpayResult.ts";
 
 // Source: https://developers.ecpay.com.tw/9103/ (checked 2026-09-23).
 // ECPG Data uses URL-encoded JSON inside AES-128-CBC/PKCS7, then standard Base64.
@@ -56,7 +57,7 @@ export function parsePaidCreditNotice(data: Record<string, unknown>): {
 
 // The browser result is navigation only; it must never settle an order.
 // Source: https://developers.ecpay.com.tw/15076/ (checked 2026-09-23).
-export function parseInSiteResultOrder(envelope: unknown, merchantId: string, hashKey: string, hashIv: string): string {
+export function parseInSiteResult(envelope: unknown, merchantId: string, hashKey: string, hashIv: string): { merchantTradeNo: string; failed: boolean } {
   if (!envelope || typeof envelope !== "object" || Array.isArray(envelope))
     throw new Error("綠界付款結果格式錯誤");
   const outer = envelope as Record<string, unknown>;
@@ -64,13 +65,20 @@ export function parseInSiteResultOrder(envelope: unknown, merchantId: string, ha
     throw new Error("綠界付款結果外層驗證失敗");
   const data = decryptEcpayInSiteData(outer.Data, hashKey, hashIv);
   if (data.MerchantID !== merchantId) throw new Error("綠界付款結果商店代號不符");
+  if (typeof data.RtnCode !== "number") throw new Error("綠界付款結果交易狀態錯誤");
   const orderInfo = data.OrderInfo;
   if (!orderInfo || typeof orderInfo !== "object" || Array.isArray(orderInfo))
     throw new Error("綠界付款結果缺少訂單資料");
   const merchantTradeNo = (orderInfo as Record<string, unknown>).MerchantTradeNo;
   if (typeof merchantTradeNo !== "string" || !/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo))
     throw new Error("綠界付款結果交易編號錯誤");
-  return merchantTradeNo;
+  // Source: https://developers.ecpay.com.tw/15076/ — RtnCode other than 1 is a
+  // failed front-end result. The server notification still controls settlement.
+  return { merchantTradeNo, failed: isEcpayFailedResultCode(data.RtnCode) };
+}
+
+export function parseInSiteResultOrder(envelope: unknown, merchantId: string, hashKey: string, hashIv: string): string {
+  return parseInSiteResult(envelope, merchantId, hashKey, hashIv).merchantTradeNo;
 }
 
 const choice: Record<EcpayInSiteMethod, string> = { Credit: "1", ATM: "3", CVS: "4", BARCODE: "5" };
