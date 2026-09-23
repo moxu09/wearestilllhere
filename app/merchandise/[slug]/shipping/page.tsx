@@ -9,6 +9,7 @@ import {
 } from "@/lib/merchandiseCatalog";
 import ShippingForm from "./ShippingForm";
 import { getEcpayConfig } from "@/lib/ecpay";
+import { isEcpayAtmAvailable } from "@/lib/ecpayAtmSchedule";
 import { getJkopayConfig } from "@/lib/jkopay";
 
 export const dynamic = "force-dynamic";
@@ -73,7 +74,7 @@ export default async function MerchandiseShippingPage({
       </header>
 
       <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-        <ShippingForm product={product} ecpayAvailable={getEcpayConfig().available || getEcpayConfig().inSiteAvailable} ecpayAioAvailable={getEcpayConfig().available} ecpayNonCreditAvailable={getEcpayConfig().nonCreditAvailable} jkopayAvailable={getJkopayConfig().available} />
+        <ShippingForm product={product} ecpayAvailable={getEcpayConfig().available || getEcpayConfig().inSiteAvailable} ecpayAioAvailable={getEcpayConfig().available} ecpayNonCreditAvailable={getEcpayConfig().nonCreditAvailable} ecpayAtmAvailable={isEcpayAtmAvailable()} jkopayAvailable={getJkopayConfig().available} />
       </div>
     </main>
   );

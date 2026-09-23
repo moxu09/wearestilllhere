@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { getEcpayConfig } from "@/lib/ecpay";
+import { isEcpayAtmAvailable } from "@/lib/ecpayAtmSchedule";
 import { decryptEcpayInSiteData, encryptEcpayInSiteData } from "@/lib/ecpayInSite";
 import { getEcpayInstructions, type EcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
@@ -50,6 +51,7 @@ function normalizedInstructions(method: Method, result: Json, order: string, amo
 
 // Sources: https://developers.ecpay.com.tw/27995/ , /28000/ , /28005/ (live checked 2026-09-23).
 export async function issueServiceDirect(order: string, method: Method): Promise<EcpayInstructions> {
+  if (method === "ATM" && !isEcpayAtmAvailable()) throw new Error("綠界虛擬 ATM 將於 9 月 28 日開放");
   const gateway = getEcpayConfig();
   if (!gateway.nonCreditAvailable) throw new Error("綠界 ATM／超商付款尚未開放");
   if (!/^[A-Za-z0-9]{1,20}$/.test(order) || !["ATM", "CVS", "BARCODE"].includes(method))

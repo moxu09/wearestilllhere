@@ -1,5 +1,6 @@
 import { createEcpayServiceCheckout, getEcpayConfig } from "@/lib/ecpay";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { isEcpayAtmAvailable } from "@/lib/ecpayAtmSchedule";
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (character) => ({
@@ -25,6 +26,7 @@ export async function GET(request: Request) {
         { value: "CVS", label: "超商代碼", min: 34, max: 20_000 },
         { value: "BARCODE", label: "超商條碼", min: 18, max: 20_000 },
       ].filter(item => amount >= item.min && amount <= item.max &&
+        (item.value !== "ATM" || isEcpayAtmAvailable()) &&
         (gateway.available || (gateway.inSiteAvailable && item.value === "Credit")) &&
         (item.value === "Credit" || gateway.nonCreditAvailable) &&
         (data.payment_kind !== "topup" || (item.value !== "CVS" && item.value !== "BARCODE")));

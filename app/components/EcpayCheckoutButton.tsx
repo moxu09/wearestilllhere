@@ -66,7 +66,7 @@ export default function EcpayCheckoutButton(props: Props) {
     <div>
       <button type="button" onClick={checkout} disabled={props.disabled || submitting}
         className="inline-flex h-12 w-full items-center justify-center rounded-md bg-[#2d9464] px-4 text-sm font-bold text-white transition hover:bg-[#38a974] disabled:cursor-not-allowed disabled:opacity-45">
-        {submitting ? "正在建立綠界付款…" : `使用綠界${({ Credit: "信用卡", ATM: "ATM 虛擬帳號", CVS: "超商代碼", BARCODE: "超商條碼" } as const)[props.method || "Credit"]}付款`}
+        {submitting ? "正在建立綠界付款…" : props.method === "Credit" || !props.method ? "綠界站內刷卡｜直接輸入卡號" : `使用綠界${({ ATM: "ATM 虛擬帳號", CVS: "超商代碼", BARCODE: "超商條碼" } as const)[props.method]}付款`}
       </button>
       {error && <p role="alert" className="mt-3 text-sm font-bold text-[#ff806f]">{error}</p>}
     </div>

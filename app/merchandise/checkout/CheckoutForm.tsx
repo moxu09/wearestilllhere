@@ -25,7 +25,7 @@ type ShippingProvider = "7-ELEVEN" | "全家";
 const inputClassName =
   "h-12 w-full rounded-md border border-white/15 bg-[#0d0e10] px-4 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#e7ba67]";
 
-export default function CheckoutForm({ ecpayAvailable, ecpayAioAvailable, ecpayNonCreditAvailable, jkopayAvailable }: { ecpayAvailable: boolean; ecpayAioAvailable: boolean; ecpayNonCreditAvailable: boolean; jkopayAvailable: boolean }) {
+export default function CheckoutForm({ ecpayAvailable, ecpayAioAvailable, ecpayNonCreditAvailable, ecpayAtmAvailable, jkopayAvailable }: { ecpayAvailable: boolean; ecpayAioAvailable: boolean; ecpayNonCreditAvailable: boolean; ecpayAtmAvailable: boolean; jkopayAvailable: boolean }) {
   const {
     items,
     itemCount,
@@ -217,6 +217,7 @@ export default function CheckoutForm({ ecpayAvailable, ecpayAioAvailable, ecpayN
               { method: "CVS" as const, min: 34, max: 20_000 },
               { method: "BARCODE" as const, min: 18, max: 20_000 },
             ].filter(option => total >= option.min && total <= option.max &&
+              (option.method !== "ATM" || ecpayAtmAvailable) &&
               (option.method === "Credit" ? ecpayAvailable : ecpayAioAvailable && ecpayNonCreditAvailable)).map(option =>
               <EcpayCheckoutButton
                 key={option.method}

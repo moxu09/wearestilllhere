@@ -10,6 +10,7 @@ import type { MerchandiseCheckoutRequest } from "@/lib/jkopay";
 import { checkMacValue, verifyEcpayMac } from "@/lib/ecpayMac";
 import { paymentInfoFields } from "@/lib/ecpayNoncredit";
 import { getEcpayInstructions } from "@/lib/ecpayPaymentInstructions";
+import { isEcpayAtmAvailable } from "@/lib/ecpayAtmSchedule";
 
 const stageUrl = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5";
 const productionUrl = "https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5";
@@ -65,6 +66,7 @@ export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRe
   if (inSite ? !config.inSiteAvailable : !config.available)
     throw new Error("綠界支付尚未開放");
   const method = assertPaymentMethod(input.ecpayMethod || "Credit");
+  if (method === "ATM" && !isEcpayAtmAvailable()) throw new Error("綠界虛擬 ATM 將於 9 月 28 日開放");
   if (inSite && method !== "Credit") throw new Error("此站內付入口目前只支援信用卡");
   if (method !== "Credit" && !config.nonCreditAvailable) throw new Error("此付款方式尚未開放");
   const customerName = String(input.customerName || "").trim();
@@ -168,6 +170,7 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string, select
   const config = getEcpayConfig();
   if (!config.available) throw new Error("綠界支付尚未開放");
   const method = assertPaymentMethod(selectedMethod);
+  if (method === "ATM" && !isEcpayAtmAvailable()) throw new Error("綠界虛擬 ATM 將於 9 月 28 日開放");
   if (method !== "Credit" && !config.nonCreditAvailable) throw new Error("此付款方式尚未開放");
   if (!/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo)) throw new Error("綠界交易編號格式錯誤");
   const { data: payment, error } = await getSupabaseAdmin()

@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import CheckoutForm from "./CheckoutForm";
 import { getEcpayConfig } from "@/lib/ecpay";
 import { getJkopayConfig } from "@/lib/jkopay";
+import { isEcpayAtmAvailable } from "@/lib/ecpayAtmSchedule";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ export default function MerchandiseCheckoutPage() {
       </header>
 
       <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-        <CheckoutForm ecpayAvailable={getEcpayConfig().available || getEcpayConfig().inSiteAvailable} ecpayAioAvailable={getEcpayConfig().available} ecpayNonCreditAvailable={getEcpayConfig().nonCreditAvailable} jkopayAvailable={getJkopayConfig().available} />
+        <CheckoutForm ecpayAvailable={getEcpayConfig().available || getEcpayConfig().inSiteAvailable} ecpayAioAvailable={getEcpayConfig().available} ecpayNonCreditAvailable={getEcpayConfig().nonCreditAvailable} ecpayAtmAvailable={isEcpayAtmAvailable()} jkopayAvailable={getJkopayConfig().available} />
       </div>
     </main>
   );
