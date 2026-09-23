@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { startPlatformCardPayment } from "@/lib/startPlatformCardPayment";
 import {
   ArrowLeft,
   ArrowRight,
@@ -274,6 +275,18 @@ export default function OrderDetailPage() {
     await loadOrder();
   }
 
+  async function payByCard() {
+    if (!order) return;
+    setBusy(true);
+    setError("");
+    try {
+      await startPlatformCardPayment(order.id);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "無法開啟站內刷卡，請稍後重試");
+      setBusy(false);
+    }
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-[#f7f3ec] px-4 py-10 text-slate-950">
@@ -467,8 +480,15 @@ export default function OrderDetailPage() {
                   <div className="mt-5 rounded-3xl border border-amber-200 bg-amber-50 p-5">
                     <p className="font-black text-amber-700">等待付款確認</p>
                     <p className="mt-2 text-sm leading-7 text-amber-700/80">
-                      這筆訂單使用的是非 ASD 錢包付款，下一步會做管理員確認付款功能。
+                      {order.payment_method === "card"
+                        ? "請使用綠界站內刷卡；實際收到綠界付款通知後才會標記已付款。"
+                        : "這筆訂單使用的是非 ASD 錢包付款，請依客服指示完成付款。"}
                     </p>
+                    {order.payment_method === "card" && isCustomer && <button type="button"
+                      onClick={payByCard} disabled={busy}
+                      className="mt-4 rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white disabled:opacity-50">
+                      {busy ? "正在開啟刷卡畫面…" : "綠界站內刷卡｜直接輸入卡號"}
+                    </button>}
                   </div>
                 )}
               </Panel>

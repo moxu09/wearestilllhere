@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const raw = await request.text();
     if (raw.length > 4096) return Response.json({ error: "資料過大" }, { status: 413 });
     const body = JSON.parse(raw) as { kind?: InSiteKind; merchantTradeNo?: string; phone?: string; email?: string };
-    if (body.kind !== "service" && body.kind !== "merchandise") throw new Error("付款類別錯誤");
+    if (body.kind !== "service" && body.kind !== "merchandise" && body.kind !== "platform") throw new Error("付款類別錯誤");
     const result = await createInSiteToken({ kind: body.kind, merchantTradeNo: body.merchantTradeNo || "", phone: body.phone, email: body.email });
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

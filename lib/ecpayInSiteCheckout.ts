@@ -3,7 +3,7 @@ import { getEcpayConfig } from "@/lib/ecpay";
 import { buildEcpayInSiteTokenData, callEcpayInSiteApi, decryptEcpayInSiteData, parsePaidCreditNotice } from "@/lib/ecpayInSite";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
-export type InSiteKind = "service" | "merchandise";
+export type InSiteKind = "service" | "merchandise" | "platform";
 type ObjectValue = Record<string, unknown>;
 
 function object(value: unknown): ObjectValue {
@@ -46,6 +46,24 @@ async function payableOrder(kind: InSiteKind, merchantTradeNo: string) {
     if (Date.now() - Date.parse(data.created_at) > 24 * 60 * 60 * 1000)
       throw new Error("付款連結已過期，請回到 Discord 重新建立訂單");
     return { amount: Number(data.amount), phone: "", description: data.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款", itemName: safeText(data.description, 100) || "服務付款" };
+  }
+  if (kind === "platform") {
+    const { data: payment, error: paymentError } = await admin.from("ecpay_platform_payments")
+      .select("platform_order_id,amount,status,created_at")
+      .eq("merchant_trade_no", merchantTradeNo).maybeSingle();
+    if (paymentError || !payment || payment.status !== "pending")
+      throw new Error("網站刷卡付款單不存在或已完成");
+    if (Date.now() - Date.parse(payment.created_at) > 24 * 60 * 60 * 1000)
+      throw new Error("刷卡付款單已過期，請回到訂單頁聯絡客服");
+    const { data: order, error: orderError } = await admin.from("platform_orders")
+      .select("title,total_amount,paid_amount,payment_method,payment_status,status")
+      .eq("id", payment.platform_order_id).maybeSingle();
+    if (orderError || !order || order.payment_method !== "card" ||
+        order.payment_status !== "unpaid" || order.status !== "pending_payment" ||
+        Number(order.paid_amount) !== 0 || Number(order.total_amount) !== Number(payment.amount))
+      throw new Error("這筆網站訂單不能再次刷卡付款");
+    return { amount: Number(payment.amount), phone: "", description: "深夜不關燈陪陪服務付款",
+      itemName: safeText(order.title, 100) || "陪陪服務付款" };
   }
   const { data, error } = await admin.from("merchandise_orders")
     .select("total_amount,status,payment_method,phone,items,created_at")
@@ -160,7 +178,10 @@ export async function handleInSiteReturn(envelope: unknown) {
     .select("payment_kind,status").eq("merchant_trade_no", merchantTradeNo).maybeSingle();
   if (error || !attempt || !["creating", "created"].includes(attempt.status))
     throw new Error("找不到站內付交易紀錄");
-  const rpc = attempt.payment_kind === "service" ? "ecpay_mark_service_paid" : "complete_ecpay_merchandise_order";
+  const rpc = attempt.payment_kind === "service" ? "ecpay_mark_service_paid"
+    : attempt.payment_kind === "platform" ? "ecpay_mark_platform_paid"
+    : attempt.payment_kind === "merchandise" ? "complete_ecpay_merchandise_order" : null;
+  if (!rpc) throw new Error("站內付交易類別錯誤");
   const { error: settleError } = await getSupabaseAdmin().rpc(rpc, {
     p_merchant_trade_no: merchantTradeNo, p_trade_no: tradeNoValue, p_amount: amount,
     p_payment_date: notice.paymentDate,

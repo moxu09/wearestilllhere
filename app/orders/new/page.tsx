@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { startPlatformCardPayment } from "@/lib/startPlatformCardPayment";
 import {
   ArrowLeft,
   ArrowRight,
@@ -59,7 +60,7 @@ type WalletData = {
   balance: number;
 };
 
-type PaymentMethod = "wallet" | "transfer" | "manual";
+type PaymentMethod = "wallet" | "transfer" | "card" | "manual";
 
 export default function NewOrderPage() {
   return (
@@ -81,6 +82,7 @@ function NewOrderContent() {
   const [player, setPlayer] = useState<Player | null>(null);
   const [services, setServices] = useState<PlayerService[]>([]);
   const [wallet, setWallet] = useState<WalletData | null>(null);
+  const [cardAvailable, setCardAvailable] = useState(false);
 
   const [selectedServiceId, setSelectedServiceId] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -217,6 +219,12 @@ function NewOrderContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerId]);
 
+  useEffect(() => {
+    void fetch("/api/payments/ecpay/platform/entry", { cache: "no-store" })
+      .then(response => response.json()).then((value: { available?: boolean }) => setCardAvailable(value.available === true))
+      .catch(() => setCardAvailable(false));
+  }, []);
+
   async function submitOrder() {
     setError("");
     setMessage("");
@@ -246,6 +254,11 @@ function NewOrderContent() {
       return;
     }
 
+    if (paymentMethod === "card" && (!cardAvailable || totalAmount < 6 || totalAmount > 199_999)) {
+      setError("綠界站內刷卡金額須介於 NT$6 至 NT$199,999，或目前尚未開放。");
+      return;
+    }
+
     setSubmitting(true);
 
     const { data, error } = await supabase.rpc("platform_create_order", {
@@ -262,9 +275,19 @@ function NewOrderContent() {
       return;
     }
 
-    setMessage("訂單建立成功。");
-
     const orderId = data as string;
+    if (paymentMethod === "card") {
+      try {
+        await startPlatformCardPayment(orderId);
+        return;
+      } catch (cause) {
+        setError(`訂單已建立，但刷卡畫面未開啟：${cause instanceof Error ? cause.message : "請到訂單頁重試"}。請勿重新下單。`);
+        setSubmitting(false);
+        window.location.href = `/orders/${orderId}`;
+        return;
+      }
+    }
+    setMessage("訂單建立成功。");
     window.location.href = `/orders/${orderId}`;
   }
 
@@ -493,10 +516,18 @@ function NewOrderContent() {
                     onClick={() => setPaymentMethod("transfer")}
                   />
 
+                  {cardAvailable && <PaymentButton
+                    active={paymentMethod === "card"}
+                    title="綠界站內刷卡｜直接輸入卡號"
+                    desc="1 ASD＝NT$1；建立訂單後在本站輸入卡號，銀行要求時需完成 3D 驗證。"
+                    icon={<CreditCard />}
+                    onClick={() => setPaymentMethod("card")}
+                  />}
+
                   <PaymentButton
                     active={paymentMethod === "manual"}
                     title="其他付款方式"
-                    desc="適合刷卡、無卡或人工付款流程。"
+                    desc="適合無卡或由客服確認的人工付款流程。"
                     icon={<ShieldCheck />}
                     onClick={() => setPaymentMethod("manual")}
                   />
@@ -630,6 +661,7 @@ function OrderSummary({
   const paymentLabel: Record<PaymentMethod, string> = {
     wallet: "ASD 錢包",
     transfer: "轉帳 / 匯款",
+    card: "綠界站內刷卡",
     manual: "其他付款",
   };
 

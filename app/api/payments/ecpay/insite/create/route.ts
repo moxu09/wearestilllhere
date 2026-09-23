@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const raw = await request.text();
     if (raw.length > 8192) return Response.json({ error: "資料過大" }, { status: 413 });
     const body = JSON.parse(raw) as { kind?: InSiteKind; merchantTradeNo?: string; attemptId?: string; payToken?: string };
-    if (body.kind !== "service" && body.kind !== "merchandise") throw new Error("付款類別錯誤");
+    if (body.kind !== "service" && body.kind !== "merchandise" && body.kind !== "platform") throw new Error("付款類別錯誤");
     const result = await submitInSitePayment({
       kind: body.kind, merchantTradeNo: body.merchantTradeNo || "",
       attemptId: body.attemptId || "", payToken: body.payToken || "",

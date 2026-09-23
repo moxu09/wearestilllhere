@@ -44,6 +44,8 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
   const locked = useRef(false);
   const statusHref = kind === "service"
     ? `/payments/ecpay/service/status?order=${encodeURIComponent(order)}`
+    : kind === "platform"
+    ? `/payments/ecpay/platform/status?order=${encodeURIComponent(order)}`
     : `/merchandise/payment-result?order=${encodeURIComponent(order)}`;
 
   async function openPayment() {
