@@ -73,7 +73,7 @@ export default async function MerchandiseShippingPage({
       </header>
 
       <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-        <ShippingForm product={product} ecpayAvailable={getEcpayConfig().available} jkopayAvailable={getJkopayConfig().available} />
+        <ShippingForm product={product} ecpayAvailable={getEcpayConfig().available || getEcpayConfig().inSiteAvailable} jkopayAvailable={getJkopayConfig().available} />
       </div>
     </main>
   );

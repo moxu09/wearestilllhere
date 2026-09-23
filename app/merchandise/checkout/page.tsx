@@ -47,7 +47,7 @@ export default function MerchandiseCheckoutPage() {
       </header>
 
       <div data-reveal className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
-        <CheckoutForm ecpayAvailable={getEcpayConfig().available} jkopayAvailable={getJkopayConfig().available} />
+        <CheckoutForm ecpayAvailable={getEcpayConfig().available || getEcpayConfig().inSiteAvailable} ecpayAioAvailable={getEcpayConfig().available} jkopayAvailable={getJkopayConfig().available} />
       </div>
     </main>
   );

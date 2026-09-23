@@ -12,6 +12,32 @@ import { checkMacValue, verifyEcpayMac } from "@/lib/ecpayMac";
 const stageUrl = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5";
 const productionUrl = "https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5";
 
+export type EcpayPaymentMethod = "Credit" | "ATM" | "CVS" | "BARCODE";
+const paymentLimits: Record<EcpayPaymentMethod, [number, number]> = {
+  Credit: [6, 199_999], ATM: [16, 49_999], CVS: [34, 20_000], BARCODE: [18, 20_000],
+};
+
+function assertPaymentMethod(value: unknown): EcpayPaymentMethod {
+  if (value === "Credit" || value === "ATM" || value === "CVS" || value === "BARCODE") return value;
+  throw new Error("綠界付款方式不支援");
+}
+
+function assertPaymentAmount(method: EcpayPaymentMethod, amount: number) {
+  const [min, max] = paymentLimits[method];
+  if (!Number.isInteger(amount) || amount < min || amount > max)
+    throw new Error(`此付款方式單筆金額須介於 NT$${min} 至 NT$${max.toLocaleString("zh-TW")}`);
+}
+
+function paymentInfoFields(method: EcpayPaymentMethod, baseUrl: string, kind: "merchandise" | "service"): Record<string, string> {
+  if (method === "Credit") return { NeedExtraPaidInfo: "Y" };
+  const path = `/api/payments/ecpay/${kind}/payment-info`;
+  return {
+    PaymentInfoURL: `${baseUrl}${path}`,
+    ClientRedirectURL: `${baseUrl}${path}/display`,
+    ...(method === "ATM" ? { ExpireDate: "3" } : { StoreExpireDate: method === "CVS" ? "4320" : "3" }),
+  };
+}
+
 export function getEcpayConfig() {
   const merchantId = process.env.ECPAY_MERCHANT_ID?.trim() || "";
   const hashKey = process.env.ECPAY_HASH_KEY?.trim() || "";
@@ -19,7 +45,8 @@ export function getEcpayConfig() {
   const baseUrl = (process.env.ECPAY_PUBLIC_BASE_URL?.trim() || "https://www.wearestilllhere.com").replace(/\/$/, "");
   const stage = process.env.ECPAY_ENV === "stage";
   const available = Boolean(merchantId && hashKey && hashIv && process.env.ECPAY_ACCEPT_PAYMENTS === "true");
-  return { merchantId, hashKey, hashIv, baseUrl, stage, available, checkoutUrl: stage ? stageUrl : productionUrl };
+  const inSiteAvailable = Boolean(merchantId && hashKey && hashIv && process.env.ECPAY_INSITE_ACCEPT_PAYMENTS === "true");
+  return { merchantId, hashKey, hashIv, baseUrl, stage, available, inSiteAvailable, checkoutUrl: stage ? stageUrl : productionUrl };
 }
 
 export function verifyEcpayCallback(fields: Record<string, string>, config = getEcpayConfig()) {
@@ -40,9 +67,12 @@ function cleanTradeText(value: string, maxLength: number) {
   return value.replace(/[&<>#]/g, " ").replace(/\s+/g, " ").trim().slice(0, maxLength);
 }
 
-export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRequest) {
+export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRequest & { ecpayMethod?: EcpayPaymentMethod }, inSite = false) {
   const config = getEcpayConfig();
-  if (!config.available) throw new Error("綠界支付尚未開放");
+  if (inSite ? !config.inSiteAvailable : !config.available)
+    throw new Error("綠界支付尚未開放");
+  const method = assertPaymentMethod(input.ecpayMethod || "Credit");
+  if (inSite && method !== "Credit") throw new Error("此站內付入口目前只支援信用卡");
   const customerName = String(input.customerName || "").trim();
   const phone = String(input.phone || "").replace(/[\s-]/g, "");
   const storeName = String(input.storeName || "").trim();
@@ -81,8 +111,7 @@ export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRe
   const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
   const shippingFee = calculateShippingFee(subtotal);
   const totalAmount = subtotal + shippingFee;
-  if (!Number.isInteger(totalAmount) || totalAmount < 6 || totalAmount > 199_999)
-    throw new Error("綠界信用卡單筆金額須介於 NT$6 至 NT$199,999");
+  assertPaymentAmount(method, totalAmount);
 
   const suffix = randomBytes(5).toString("hex").toUpperCase();
   const orderNo = `WEB-${Date.now()}-${suffix}`;
@@ -114,9 +143,9 @@ export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRe
     ItemName: items.map((item) => cleanTradeText(`${item.name} x${item.quantity}`, 70)).join("#").slice(0, 400),
     ReturnURL: `${config.baseUrl}/api/payments/ecpay/merchandise/result`,
     OrderResultURL: `${config.baseUrl}/api/payments/ecpay/merchandise/display`,
-    ChoosePayment: "Credit",
-    NeedExtraPaidInfo: "Y",
+    ChoosePayment: method,
     EncryptType: "1",
+    ...paymentInfoFields(method, config.baseUrl, "merchandise"),
   };
   fields.CheckMacValue = checkMacValue(fields, config.hashKey, config.hashIv);
   return { orderNo, merchantTradeNo, action: config.checkoutUrl, fields };
@@ -141,13 +170,14 @@ export async function completeEcpayMerchandisePayment(fields: Record<string, str
   return true;
 }
 
-export async function createEcpayServiceCheckout(merchantTradeNo: string) {
+export async function createEcpayServiceCheckout(merchantTradeNo: string, selectedMethod: unknown = "Credit") {
   const config = getEcpayConfig();
   if (!config.available) throw new Error("綠界支付尚未開放");
+  const method = assertPaymentMethod(selectedMethod);
   if (!/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo)) throw new Error("綠界交易編號格式錯誤");
   const { data: payment, error } = await getSupabaseAdmin()
     .from("ecpay_service_payments")
-    .select("merchant_trade_no,organization_code,amount,description,status,created_at")
+    .select("merchant_trade_no,organization_code,payment_kind,amount,description,status,created_at")
     .eq("merchant_trade_no", merchantTradeNo)
     .maybeSingle();
   if (error || !payment) throw new Error("找不到綠界付款單");
@@ -155,7 +185,9 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string) {
   if (Date.now() - Date.parse(payment.created_at) > 24 * 60 * 60 * 1000)
     throw new Error("付款連結已過期，請回到 Discord 重新建立訂單");
   const amount = Number(payment.amount);
-  if (!Number.isInteger(amount) || amount < 6 || amount > 199_999) throw new Error("綠界信用卡付款金額錯誤");
+  assertPaymentAmount(method, amount);
+  if (payment.payment_kind === "topup" && (method === "CVS" || method === "BARCODE"))
+    throw new Error("儲值不提供超商代碼或條碼付款");
   const description = cleanTradeText(String(payment.description || "服務付款"), 100);
   const fields: Record<string, string> = {
     MerchantID: config.merchantId,
@@ -167,9 +199,9 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string) {
     ItemName: description || "服務付款",
     ReturnURL: `${config.baseUrl}/api/payments/ecpay/service/result`,
     OrderResultURL: `${config.baseUrl}/api/payments/ecpay/service/display`,
-    ChoosePayment: "Credit",
-    NeedExtraPaidInfo: "Y",
+    ChoosePayment: method,
     EncryptType: "1",
+    ...paymentInfoFields(method, config.baseUrl, "service"),
   };
   fields.CheckMacValue = checkMacValue(fields, config.hashKey, config.hashIv);
   return { action: config.checkoutUrl, fields };
@@ -192,4 +224,45 @@ export async function completeEcpayServicePayment(fields: Record<string, string>
   });
   if (error) throw new Error(error.message || "服務付款狀態保存失敗");
   return true;
+}
+
+export async function saveEcpayPaymentInfo(kind: "merchandise" | "service", fields: Record<string, string>) {
+  if (!verifyEcpayCallback(fields)) throw new Error("綠界取號通知驗證失敗");
+  const merchantTradeNo = fields.MerchantTradeNo || "";
+  const tradeNo = fields.TradeNo || "";
+  const amount = Number(fields.TradeAmt);
+  const type = fields.PaymentType?.split("_")[0];
+  const method = assertPaymentMethod(type);
+  if (method === "Credit" || !/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo) ||
+      !/^[A-Za-z0-9]{1,20}$/.test(tradeNo) || !Number.isSafeInteger(amount) || amount <= 0)
+    throw new Error("綠界取號通知資料不完整");
+  const success = method === "ATM" ? fields.RtnCode === "2" : fields.RtnCode === "10100073";
+  if (!success) throw new Error("綠界取號未成功");
+  if (method === "ATM" && (!/^\d{3}$/.test(fields.BankCode || "") || !/^\d{6,16}$/.test(fields.vAccount || "")))
+    throw new Error("綠界虛擬帳號資料不完整");
+  if (method === "CVS" && !/^[A-Za-z0-9]{6,14}$/.test(fields.PaymentNo || ""))
+    throw new Error("綠界超商代碼資料不完整");
+  if (method === "BARCODE" && [fields.Barcode1, fields.Barcode2, fields.Barcode3].some(value => !/^[A-Za-z0-9-]{1,20}$/.test(value || "")))
+    throw new Error("綠界超商條碼資料不完整");
+  const table = kind === "merchandise" ? "merchandise_orders" : "ecpay_service_payments";
+  const idColumn = kind === "merchandise" ? "platform_order_id" : "merchant_trade_no";
+  const amountColumn = kind === "merchandise" ? "total_amount" : "amount";
+  const admin = getSupabaseAdmin();
+  const { data: payment, error } = await admin.from(table).select(`${amountColumn},status,raw_result`)
+    .eq(idColumn, merchantTradeNo).maybeSingle();
+  if (error || !payment) throw new Error("找不到對應的綠界付款單");
+  const localAmount = kind === "merchandise" ? "total_amount" in payment ? payment.total_amount : null : "amount" in payment ? payment.amount : null;
+  if (Number(localAmount) !== amount) throw new Error("綠界取號金額不符");
+  if (payment.status === "paid") return { merchantTradeNo, method };
+  if (payment.status !== "pending") throw new Error("綠界付款單狀態不可取號");
+  const old = payment.raw_result as Record<string, string> | null;
+  if (old?.TradeNo && old.TradeNo !== tradeNo) throw new Error("綠界付款單已有不同取號紀錄");
+  const safeInfo = Object.fromEntries([
+    "MerchantTradeNo", "TradeNo", "TradeAmt", "PaymentType", "ExpireDate",
+    "BankCode", "vAccount", "PaymentNo", "Barcode1", "Barcode2", "Barcode3",
+  ].filter(key => fields[key]).map(key => [key, fields[key]]));
+  const { error: updateError } = await admin.from(table).update({ raw_result: safeInfo })
+    .eq(idColumn, merchantTradeNo).eq("status", "pending");
+  if (updateError) throw new Error(updateError.message || "保存綠界取號資料失敗");
+  return { merchantTradeNo, method };
 }

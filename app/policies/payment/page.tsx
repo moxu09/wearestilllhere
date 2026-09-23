@@ -15,7 +15,7 @@ export default function PaymentPolicyPage() {
   return (
     <PolicyShell eyebrow="Payment information" title="付款說明" intro="商品頁顯示的金額以新臺幣計價，實際可用方式以結帳頁為準。">
       <PolicySection title="一、目前付款狀態">
-        <p>街口支付已開放使用；{ecpayAvailable ? "綠界信用卡亦可於結帳頁選用；" : "綠界信用卡準備中；"}LINE Pay、PAYUNi 與全支付仍在申請中。結帳頁會顯示實際應付金額，選擇付款方式後將前往相應的安全付款頁。</p>
+        <p>街口支付已開放使用；{ecpayAvailable ? "綠界信用卡、ATM 虛擬帳號、超商代碼與超商條碼可依訂單金額於結帳頁選用；" : "綠界付款準備中；"}LINE Pay、PAYUNi 與全支付仍在申請中。結帳頁會顯示實際應付金額；ATM 或超商取得繳費資訊後，須完成繳費才算付款成功。</p>
       </PolicySection>
 
       <PolicySection title="二、商品、運費與應付總額">
