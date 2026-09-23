@@ -197,7 +197,7 @@ export default function CheckoutForm({ ecpayAvailable, ecpayAioAvailable, ecpayN
           <CreditCard className="mx-auto h-7 w-7 text-[#e7ba67]" />
           <h2 className="mt-4 text-xl font-bold">選擇付款方式</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/45">
-            確認貨運資料與購物車內容後選擇付款方式。{ecpayNonCreditAvailable && "ATM 與超商付款取得繳費資訊後，仍須完成繳費。"}
+            確認貨運資料與購物車內容後選擇付款方式。{ecpayNonCreditAvailable && (ecpayAtmAvailable ? "ATM 與超商付款取得繳費資訊後，仍須完成繳費。" : "超商付款取得繳費資訊後，仍須完成繳費；虛擬 ATM 於 9 月 28 日開放。")}
           </p>
           <div className="mt-6">
             {jkopayAvailable ? <JkopayCheckoutButton
