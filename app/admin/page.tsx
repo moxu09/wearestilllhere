@@ -28,6 +28,13 @@ type Profile = {
   display_name: string | null;
 };
 
+type MerchandiseSummary = {
+  total: number;
+  pending: number;
+  paid: number;
+  paidAmount: number;
+};
+
 type OrderStatus =
   | "pending_payment"
   | "paid"
@@ -113,6 +120,7 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [merchandiseSummary, setMerchandiseSummary] = useState<MerchandiseSummary | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const [voiceRooms, setVoiceRooms] = useState<VoiceRoom[]>([]);
@@ -209,6 +217,23 @@ export default function AdminDashboardPage() {
     if (profileData?.role !== "admin" && profileData?.role !== "staff") {
       setLoading(false);
       return;
+    }
+
+    if (profileData?.role === "admin") {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (token) {
+        const merchandiseResponse = await fetch("/api/admin/merchandise-orders", {
+          cache: "no-store",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (merchandiseResponse.ok) {
+          const merchandiseData = (await merchandiseResponse.json()) as { summary: MerchandiseSummary };
+          setMerchandiseSummary(merchandiseData.summary);
+        } else {
+          setError("讀取官網商品訂單統計失敗，請到商品訂單頁查看詳情。");
+        }
+      }
     }
 
     const [ordersResult, applicationsResult, playersResult, roomsResult] =
@@ -410,6 +435,13 @@ export default function AdminDashboardPage() {
             />
           </div>
 
+          {profile.role === "admin" && merchandiseSummary && (
+            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              <StatCard title="官網商品訂單" value={String(merchandiseSummary.total)} desc={`待付款 ${merchandiseSummary.pending} 筆`} icon={<Package />} />
+              <StatCard title="商品已付款" value={String(merchandiseSummary.paid)} desc={`已付款金額 NT$ ${merchandiseSummary.paidAmount.toLocaleString()}`} icon={<Coins />} />
+            </div>
+          )}
+
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
             <SmallStat
               title="在線陪玩師"
@@ -447,6 +479,13 @@ export default function AdminDashboardPage() {
                   href="/admin/orders"
                   icon={<ReceiptText />}
                 />
+
+                {profile.role === "admin" && <QuickLink
+                  title="官網商品訂單"
+                  desc="查看下單名單、付款狀態與商品營收。"
+                  href="/admin/merchandise-orders"
+                  icon={<Package />}
+                />}
 
                 <QuickLink
                   title="陪玩師申請"
