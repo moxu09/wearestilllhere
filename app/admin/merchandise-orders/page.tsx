@@ -69,7 +69,10 @@ export default function MerchandiseOrdersPage() {
     }
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void load(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [load]);
 
   async function checkEcpay(order: MerchandiseOrder) {
     setCheckingId(order.id);

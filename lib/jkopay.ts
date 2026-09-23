@@ -224,7 +224,6 @@ export async function createMerchandisePayment(input: MerchandiseCheckoutRequest
 }
 
 export async function inquireJkopay(platformOrderId: string) {
-  const config = getJkopayConfig();
   const query = `platform_order_ids=${encodeURIComponent(platformOrderId)}`;
   const result = await callJkopay({
     payload: query,

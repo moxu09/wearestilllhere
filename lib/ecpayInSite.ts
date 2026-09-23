@@ -54,6 +54,25 @@ export function parsePaidCreditNotice(data: Record<string, unknown>): {
   return { merchantTradeNo, tradeNo, amount, paymentDate: typeof info.PaymentDate === "string" ? info.PaymentDate : null };
 }
 
+// The browser result is navigation only; it must never settle an order.
+// Source: https://developers.ecpay.com.tw/15076/ (checked 2026-09-23).
+export function parseInSiteResultOrder(envelope: unknown, merchantId: string, hashKey: string, hashIv: string): string {
+  if (!envelope || typeof envelope !== "object" || Array.isArray(envelope))
+    throw new Error("綠界付款結果格式錯誤");
+  const outer = envelope as Record<string, unknown>;
+  if (!merchantId || outer.MerchantID !== merchantId || outer.TransCode !== 1 || typeof outer.Data !== "string")
+    throw new Error("綠界付款結果外層驗證失敗");
+  const data = decryptEcpayInSiteData(outer.Data, hashKey, hashIv);
+  if (data.MerchantID !== merchantId) throw new Error("綠界付款結果商店代號不符");
+  const orderInfo = data.OrderInfo;
+  if (!orderInfo || typeof orderInfo !== "object" || Array.isArray(orderInfo))
+    throw new Error("綠界付款結果缺少訂單資料");
+  const merchantTradeNo = (orderInfo as Record<string, unknown>).MerchantTradeNo;
+  if (typeof merchantTradeNo !== "string" || !/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo))
+    throw new Error("綠界付款結果交易編號錯誤");
+  return merchantTradeNo;
+}
+
 const choice: Record<EcpayInSiteMethod, string> = { Credit: "1", ATM: "3", CVS: "4", BARCODE: "5" };
 
 export function buildEcpayInSiteTokenData(input: {

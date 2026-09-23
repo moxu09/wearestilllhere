@@ -63,7 +63,7 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
       if (!response.ok || !result.token || !result.attemptId) throw new Error(result.error || "無法建立付款畫面");
       attemptId.current = result.attemptId;
       await loadScript("https://code.jquery.com/jquery-3.7.1.min.js", "sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs");
-      await loadScript("https://cdn.jsdelivr.net/npm/node-forge@0.7.0/dist/forge.min.js", "sha384-sgzMi6V7PVuBrH3D+OTG6gR4GjgQCsSSUYFcGoGCNr5ks7Sr3WrS+zNv5H33fTY5");
+      // The official SDK loads its own compatible forge version during initialize().
       await loadScript(`https://${result.stage ? "ecpg-stage" : "ecpg"}.ecpay.com.tw/Scripts/sdk-1.0.0.js?t=20210121100116`);
       const sdk = window.ECPay;
       if (!sdk) throw new Error("綠界付款元件無法啟動");

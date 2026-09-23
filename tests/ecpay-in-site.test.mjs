@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { encryptEcpayInSiteData, decryptEcpayInSiteData, buildEcpayInSiteTokenData, parsePaidCreditNotice } from "../lib/ecpayInSite.ts";
+import { encryptEcpayInSiteData, decryptEcpayInSiteData, buildEcpayInSiteTokenData, parsePaidCreditNotice, parseInSiteResultOrder } from "../lib/ecpayInSite.ts";
 
 // Source: ECPay-API-Skill/test-vectors/aes-encryption.json, official ECPG vector.
 const key = "pwFHCqoQZGmho4w6";
@@ -36,4 +36,14 @@ test("僅已付款、非模擬的信用卡通知可入帳", () => {
   assert.equal(parsePaidCreditNotice({ RtnCode: 1, OrderInfo: { ...info, TradeStatus: "0" } }), null);
   assert.equal(parsePaidCreditNotice({ RtnCode: 1, OrderInfo: { ...info, PaymentType: "ATM" } }), null);
   assert.throws(() => parsePaidCreditNotice({ RtnCode: 1, OrderInfo: { ...info, TradeAmt: 0 } }));
+});
+
+test("瀏覽器付款結果需驗證外層與內層商店代號，且只擷取交易編號", () => {
+  const payload = { MerchantID: "3002607", RtnCode: 1, OrderInfo: { MerchantTradeNo: "DN12345" } };
+  const envelope = { MerchantID: "3002607", TransCode: 1, Data: encryptEcpayInSiteData(payload, key, iv) };
+  assert.equal(parseInSiteResultOrder(envelope, "3002607", key, iv), "DN12345");
+  assert.throws(() => parseInSiteResultOrder({ ...envelope, MerchantID: "9999999" }, "3002607", key, iv));
+  assert.throws(() => parseInSiteResultOrder({ ...envelope, TransCode: 0 }, "3002607", key, iv));
+  assert.throws(() => parseInSiteResultOrder({ ...envelope, Data: encryptEcpayInSiteData({ ...payload, MerchantID: "9999999" }, key, iv) }, "3002607", key, iv));
+  assert.throws(() => parseInSiteResultOrder({ ...envelope, Data: encryptEcpayInSiteData({ ...payload, OrderInfo: { MerchantTradeNo: "INVALID-ORDER" } }, key, iv) }, "3002607", key, iv));
 });

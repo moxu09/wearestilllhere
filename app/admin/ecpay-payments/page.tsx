@@ -50,7 +50,10 @@ export default function EcpayPaymentsPage() {
     }
   }, [getToken]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void load(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [load]);
 
   async function reconcile(payment: Payment) {
     setChecking(payment.merchant_trade_no);

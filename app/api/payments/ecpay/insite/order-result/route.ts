@@ -1,4 +1,6 @@
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { parseInSiteResultOrder } from "@/lib/ecpayInSite";
+import { getEcpayConfig } from "@/lib/ecpay";
 
 export const runtime = "nodejs";
 
@@ -9,15 +11,10 @@ export async function POST(request: Request) {
     if (body.length > 16384) return new Response("無法顯示付款結果", { status: 413 });
     const resultData = new URLSearchParams(body).get("ResultData");
     if (!resultData) throw new Error("付款結果資料不足");
-    const outer = JSON.parse(resultData) as { Data?: string };
+    const outer: unknown = JSON.parse(resultData);
     // This browser redirect is navigation only. Never settle an order from ResultData.
-    const { decryptEcpayInSiteData } = await import("@/lib/ecpayInSite");
-    const { getEcpayConfig } = await import("@/lib/ecpay");
     const gateway = getEcpayConfig();
-    const data = decryptEcpayInSiteData(String(outer.Data || ""), gateway.hashKey, gateway.hashIv);
-    const orderInfo = data.OrderInfo as Record<string, unknown> | undefined;
-    const merchantTradeNo = String(orderInfo?.MerchantTradeNo || "");
-    if (!/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo)) throw new Error("付款編號錯誤");
+    const merchantTradeNo = parseInSiteResultOrder(outer, gateway.merchantId, gateway.hashKey, gateway.hashIv);
     const { data: attempt } = await getSupabaseAdmin().from("ecpay_insite_attempts")
       .select("payment_kind").eq("merchant_trade_no", merchantTradeNo).maybeSingle();
     if (!attempt) throw new Error("找不到付款單");
