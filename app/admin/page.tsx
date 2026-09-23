@@ -487,6 +487,13 @@ export default function AdminDashboardPage() {
                   icon={<Package />}
                 />}
 
+                {profile.role === "admin" && <QuickLink
+                  title="綠界服務付款"
+                  desc="查詢深夜與秋奈的付款及交付狀態。"
+                  href="/admin/ecpay-payments"
+                  icon={<Coins />}
+                />}
+
                 <QuickLink
                   title="陪玩師申請"
                   desc="審核會員申請並建立陪玩師資料。"

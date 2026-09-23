@@ -115,6 +115,7 @@ export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRe
     ReturnURL: `${config.baseUrl}/api/payments/ecpay/merchandise/result`,
     OrderResultURL: `${config.baseUrl}/api/payments/ecpay/merchandise/display`,
     ChoosePayment: "Credit",
+    NeedExtraPaidInfo: "Y",
     EncryptType: "1",
   };
   fields.CheckMacValue = checkMacValue(fields, config.hashKey, config.hashIv);
@@ -167,6 +168,7 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string) {
     ReturnURL: `${config.baseUrl}/api/payments/ecpay/service/result`,
     OrderResultURL: `${config.baseUrl}/api/payments/ecpay/service/display`,
     ChoosePayment: "Credit",
+    NeedExtraPaidInfo: "Y",
     EncryptType: "1",
   };
   fields.CheckMacValue = checkMacValue(fields, config.hashKey, config.hashIv);

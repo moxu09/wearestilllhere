@@ -41,6 +41,7 @@ export default function MerchandiseOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [checkingId, setCheckingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -69,6 +70,28 @@ export default function MerchandiseOrdersPage() {
   }, []);
 
   useEffect(() => { void load(); }, [load]);
+
+  async function checkEcpay(order: MerchandiseOrder) {
+    setCheckingId(order.id);
+    setError("");
+    try {
+      const { data, error: authError } = await supabase.auth.getSession();
+      if (authError) throw authError;
+      if (!data.session) throw new Error("請先登入管理員帳號");
+      const response = await fetch(`/api/admin/merchandise-orders/${order.id}/ecpay-reconcile`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${data.session.access_token}` },
+      });
+      const result = (await response.json()) as { error?: string; remoteStatus?: string };
+      if (!response.ok) throw new Error(result.error || "綠界查證失敗");
+      await load();
+      if (result.remoteStatus !== "paid") setError("綠界尚未確認付款，訂單狀態未變更。");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "綠界查證失敗");
+    } finally {
+      setCheckingId(null);
+    }
+  }
 
   const visible = useMemo(() => {
     const term = keyword.trim().toLowerCase();
@@ -115,7 +138,7 @@ export default function MerchandiseOrdersPage() {
             </label>
             <div className="mt-5 overflow-x-auto rounded-2xl bg-white shadow-sm">
               <table className="w-full min-w-[950px] text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600"><tr>{["下單時間", "訂單編號", "顧客", "電話", "商品", "取貨門市", "付款方式", "狀態", "金額"].map((title) => <th key={title} className="p-4">{title}</th>)}</tr></thead>
+                <thead className="bg-slate-50 text-slate-600"><tr>{["下單時間", "訂單編號", "顧客", "電話", "商品", "取貨門市", "付款方式", "狀態", "金額", "綠界查證"].map((title) => <th key={title} className="p-4">{title}</th>)}</tr></thead>
                 <tbody>
                   {visible.map((order) => (
                     <tr key={order.id} className="border-t border-slate-100 align-top">
@@ -128,6 +151,11 @@ export default function MerchandiseOrdersPage() {
                       <td className="p-4">{order.payment_method}</td>
                       <td className="p-4 whitespace-nowrap">{statusText[order.status] || order.status}</td>
                       <td className="p-4 whitespace-nowrap font-bold">NT$ {Number(order.total_amount).toLocaleString()}</td>
+                      <td className="p-4 whitespace-nowrap">{order.payment_method === "綠界支付" && order.status === "pending" ? (
+                        <button type="button" disabled={checkingId === order.id} onClick={() => void checkEcpay(order)} className="rounded-lg border border-violet-300 px-3 py-2 font-bold text-violet-700 disabled:opacity-50">
+                          {checkingId === order.id ? "查證中…" : "向綠界查證"}
+                        </button>
+                      ) : "—"}</td>
                     </tr>
                   ))}
                 </tbody>
