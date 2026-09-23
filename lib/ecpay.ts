@@ -46,7 +46,8 @@ export function getEcpayConfig() {
   const stage = process.env.ECPAY_ENV === "stage";
   const available = Boolean(merchantId && hashKey && hashIv && process.env.ECPAY_ACCEPT_PAYMENTS === "true");
   const inSiteAvailable = Boolean(merchantId && hashKey && hashIv && process.env.ECPAY_INSITE_ACCEPT_PAYMENTS === "true");
-  return { merchantId, hashKey, hashIv, baseUrl, stage, available, inSiteAvailable, checkoutUrl: stage ? stageUrl : productionUrl };
+  const nonCreditAvailable = Boolean(available && process.env.ECPAY_NONCREDIT_ACCEPT_PAYMENTS === "true");
+  return { merchantId, hashKey, hashIv, baseUrl, stage, available, inSiteAvailable, nonCreditAvailable, checkoutUrl: stage ? stageUrl : productionUrl };
 }
 
 export function verifyEcpayCallback(fields: Record<string, string>, config = getEcpayConfig()) {
@@ -73,6 +74,7 @@ export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRe
     throw new Error("綠界支付尚未開放");
   const method = assertPaymentMethod(input.ecpayMethod || "Credit");
   if (inSite && method !== "Credit") throw new Error("此站內付入口目前只支援信用卡");
+  if (method !== "Credit" && !config.nonCreditAvailable) throw new Error("此付款方式尚未開放");
   const customerName = String(input.customerName || "").trim();
   const phone = String(input.phone || "").replace(/[\s-]/g, "");
   const storeName = String(input.storeName || "").trim();
@@ -174,6 +176,7 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string, select
   const config = getEcpayConfig();
   if (!config.available) throw new Error("綠界支付尚未開放");
   const method = assertPaymentMethod(selectedMethod);
+  if (method !== "Credit" && !config.nonCreditAvailable) throw new Error("此付款方式尚未開放");
   if (!/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo)) throw new Error("綠界交易編號格式錯誤");
   const { data: payment, error } = await getSupabaseAdmin()
     .from("ecpay_service_payments")

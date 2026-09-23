@@ -26,6 +26,7 @@ export async function GET(request: Request) {
         { value: "BARCODE", label: "超商條碼", min: 18, max: 20_000 },
       ].filter(item => amount >= item.min && amount <= item.max &&
         (gateway.available || (gateway.inSiteAvailable && item.value === "Credit")) &&
+        (item.value === "Credit" || gateway.nonCreditAvailable) &&
         (data.payment_kind !== "topup" || (item.value !== "CVS" && item.value !== "BARCODE")));
       const links = methods.map(item => {
         const target = item.value === "Credit" && process.env.ECPAY_INSITE_ACCEPT_PAYMENTS === "true"
