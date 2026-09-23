@@ -19,9 +19,13 @@ export default function ServicePaymentStatusClient({ order }: { order: string })
         if (!response.ok) throw new Error(result.error || "無法查詢付款資訊");
         if (cancelled) return;
         setPayment(result);
+        setError("");
         if (result.status === "pending") timer = setTimeout(check, result.payment_info ? 30_000 : 3_000);
       } catch (cause) {
-        if (!cancelled) setError(cause instanceof Error ? cause.message : "無法查詢付款資訊");
+        if (!cancelled) {
+          setError(cause instanceof Error ? cause.message : "無法查詢付款資訊");
+          timer = setTimeout(check, 10_000);
+        }
       }
     };
     void check();

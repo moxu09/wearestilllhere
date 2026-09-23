@@ -8,6 +8,8 @@ import {
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import type { MerchandiseCheckoutRequest } from "@/lib/jkopay";
 import { checkMacValue, verifyEcpayMac } from "@/lib/ecpayMac";
+import { paymentInfoFields } from "@/lib/ecpayNoncredit";
+import { getEcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 
 const stageUrl = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5";
 const productionUrl = "https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5";
@@ -26,16 +28,6 @@ function assertPaymentAmount(method: EcpayPaymentMethod, amount: number) {
   const [min, max] = paymentLimits[method];
   if (!Number.isInteger(amount) || amount < min || amount > max)
     throw new Error(`此付款方式單筆金額須介於 NT$${min} 至 NT$${max.toLocaleString("zh-TW")}`);
-}
-
-function paymentInfoFields(method: EcpayPaymentMethod, baseUrl: string, kind: "merchandise" | "service"): Record<string, string> {
-  if (method === "Credit") return { NeedExtraPaidInfo: "Y" };
-  const path = `/api/payments/ecpay/${kind}/payment-info`;
-  return {
-    PaymentInfoURL: `${baseUrl}${path}`,
-    ClientRedirectURL: `${baseUrl}${path}/display`,
-    ...(method === "ATM" ? { ExpireDate: "3" } : { StoreExpireDate: method === "CVS" ? "4320" : "3" }),
-  };
 }
 
 export function getEcpayConfig() {
@@ -144,7 +136,7 @@ export async function createEcpayMerchandisePayment(input: MerchandiseCheckoutRe
     TradeDesc: "深夜不關燈周邊商品",
     ItemName: items.map((item) => cleanTradeText(`${item.name} x${item.quantity}`, 70)).join("#").slice(0, 400),
     ReturnURL: `${config.baseUrl}/api/payments/ecpay/merchandise/result`,
-    OrderResultURL: `${config.baseUrl}/api/payments/ecpay/merchandise/display`,
+    ...(method === "Credit" ? { OrderResultURL: `${config.baseUrl}/api/payments/ecpay/merchandise/display` } : {}),
     ChoosePayment: method,
     EncryptType: "1",
     ...paymentInfoFields(method, config.baseUrl, "merchandise"),
@@ -201,7 +193,7 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string, select
     TradeDesc: payment.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款",
     ItemName: description || "服務付款",
     ReturnURL: `${config.baseUrl}/api/payments/ecpay/service/result`,
-    OrderResultURL: `${config.baseUrl}/api/payments/ecpay/service/display`,
+    ...(method === "Credit" ? { OrderResultURL: `${config.baseUrl}/api/payments/ecpay/service/display` } : {}),
     ChoosePayment: method,
     EncryptType: "1",
     ...paymentInfoFields(method, config.baseUrl, "service"),
@@ -264,6 +256,7 @@ export async function saveEcpayPaymentInfo(kind: "merchandise" | "service", fiel
     "MerchantTradeNo", "TradeNo", "TradeAmt", "PaymentType", "ExpireDate",
     "BankCode", "vAccount", "PaymentNo", "Barcode1", "Barcode2", "Barcode3",
   ].filter(key => fields[key]).map(key => [key, fields[key]]));
+  if (!getEcpayInstructions(safeInfo)) throw new Error("綠界繳費期限或資訊格式不正確");
   const { error: updateError } = await admin.from(table).update({ raw_result: safeInfo })
     .eq(idColumn, merchantTradeNo).eq("status", "pending");
   if (updateError) throw new Error(updateError.message || "保存綠界取號資料失敗");

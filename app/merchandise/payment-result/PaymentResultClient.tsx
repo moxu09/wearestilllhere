@@ -18,21 +18,26 @@ export default function PaymentResultClient({ orderId }: { orderId: string }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    let attempts = 0;
+    let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const check = async () => {
       try {
         const response = await fetch(`/api/payments/merchandise/status?order=${encodeURIComponent(orderId)}`, { cache: "no-store" });
         const result = (await response.json()) as OrderStatus & { error?: string };
         if (!response.ok) throw new Error(result.error || "無法查詢付款結果");
+        if (cancelled) return;
         setOrder(result);
-        if (result.status === "pending" && attempts++ < 20) timer = setTimeout(check, 3000);
+        setError("");
+        if (result.status === "pending") timer = setTimeout(check, result.payment_info ? 30_000 : 3_000);
       } catch (statusError) {
-        setError(statusError instanceof Error ? statusError.message : "無法查詢付款結果");
+        if (!cancelled) {
+          setError(statusError instanceof Error ? statusError.message : "無法查詢付款結果");
+          timer = setTimeout(check, 10_000);
+        }
       }
     };
     void check();
-    return () => timer && clearTimeout(timer);
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
   }, [orderId]);
 
   const paid = order?.status === "paid";
