@@ -172,13 +172,18 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string, select
   if (!/^[A-Za-z0-9]{1,20}$/.test(merchantTradeNo)) throw new Error("綠界交易編號格式錯誤");
   const { data: payment, error } = await getSupabaseAdmin()
     .from("ecpay_service_payments")
-    .select("merchant_trade_no,organization_code,payment_kind,amount,description,status,created_at")
+    .select("merchant_trade_no,organization_code,payment_kind,amount,description,status,created_at,raw_result")
     .eq("merchant_trade_no", merchantTradeNo)
     .maybeSingle();
   if (error || !payment) throw new Error("找不到綠界付款單");
   if (payment.status !== "pending") throw new Error("這筆付款已完成或不可付款");
   if (Date.now() - Date.parse(payment.created_at) > 24 * 60 * 60 * 1000)
     throw new Error("付款連結已過期，請回到 Discord 重新建立訂單");
+  if (getEcpayInstructions(payment.raw_result))
+    throw new Error("此付款單已取得繳費資訊，請使用原本的虛擬帳號或代碼");
+  const { data: attempt, error: attemptError } = await getSupabaseAdmin().from("ecpay_insite_attempts")
+    .select("merchant_trade_no").eq("merchant_trade_no", merchantTradeNo).maybeSingle();
+  if (attemptError || attempt) throw new Error("此付款單已開始建立付款資料，請勿重複付款");
   const amount = Number(payment.amount);
   assertPaymentAmount(method, amount);
   if (payment.payment_kind === "topup" && (method === "CVS" || method === "BARCODE"))
