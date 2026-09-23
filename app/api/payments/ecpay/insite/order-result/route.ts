@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       : attempt.payment_kind === "platform" ? "/payments/ecpay/platform/status"
       : attempt.payment_kind === "merchandise" ? "/merchandise/payment-result" : null;
     if (!path) throw new Error("站內付交易類別錯誤");
-    const destination = new URL(path, request.url);
+    const destination = new URL(path, gateway.baseUrl);
     destination.searchParams.set("order", merchantTradeNo);
     return Response.redirect(destination, 303);
   } catch (error) {

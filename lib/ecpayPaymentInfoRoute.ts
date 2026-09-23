@@ -1,4 +1,4 @@
-import { saveEcpayPaymentInfo } from "@/lib/ecpay";
+import { getEcpayConfig, saveEcpayPaymentInfo } from "@/lib/ecpay";
 
 export async function handleEcpayPaymentInfo(
   request: Request,
@@ -12,7 +12,7 @@ export async function handleEcpayPaymentInfo(
     const { merchantTradeNo } = await saveEcpayPaymentInfo(kind, fields);
     if (display) {
       const path = kind === "merchandise" ? "/merchandise/payment-result" : "/payments/ecpay/service/status";
-      const destination = new URL(path, request.url);
+      const destination = new URL(path, getEcpayConfig().baseUrl);
       destination.searchParams.set("order", merchantTradeNo);
       return Response.redirect(destination, 303);
     }
