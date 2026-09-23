@@ -26,6 +26,8 @@ import EcpayCheckoutButton from "@/app/components/EcpayCheckoutButton";
 type Props = {
   product: MerchandiseProduct;
   ecpayAvailable: boolean;
+  ecpayAioAvailable: boolean;
+  ecpayNonCreditAvailable: boolean;
   jkopayAvailable: boolean;
 };
 
@@ -34,7 +36,7 @@ type ShippingProvider = "7-ELEVEN" | "全家";
 const inputClassName =
   "h-12 w-full rounded-md border border-white/15 bg-[#0d0e10] px-4 text-sm text-white outline-none placeholder:text-white/25 focus:border-[#e7ba67]";
 
-export default function ShippingForm({ product, ecpayAvailable, jkopayAvailable }: Props) {
+export default function ShippingForm({ product, ecpayAvailable, ecpayAioAvailable, ecpayNonCreditAvailable, jkopayAvailable }: Props) {
   const {
     items,
     itemCount,
@@ -273,7 +275,7 @@ export default function ShippingForm({ product, ecpayAvailable, jkopayAvailable 
           <CreditCard className="mx-auto h-7 w-7 text-[#e7ba67]" />
           <h2 className="mt-4 text-xl font-bold text-white">選擇付款方式</h2>
           <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/45">
-            確認貨運資料與購物車內容後，選擇街口支付或綠界信用卡安全付款頁。
+            確認貨運資料與購物車內容後選擇付款方式。{ecpayNonCreditAvailable && "ATM 與超商付款取得繳費資訊後，仍須完成繳費。"}
           </p>
           <div className="mt-6 space-y-3 rounded-md bg-[#0d0e10] p-4 text-left text-sm">
             <PriceRow label={`購物車商品（${itemCount} 件）`} value={money(cartSubtotal)} />
@@ -312,18 +314,26 @@ export default function ShippingForm({ product, ecpayAvailable, jkopayAvailable 
               }
             /> : <p className="rounded-md border border-white/10 bg-[#0d0e10] px-4 py-3 text-sm text-white/50">街口付款準備中</p>}
           </div>
-          <div className="mt-3">
+          <div className="mt-3 space-y-3">
             {ecpayAvailable ? (
-              <EcpayCheckoutButton
+              [
+                { method: "Credit" as const, min: 6, max: 199_999 },
+                { method: "ATM" as const, min: 16, max: 49_999 },
+                { method: "CVS" as const, min: 34, max: 20_000 },
+                { method: "BARCODE" as const, min: 18, max: 20_000 },
+              ].filter(option => cartTotal >= option.min && cartTotal <= option.max &&
+                (option.method === "Credit" ? ecpayAvailable : ecpayAioAvailable && ecpayNonCreditAvailable)).map(option => <EcpayCheckoutButton
+                key={option.method}
+                method={option.method}
                 customerName={form.name}
                 phone={form.phone}
                 shippingProvider={form.provider}
                 storeName={form.storeName}
                 items={items}
                 disabled={itemCount === 0 || form.name.trim().length < 2 || !/^09\d{8}$/.test(form.phone.replace(/[\s-]/g, "")) || form.storeName.trim().length < 2}
-              />
+              />)
             ) : (
-              <p className="rounded-md border border-white/10 bg-[#0d0e10] px-4 py-3 text-sm text-white/50">綠界信用卡付款準備中</p>
+              <p className="rounded-md border border-white/10 bg-[#0d0e10] px-4 py-3 text-sm text-white/50">綠界付款準備中</p>
             )}
           </div>
           <div className="mt-6">
