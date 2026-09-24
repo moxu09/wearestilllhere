@@ -5,6 +5,9 @@ import type { ReactNode } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { startPlatformCardPayment } from "@/lib/startPlatformCardPayment";
+import { getPlatformAtmPayment, startPlatformAtmPayment } from "@/lib/startPlatformAtmPayment";
+import EcpayInstructionsView from "@/app/components/EcpayInstructionsView";
+import type { EcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 import {
   ArrowLeft,
   ArrowRight,
@@ -119,6 +122,8 @@ export default function OrderDetailPage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [atmAvailable, setAtmAvailable] = useState(false);
+  const [atmInfo, setAtmInfo] = useState<EcpayInstructions | null>(null);
 
   const isCustomer = !!order && order.customer_user_id === currentUserId;
   const isPlayer = !!order && order.player_user_id === currentUserId;
@@ -212,6 +217,14 @@ export default function OrderDetailPage() {
     }
 
     setOrder(orderData as unknown as Order);
+    setAtmInfo(null);
+    if (orderData.payment_method === "transfer" && orderData.payment_status === "unpaid" &&
+        orderData.customer_user_id === user.id) {
+      void fetch("/api/payments/ecpay/platform/atm/entry", { cache: "no-store" })
+        .then(response => response.json()).then((value: { available?: boolean }) => setAtmAvailable(value.available === true))
+        .catch(() => setAtmAvailable(false));
+      void getPlatformAtmPayment(orderId).then(setAtmInfo).catch(() => null);
+    }
 
     const { data: itemData, error: itemError } = await supabase
       .from("platform_order_items")
@@ -283,6 +296,20 @@ export default function OrderDetailPage() {
       await startPlatformCardPayment(order.id);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "無法開啟站內刷卡，請稍後重試");
+      setBusy(false);
+    }
+  }
+
+  async function payByAtm() {
+    if (!order) return;
+    setBusy(true);
+    setError("");
+    try {
+      setAtmInfo(await startPlatformAtmPayment(order.id));
+      setMessage("已取得一次性虛擬帳號；實際匯款後才會更新付款狀態。");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "無法取得虛擬帳號，請聯繫客服核對");
+    } finally {
       setBusy(false);
     }
   }
@@ -482,13 +509,21 @@ export default function OrderDetailPage() {
                     <p className="mt-2 text-sm leading-7 text-amber-700/80">
                       {order.payment_method === "card"
                         ? "請使用綠界站內刷卡；實際收到綠界付款通知後才會標記已付款。"
-                        : "這筆訂單使用的是非 ASD 錢包付款，請依客服指示完成付款。"}
+                        : order.payment_method === "transfer" && atmAvailable
+                          ? "請使用本訂單專屬虛擬帳號轉帳；取得帳號不代表已付款，收到綠界通知後才會自動核帳。"
+                          : "這筆訂單使用的是非 ASD 錢包付款，請依客服指示完成付款。"}
                     </p>
                     {order.payment_method === "card" && isCustomer && <button type="button"
                       onClick={payByCard} disabled={busy}
                       className="mt-4 rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white disabled:opacity-50">
                       {busy ? "正在開啟刷卡畫面…" : "綠界站內刷卡｜直接輸入卡號"}
                     </button>}
+                    {order.payment_method === "transfer" && isCustomer && atmAvailable && !atmInfo && <button type="button"
+                      onClick={payByAtm} disabled={busy}
+                      className="mt-4 rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white disabled:opacity-50">
+                      {busy ? "正在取得虛擬帳號…" : "取得綠界虛擬 ATM 帳號"}
+                    </button>}
+                    {order.payment_method === "transfer" && atmInfo?.method === "ATM" && <EcpayInstructionsView info={atmInfo} />}
                   </div>
                 )}
               </Panel>

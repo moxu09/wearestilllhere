@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { startPlatformCardPayment } from "@/lib/startPlatformCardPayment";
+import { startPlatformAtmPayment } from "@/lib/startPlatformAtmPayment";
 import {
   ArrowLeft,
   ArrowRight,
@@ -83,6 +84,7 @@ function NewOrderContent() {
   const [services, setServices] = useState<PlayerService[]>([]);
   const [wallet, setWallet] = useState<WalletData | null>(null);
   const [cardAvailable, setCardAvailable] = useState(false);
+  const [atmAvailable, setAtmAvailable] = useState(false);
 
   const [selectedServiceId, setSelectedServiceId] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -223,6 +225,9 @@ function NewOrderContent() {
     void fetch("/api/payments/ecpay/platform/entry", { cache: "no-store" })
       .then(response => response.json()).then((value: { available?: boolean }) => setCardAvailable(value.available === true))
       .catch(() => setCardAvailable(false));
+    void fetch("/api/payments/ecpay/platform/atm/entry", { cache: "no-store" })
+      .then(response => response.json()).then((value: { available?: boolean }) => setAtmAvailable(value.available === true))
+      .catch(() => setAtmAvailable(false));
   }, []);
 
   async function submitOrder() {
@@ -258,6 +263,10 @@ function NewOrderContent() {
       setError("綠界站內刷卡金額須介於 NT$6 至 NT$199,999，或目前尚未開放。");
       return;
     }
+    if (paymentMethod === "transfer" && atmAvailable && (totalAmount < 16 || totalAmount > 49_999)) {
+      setError("虛擬 ATM 金額須介於 NT$16 至 NT$49,999，請改選其他付款方式。");
+      return;
+    }
 
     setSubmitting(true);
 
@@ -285,6 +294,13 @@ function NewOrderContent() {
         setSubmitting(false);
         window.location.href = `/orders/${orderId}`;
         return;
+      }
+    }
+    if (paymentMethod === "transfer" && atmAvailable) {
+      try {
+        await startPlatformAtmPayment(orderId);
+      } catch (cause) {
+        setError(`訂單已建立，但虛擬 ATM 尚未顯示：${cause instanceof Error ? cause.message : "請到訂單頁查詢"}。請勿重新下單。`);
       }
     }
     setMessage("訂單建立成功。");
@@ -511,7 +527,7 @@ function NewOrderContent() {
                   <PaymentButton
                     active={paymentMethod === "transfer"}
                     title="轉帳 / 匯款"
-                    desc="建立待付款訂單，之後由客服確認收款。"
+                    desc={atmAvailable ? "建立訂單後取得一次性虛擬 ATM 帳號；實際匯款完成後自動核帳。" : "建立待付款訂單，之後由客服確認收款。"}
                     icon={<CreditCard />}
                     onClick={() => setPaymentMethod("transfer")}
                   />
