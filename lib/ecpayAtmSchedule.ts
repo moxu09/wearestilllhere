@@ -6,12 +6,8 @@ export function isEcpayAtmAvailable(now = Date.now()): boolean {
 }
 
 export function isEcpayAtmAvailableForPayment(
-  payment: { organization_code?: string | null; metadata?: unknown },
+  _payment: { organization_code?: string | null; metadata?: unknown },
   now = Date.now(),
 ): boolean {
-  if (isEcpayAtmAvailable(now)) return true;
-  const metadata = payment.metadata;
-  return payment.organization_code === "qiunai" &&
-    metadata !== null && typeof metadata === "object" && !Array.isArray(metadata) &&
-    "flow" in metadata && metadata.flow === "self_service";
+  return isEcpayAtmAvailable(now);
 }
