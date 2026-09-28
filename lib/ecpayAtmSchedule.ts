@@ -15,3 +15,13 @@ export function isEcpayAtmAvailableForPayment(
     metadata !== null && typeof metadata === "object" && !Array.isArray(metadata) &&
     "flow" in metadata && metadata.flow === "self_service";
 }
+
+export function mayIssueNewServiceAtm(payment: {
+  payment_kind?: string | null;
+  metadata?: unknown;
+}): boolean {
+  if (payment.payment_kind !== "order") return true;
+  const metadata = payment.metadata;
+  return metadata !== null && typeof metadata === "object" && !Array.isArray(metadata) &&
+    "flow" in metadata && metadata.flow === "self_service";
+}

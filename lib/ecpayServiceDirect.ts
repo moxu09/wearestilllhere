@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { getEcpayConfig } from "@/lib/ecpay";
-import { isEcpayAtmAvailableForPayment } from "@/lib/ecpayAtmSchedule";
+import { isEcpayAtmAvailableForPayment, mayIssueNewServiceAtm } from "@/lib/ecpayAtmSchedule";
 import { decryptEcpayInSiteData, encryptEcpayInSiteData } from "@/lib/ecpayInSite";
 import { getEcpayInstructions, type EcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
@@ -69,6 +69,11 @@ export async function issueServiceDirect(order: string, method: Method): Promise
   if (prior) {
     if (prior.method !== method) throw new Error("此付款單已選擇其他繳費方式，請使用原資訊");
     return prior;
+  }
+  // 人工開單回到原銀行匯款；已核發的虛擬帳號仍可查閱並正常等待回呼。
+  // 自助訂單的 flow 標記由機器人建立，繼續允許 ATM 取號。
+  if (method === "ATM" && !mayIssueNewServiceAtm(payment)) {
+    throw new Error("人工訂單請選擇原銀行匯款；此綠界付款單不能再核發虛擬 ATM 帳號");
   }
 
   // Existing unique key also prevents a simultaneous card token or a second code request.

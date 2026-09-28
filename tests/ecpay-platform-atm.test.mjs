@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { mayIssueNewServiceAtm } from "../lib/ecpayAtmSchedule.ts";
 
 const source = readFileSync(new URL("../lib/ecpayPlatformAtm.ts", import.meta.url), "utf8");
 const migration = readFileSync(new URL("../supabase/migrations/20260924130000_ecpay_platform_atm.sql", import.meta.url), "utf8");
+const serviceDirect = readFileSync(new URL("../lib/ecpayServiceDirect.ts", import.meta.url), "utf8");
 
 test("會員訂單 ATM 取號不等於付款，只有驗證通知能呼叫核帳 RPC", () => {
   const issue = source.split("export async function issuePlatformAtm(")[1]
@@ -21,4 +23,17 @@ test("會員刷卡與 ATM 對應不同的訂單付款方式，核帳函式僅 se
   assert.match(migration, /method = 'ATM' and\s+\(v_order\.payment_method <> 'transfer'/);
   assert.match(migration, /v_order\.paid_amount <> 0/);
   assert.match(migration, /grant execute on function public\.ecpay_mark_platform_paid\([\s\S]*?to service_role;/);
+});
+
+test("人工訂單不得新核發 ATM；既有取號仍可查閱且自助訂單不受影響", () => {
+  const prior = serviceDirect.indexOf("const prior = getEcpayInstructions(payment.raw_result)");
+  const manualGuard = serviceDirect.indexOf('!mayIssueNewServiceAtm(payment)');
+  const claim = serviceDirect.indexOf('from("ecpay_insite_attempts").insert');
+  assert.ok(prior >= 0 && prior < manualGuard && manualGuard < claim);
+  assert.equal(mayIssueNewServiceAtm({ payment_kind: "order", metadata: { flow: "quote" } }), false);
+  assert.equal(mayIssueNewServiceAtm({ payment_kind: "order", metadata: { flow: "service" } }), false);
+  assert.equal(mayIssueNewServiceAtm({ payment_kind: "order" }), false);
+  assert.equal(mayIssueNewServiceAtm({ payment_kind: "order", metadata: { flow: "self_service" } }), true);
+  assert.equal(mayIssueNewServiceAtm({ payment_kind: "topup", metadata: { flow: "self_service" } }), true);
+  assert.doesNotMatch(serviceDirect.slice(manualGuard, claim), /payment_status: "paid"/);
 });
