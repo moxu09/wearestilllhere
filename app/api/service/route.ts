@@ -1,4 +1,5 @@
 import { apiError, getDiscordProfile, requireStaff } from "@/lib/serverAuth";
+import { getQiunaiReviewCommission } from "@/lib/qiunaiCommission";
 
 function reportMeta(row: Record<string, unknown>) {
   try {
@@ -354,8 +355,12 @@ export async function POST(request: Request) {
         .eq("discord_id", staffId);
       if (body.brand === "deepnight")
         staffQuery = staffQuery.eq("guild_id", "1501098191813214312");
-      const { data: staff } = await staffQuery.limit(1).maybeSingle();
-      const rate = commissionRate(staff, endedAt, isTip);
+      const { data: staff, error: staffError } = await staffQuery.limit(1).maybeSingle();
+      if (staffError) throw staffError;
+      if (!staff) throw new Error("找不到員工抽成設定");
+      const rate = body.brand === "qiunai"
+        ? await getQiunaiReviewCommission(admin, staff, endedAt, isTip)
+        : commissionRate(staff, endedAt, isTip);
       const amount = Number(report.order_amount || report.price || 0);
       const salary = Math.round((amount * rate) / 100);
       const payload =
