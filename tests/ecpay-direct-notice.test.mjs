@@ -16,3 +16,7 @@ test('模擬付款、非成功與未付款通知不入帳；拒絕無效金額�
  for(const info of [{TradeAmt:true},{TradeAmt:-1},{TradeStatus:0},{PaymentType:'Credit'},{MerchantTradeNo:'bad-id'},{PaymentDate:null}])
   assert.throws(()=>parseDirectServiceNotice(envelope({...data,OrderInfo:{...data.OrderInfo,...info}}),cfg),/FIELDS_INVALID/);
 });
+test('超商代碼正式付款通知核對完整欄位後可解析',()=>{
+ const notice=parseDirectServiceNotice(envelope({...data,OrderInfo:{...data.OrderInfo,PaymentType:'CVS'}}),cfg);
+ assert.equal(notice.method,'CVS');assert.equal(notice.tradeNo,data.OrderInfo.TradeNo);assert.equal(notice.paymentDate,data.OrderInfo.PaymentDate);
+});

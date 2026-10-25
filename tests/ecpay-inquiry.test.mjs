@@ -27,3 +27,8 @@ test('金額、原交易編號、付款方式、模擬狀態不符皆不提交�
 test('綠界403持久化30分鐘冷卻，網路錯誤不改成已付款',async()=>{
  for(const message of ['綠界查詢失敗（HTTP 403）','timeout']){const d=db({finish:{status:'error'}});await inquireEcpayService(d,cfg,input,async()=>{throw Error(message)});assert.equal(d.calls[1].args.p_rate_limited,message.includes('403'));assert.ok(d.calls[1].args.p_error);}
 });
+test('超商代碼使用同一驗證與節流路徑，確認後才提交付款',async()=>{
+ const d=db({payment:{organization_code:'qiunai',user_id:'u',channel_id:'c',amount:100,raw_result:{TradeNo:'123',PaymentType:'CVS'}}});
+ await inquireEcpayService(d,cfg,input,async()=>({...paid,raw:{PaymentType:'CVS_CVS'}}));
+ assert.equal(d.calls[1].args.p_remote_status,'paid');assert.equal(d.calls[1].args.p_amount,100);
+});
