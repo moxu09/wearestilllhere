@@ -12,7 +12,10 @@ export async function POST(request: Request) {
     await settleServiceDirect(JSON.parse(raw));
     return new Response("1|OK", { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
   } catch (error) {
-    console.error("ECPay direct payment notification failed", error);
+    console.error("ECPay direct payment notification failed", {
+      reason: error instanceof Error ? error.message : "UNKNOWN",
+      contentType: request.headers.get("content-type"),
+    });
     return new Response("0|ERROR", { status: 500, headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
   }
 }

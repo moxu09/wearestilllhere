@@ -1,3 +1,4 @@
+import { inquireEcpayService } from "./ecpayInquiry";
 import { getEcpayConfig } from "./ecpay";
 import { queryEcpayTrade } from "./ecpayQuery";
 import { getSupabaseAdmin } from "./supabaseAdmin";
@@ -29,9 +30,18 @@ export async function reconcileEcpayMerchandise(merchantTradeNo: string) {
 export async function reconcileEcpayService(merchantTradeNo: string) {
   const admin = getSupabaseAdmin();
   const { data: payment, error } = await admin.from("ecpay_service_payments")
-    .select("merchant_trade_no,status,amount,trade_no,organization_code,fulfillment_status")
+    .select("merchant_trade_no,status,amount,trade_no,organization_code,fulfillment_status,raw_result,metadata")
     .eq("merchant_trade_no", merchantTradeNo).maybeSingle();
   if (error || !payment) throw new Error("找不到服務付款單");
+  const method = String(payment.raw_result?.PaymentType || payment.metadata?.ecpay_direct_method || "").split("_")[0];
+  if (payment.organization_code === "qiunai" && ["ATM", "CVS"].includes(method)) {
+    const result = await inquireEcpayService(admin, getEcpayConfig(), { order: merchantTradeNo, source: "scheduled" });
+    if (result.status === "needs_review") throw new Error("此筆可能已人工補款或付款，請先核對，避免重複入帳");
+    if (result.status === "cooldown") throw new Error(`查單冷卻中，請約 ${result.retry_after} 秒後重試`);
+    if (result.status === "error") throw new Error("綠界查詢暫時失敗，請稍後重試");
+    return { remoteStatus: result.remote_status || result.status, localStatus: result.status,
+      organizationCode: payment.organization_code, fulfillmentStatus: result.fulfillment_status };
+  }
   const remote = await queryEcpayTrade(getEcpayConfig(), merchantTradeNo);
   if (remote.amount !== Number(payment.amount)) throw new Error("綠界與服務付款單金額不符");
   if (payment.status === "paid" && payment.trade_no !== remote.tradeNo)

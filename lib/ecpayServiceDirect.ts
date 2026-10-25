@@ -1,3 +1,4 @@
+import { parseDirectServiceNotice } from "./ecpayDirectNotice";
 import { randomUUID } from "node:crypto";
 import { getEcpayConfig } from "@/lib/ecpay";
 import { isEcpayAtmAvailableForPayment } from "@/lib/ecpayAtmSchedule";
@@ -119,30 +120,19 @@ export async function issueServiceDirect(order: string, method: Method): Promise
 // Source: https://developers.ecpay.com.tw/28010/ (live checked 2026-09-23).
 export async function settleServiceDirect(envelope: unknown) {
   const gateway = getEcpayConfig();
-  const outer = object(envelope);
-  if (!gateway.merchantId || outer.MerchantID !== gateway.merchantId || outer.TransCode !== 1 || typeof outer.Data !== "string")
-    throw new Error("綠界付款通知驗證失敗");
-  const data = decryptEcpayInSiteData(outer.Data, gateway.hashKey, gateway.hashIv);
-  if (data.MerchantID !== gateway.merchantId) throw new Error("綠界付款通知商店代號不符");
-  if (data.RtnCode !== 1 || data.SimulatePaid === 1 || data.SimulatePaid === "1") return false;
-  const info = object(data.OrderInfo);
-  const order = String(info.MerchantTradeNo || "");
-  const tradeNo = String(info.TradeNo || "");
-  const amount = Number(info.TradeAmt);
-  if (!/^[A-Za-z0-9]{1,20}$/.test(order) || !/^[A-Za-z0-9]{1,20}$/.test(tradeNo) ||
-      !Number.isSafeInteger(amount) || String(info.TradeStatus) !== "1" ||
-      !["ATM", "CVS", "BARCODE"].includes(String(info.PaymentType)))
-    throw new Error("綠界付款通知資料不完整");
+  const notice = parseDirectServiceNotice(envelope, gateway);
+  if (!notice) return false;
+  const { order, tradeNo, amount, method, paymentDate, data } = notice;
   const admin = getSupabaseAdmin();
   const { data: payment, error } = await admin.from("ecpay_service_payments")
     .select("amount,raw_result,status").eq("merchant_trade_no", order).maybeSingle();
   if (error || !payment || Number(payment.amount) !== amount) throw new Error("綠界付款通知與訂單金額不符");
   const issued = object(payment.raw_result);
-  if (issued.PaymentType !== info.PaymentType || issued.TradeNo !== tradeNo)
+  if (issued.PaymentType !== method || issued.TradeNo !== tradeNo)
     throw new Error("綠界付款通知與取號紀錄不符");
   const { error: settleError } = await admin.rpc("ecpay_mark_service_paid", {
     p_merchant_trade_no: order, p_trade_no: tradeNo, p_amount: amount,
-    p_payment_date: typeof info.PaymentDate === "string" ? info.PaymentDate : null,
+    p_payment_date: paymentDate,
     p_raw_result: { ...issued, ...data, gateway: "ecpay-direct" },
   });
   if (settleError) throw new Error(settleError.message || "綠界服務付款入帳失敗");
