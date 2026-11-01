@@ -41,6 +41,8 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
   const [hasAttempt, setHasAttempt] = useState(false);
   const [error, setError] = useState("");
   const attemptId = useRef("");
+  const sdkInitialized = useRef(false);
+  const [frameKey, setFrameKey] = useState(0);
   const locked = useRef(false);
   const statusHref = kind === "service"
     ? `/payments/ecpay/service/status?order=${encodeURIComponent(order)}`
@@ -48,7 +50,7 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
     ? `/payments/ecpay/platform/status?order=${encodeURIComponent(order)}`
     : `/merchandise/payment-result?order=${encodeURIComponent(order)}`;
 
-  async function openPayment() {
+  async function openPayment(restart = false) {
     if (locked.current) return;
     if (phone && !/^09\d{8}$/.test(phone.replace(/[\s-]/g, ""))) { setError("請填寫正確的台灣手機號碼"); return; }
     if (!phone && !email.trim()) { setError("請填寫手機號碼或電子郵件"); return; }
@@ -59,11 +61,12 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
     try {
       const response = await fetch("/api/payments/ecpay/insite/token", {
         method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store",
-        body: JSON.stringify({ kind, merchantTradeNo: order, phone, email }),
+        body: JSON.stringify({ kind, merchantTradeNo: order, phone, email, restart }),
       });
       const result = await response.json() as { token?: string; attemptId?: string; stage?: boolean; error?: string };
       if (!response.ok || !result.token || !result.attemptId) throw new Error(result.error || "無法建立付款畫面");
       attemptId.current = result.attemptId;
+      setFrameKey(value => value + 1);
       await loadScript("https://code.jquery.com/jquery-3.7.1.min.js", "sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs");
       // The official SDK loads its own compatible forge version during initialize().
       await loadScript(`https://${result.stage ? "ecpg-stage" : "ecpg"}.ecpay.com.tw/Scripts/sdk-1.0.0.js?t=20210121100116`);
@@ -71,20 +74,27 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
       if (!sdk) throw new Error("綠界付款元件無法啟動");
       // Source: official Web JS SDK flow, https://developers.ecpay.com.tw/8998/.
       await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-      await sdkCall(done => sdk.initialize(result.stage ? "Stage" : "Prod", 1, done));
+      if (!sdkInitialized.current) {
+        await sdkCall(done => sdk.initialize(result.stage ? "Stage" : "Prod", 1, done));
+        sdkInitialized.current = true;
+      }
       await sdkCall(done => sdk.createPayment(result.token!, "zh-TW", done, "V2"));
       setPhase("ready");
+      locked.current = false;
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "無法建立付款畫面");
       setPhase("idle");
-      // A token may have been issued already. Do not request a second token for the same order.
+      // A replacement is allowed only while the server still confirms no charge submission.
+      locked.current = false;
     }
   }
 
   async function pay() {
-    if (phase !== "ready" || !window.ECPay || !attemptId.current) return;
+    if (locked.current || phase !== "ready" || !window.ECPay || !attemptId.current) return;
+    locked.current = true;
     setPhase("submitting");
     setError("");
+    let sentToServer = false;
     try {
       const payment = await new Promise<{ PayToken?: string }>((resolve, reject) => {
         window.ECPay!.getPayToken((value, sdkError) => {
@@ -92,6 +102,7 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
           else resolve(value);
         });
       });
+      sentToServer = true;
       const response = await fetch("/api/payments/ecpay/insite/create", {
         method: "POST", headers: { "Content-Type": "application/json" }, cache: "no-store",
         body: JSON.stringify({ kind, merchantTradeNo: order, attemptId: attemptId.current, payToken: payment.PayToken }),
@@ -107,7 +118,8 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "付款結果未確認，請勿重複付款");
-      setPhase("submitted");
+      setPhase(sentToServer ? "submitted" : "ready");
+      if (!sentToServer) locked.current = false;
     }
   }
 
@@ -115,14 +127,17 @@ export default function EcpayInSiteCard({ kind, order, initialPhone = "" }: {
     <h1 className="text-2xl font-black">綠界站內刷卡</h1>
     <p className="mt-2 text-sm text-slate-300">訂單編號：{order}</p>
     <p className="mt-3 text-sm text-slate-300">卡號由綠界安全元件收集，本站不接觸信用卡資料。銀行要求時會前往 3D 驗證頁。</p>
+    <p className="mt-3 text-sm text-emerald-200">選錯卡可在確認付款前按「重新輸入／更換信用卡」，沿用原訂單的優惠券與點數，不必重開票口。</p>
     {phase === "idle" && !hasAttempt && <div className="mt-5 space-y-3">
       <label className="block text-sm">聯絡手機<input type="tel" autoComplete="tel" value={phone} onChange={event => setPhone(event.target.value)} placeholder="09xxxxxxxx" className="mt-1 w-full rounded-lg bg-slate-800 p-3 text-white" /></label>
       <label className="block text-sm">電子郵件（可選填）<input type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} className="mt-1 w-full rounded-lg bg-slate-800 p-3 text-white" /></label>
-      <button type="button" onClick={openPayment} className="w-full rounded-lg bg-emerald-600 p-3 font-bold hover:bg-emerald-500">開啟刷卡畫面</button>
+      <button type="button" onClick={() => void openPayment()} className="w-full rounded-lg bg-emerald-600 p-3 font-bold hover:bg-emerald-500">開啟刷卡畫面</button>
     </div>}
-    {phase !== "idle" && <div className="mt-5 min-h-32 rounded-lg bg-white p-2 text-slate-900" id="ECPayPayment" />}
+    {phase !== "idle" && <div key={frameKey} className="mt-5 min-h-32 rounded-lg bg-white p-2 text-slate-900" id="ECPayPayment" />}
     {phase === "loading" && <p className="mt-3 text-sm text-slate-300">正在載入綠界付款畫面…</p>}
     {phase === "ready" && <button type="button" onClick={pay} className="mt-4 w-full rounded-lg bg-emerald-600 p-3 font-bold hover:bg-emerald-500">確認付款</button>}
+    {(phase === "ready" || (phase === "idle" && hasAttempt)) && <button type="button" onClick={() => void openPayment(true)} className="mt-3 w-full rounded-lg border border-slate-500 p-3 font-bold">重新輸入／更換信用卡</button>}
+    {(phase === "ready" || (phase === "idle" && hasAttempt)) && <p className="mt-2 text-sm text-slate-300">沿用原訂單、優惠券與點數，不必重開票口。已送出銀行授權時請先查詢付款結果。</p>}
     {phase === "submitting" && <p className="mt-4 text-sm text-slate-300">正在送出付款，請勿關閉或重複操作…</p>}
     {phase === "submitted" && <p className="mt-4 text-sm text-slate-300">請等候付款通知，勿再次刷卡。</p>}
     {error && <p role="alert" className="mt-4 text-sm text-red-300">{error}</p>}

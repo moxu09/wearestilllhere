@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { claimTokenAttempt } from "./ecpayInSiteRetry";
 import { getEcpayConfig } from "@/lib/ecpay";
 import { buildEcpayInSiteTokenData, callEcpayInSiteApi, decryptEcpayInSiteData, parsePaidCreditNotice } from "@/lib/ecpayInSite";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
@@ -40,11 +40,27 @@ async function payableOrder(kind: InSiteKind, merchantTradeNo: string) {
   const admin = getSupabaseAdmin();
   if (kind === "service") {
     const { data, error } = await admin.from("ecpay_service_payments")
-      .select("amount,status,description,organization_code,created_at,payment_kind")
+      .select("amount,status,description,organization_code,created_at,payment_kind,metadata,entity_key,user_id")
       .eq("merchant_trade_no", merchantTradeNo).maybeSingle();
     if (error || !data || data.status !== "pending") throw new Error("付款單不存在或已完成");
     if (Date.now() - Date.parse(data.created_at) > 24 * 60 * 60 * 1000)
       throw new Error("付款連結已過期，請回到 Discord 重新建立訂單");
+    if (data.payment_kind === "order") {
+      const ids = Array.isArray(data.metadata?.orderIds) ? data.metadata.orderIds.map(String)
+        : /^[0-9a-f-]{36}$/i.test(data.entity_key || "") ? [data.entity_key] : [];
+      if (!ids.length) throw new Error("付款單缺少對應訂單，請聯繫客服核對");
+      const linked = await admin.from("play_orders").select("id,customer_id,paid,status,is_deleted,final_price,price,vip_point_checkout_key")
+        .in("id",ids).eq("guild_id",data.organization_code === "qiunai" ? "1206138511535898654" : "1501098191813214312");
+      if (linked.error || linked.data?.length !== ids.length || linked.data.some(o => o.customer_id !== data.user_id || o.paid || o.is_deleted ||
+          ["cancelled","canceled","abandoned","refunded","completed","accepted"].includes(o.status)) ||
+          linked.data.reduce((n,o)=>n+Number(o.final_price ?? o.price ?? 0),0) !== Number(data.amount))
+        throw new Error("原訂單已取消、已付款或金額已變更，不能再次刷卡");
+      const pointKeys = linked.data.map(o=>o.vip_point_checkout_key).filter(Boolean);
+      if (pointKeys.length && data.organization_code === "qiunai") {
+        const points = await admin.from("qiunai_vip_point_checkouts").select("status").in("checkout_key",pointKeys);
+        if (points.error || points.data?.some(p=>p.status === "released")) throw new Error("原訂單折抵已返還，不能再次刷卡");
+      }
+    }
     return { amount: Number(data.amount), phone: "", description: data.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款", itemName: safeText(data.description, 100) || "服務付款" };
   }
   if (kind === "platform") {
@@ -81,7 +97,7 @@ async function payableOrder(kind: InSiteKind, merchantTradeNo: string) {
 
 // Source: https://developers.ecpay.com.tw/9040/ and /9053/ (live checked 2026-09-23).
 export async function createInSiteToken(input: {
-  kind: InSiteKind; merchantTradeNo: string; phone?: string; email?: string;
+  kind: InSiteKind; merchantTradeNo: string; phone?: string; email?: string; restart?: boolean;
 }) {
   const gateway = config();
   const merchantTradeNo = tradeNo(input.merchantTradeNo);
@@ -95,14 +111,7 @@ export async function createInSiteToken(input: {
   if (!phone && !email) throw new Error("請填寫手機號碼或電子郵件");
 
   const admin = getSupabaseAdmin();
-  const attemptId = randomUUID();
-  const { error: insertError } = await admin.from("ecpay_insite_attempts").insert({
-    merchant_trade_no: merchantTradeNo, payment_kind: input.kind, attempt_id: attemptId,
-    status: "token_requested",
-  });
-  if (insertError) throw new Error(insertError.code === "23505"
-    ? "此付款單已建立站內付交易；請勿重複付款，請先查詢結果"
-    : "站內付交易記錄建立失敗，請稍後再試");
+  const attemptId = await claimTokenAttempt(admin, merchantTradeNo, input.kind, input.restart === true);
   try {
     const tokenData = buildEcpayInSiteTokenData({
       merchantId: gateway.merchantId, tradeNo: merchantTradeNo, tradeDate: tradeDate(),
