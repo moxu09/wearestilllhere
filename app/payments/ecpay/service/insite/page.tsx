@@ -8,6 +8,7 @@ export default async function ServiceInSitePage({ searchParams }: { searchParams
   const { order = "" } = await searchParams;
   if (/^[A-Za-z0-9]{1,20}$/.test(order)) {
     const {data}=await getSupabaseAdmin().from("ecpay_service_payments").select("status,metadata").eq("merchant_trade_no",order).maybeSingle();
+    if(data?.status === "pending" && data.metadata?.verified_card_failure)redirect(`/payments/ecpay/service/status?order=${encodeURIComponent(order)}`);
     const target=data?.status === "failed" ? data.metadata?.card_retry_to : null;
     if(typeof target === "string" && /^[A-Za-z0-9]{1,20}$/.test(target) && target!==order)redirect(`/payments/ecpay/service/insite?order=${encodeURIComponent(target)}`);
   }
