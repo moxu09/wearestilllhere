@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {isMerchantPaymentOrigin} from '../lib/ecpayRequestOrigin.ts';
+test('公開商戶網域不受 Railway 內部主機名稱影響',()=>{assert.equal(isMerchantPaymentOrigin('https://wearestilllhere.com','https://www.wearestilllhere.com'),true);assert.equal(isMerchantPaymentOrigin('https://www.wearestilllhere.com','https://www.wearestilllhere.com'),true);});
+test('拒絕缺少來源、偽造商戶網域及非 HTTPS 來源',()=>{for(const origin of [null,'https://wearestilllhere.com.evil.test','https://evil.test','http://wearestilllhere.com'])assert.equal(isMerchantPaymentOrigin(origin,'https://www.wearestilllhere.com'),false);});
