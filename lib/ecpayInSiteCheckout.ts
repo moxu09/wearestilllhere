@@ -1,6 +1,7 @@
+import { recordVerifiedCardFailure } from "./ecpayServiceCardRetry";
 import { claimTokenAttempt } from "./ecpayInSiteRetry";
 import { getEcpayConfig } from "@/lib/ecpay";
-import { buildEcpayInSiteTokenData, callEcpayInSiteApi, decryptEcpayInSiteData, parsePaidCreditNotice } from "@/lib/ecpayInSite";
+import { buildEcpayInSiteTokenData, EcpayInSiteBusinessError, callEcpayInSiteApi, decryptEcpayInSiteData, parsePaidCreditNotice } from "@/lib/ecpayInSite";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export type InSiteKind = "service" | "merchandise" | "platform";
@@ -154,11 +155,15 @@ export async function submitInSitePayment(input: {
   });
   if (claimError || claimed !== true) throw new Error("這筆付款已送出或付款畫面已過期；請先查詢付款結果");
   // The claim remains 'creating' on timeout: never retry an ambiguous charge automatically.
-  const result = await callEcpayInSiteApi({
+  let result:Record<string,unknown>;
+  try { result = await callEcpayInSiteApi({
     merchantId: gateway.merchantId, hashKey: gateway.hashKey, hashIv: gateway.hashIv,
     stage: gateway.stage, endpoint: "CreatePayment",
     data: { MerchantID: gateway.merchantId, PayToken: input.payToken, MerchantTradeNo: merchantTradeNo },
-  });
+  }); } catch(error) {
+    if(input.kind === "service" && error instanceof EcpayInSiteBusinessError && error.data.MerchantID === gateway.merchantId && (error.data.OrderInfo as Record<string,unknown>)?.MerchantTradeNo === merchantTradeNo) await recordVerifiedCardFailure(error.data);
+    throw error;
+  }
   const orderInfo = object(result.OrderInfo);
   if (orderInfo.MerchantTradeNo !== merchantTradeNo) throw new Error("綠界交易編號不符，請聯繫客服核對");
   const threeDUrl = object(result.ThreeDInfo || {}).ThreeDURL;
@@ -181,7 +186,7 @@ export async function handleInSiteReturn(envelope: unknown) {
   const data = decryptEcpayInSiteData(outer.Data, gateway.hashKey, gateway.hashIv);
   if (data.MerchantID !== gateway.merchantId) throw new Error("綠界付款通知商店代號不符");
   const notice = parsePaidCreditNotice(data);
-  if (!notice) return false;
+  if (!notice) { await recordVerifiedCardFailure(data); return false; }
   const { merchantTradeNo, tradeNo: tradeNoValue, amount } = notice;
   const { data: attempt, error } = await getSupabaseAdmin().from("ecpay_insite_attempts")
     .select("payment_kind,status").eq("merchant_trade_no", merchantTradeNo).maybeSingle();

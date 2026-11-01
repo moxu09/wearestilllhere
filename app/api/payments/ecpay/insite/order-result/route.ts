@@ -1,3 +1,5 @@
+import { recordVerifiedCardFailure } from "@/lib/ecpayServiceCardRetry";
+import { decryptEcpayInSiteData } from "@/lib/ecpayInSite";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { parseInSiteResult } from "@/lib/ecpayInSite";
 import { getEcpayConfig } from "@/lib/ecpay";
@@ -18,6 +20,7 @@ export async function POST(request: Request) {
     const { data: attempt } = await getSupabaseAdmin().from("ecpay_insite_attempts")
       .select("payment_kind").eq("merchant_trade_no", merchantTradeNo).maybeSingle();
     if (!attempt) throw new Error("找不到付款單");
+    if (failed && attempt.payment_kind === "service") await recordVerifiedCardFailure(decryptEcpayInSiteData((outer as {Data:string}).Data,gateway.hashKey,gateway.hashIv));
     const path = attempt.payment_kind === "service" ? "/payments/ecpay/service/status"
       : attempt.payment_kind === "platform" ? "/payments/ecpay/platform/status"
       : attempt.payment_kind === "merchandise" ? "/merchandise/payment-result" : null;

@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {parseFinalCardFailure} from '../lib/ecpayCardFailure.ts';
+import {queryInSiteCredit} from '../lib/ecpayInSiteQuery.ts';
+import {encryptEcpayInSiteData} from '../lib/ecpayInSite.ts';
+const fail={MerchantID:'M1',RtnCode:10100251,OrderInfo:{MerchantTradeNo:'QNT1',TradeNo:'ECP1',TradeAmt:300,PaymentType:'Credit',TradeStatus:'0'}};
+test('明確失敗且未授權完成才可重新付款',()=>{assert.equal(parseFinalCardFailure(fail).amount,300);for(const d of [{...fail,RtnCode:1},{...fail,RtnCode:10300066},{...fail,SimulatePaid:1},{...fail,CardInfo:{AuthCode:'AUTHOK'}},{...fail,OrderInfo:{...fail.OrderInfo,TradeStatus:'1'}},{...fail,OrderInfo:{...fail.OrderInfo,PaymentType:'ATM'}},{...fail,OrderInfo:{...fail.OrderInfo,TradeAmt:0}}])assert.equal(parseFinalCardFailure(d),null);});
+const cfg={merchantId:'M1',hashKey:'1234567890123456',hashIv:'1234567890123456',stage:true};
+test('重新付款前查核站內付正確端點、解密及商戶訂單金額',async()=>{const result={MerchantID:'M1',RtnCode:1,OrderInfo:fail.OrderInfo};const fetched=[];const fetcher=async(url,opts)=>{fetched.push(url);assert.equal(opts.method,'POST');return Response.json({MerchantID:'M1',TransCode:1,Data:encryptEcpayInSiteData(result,cfg.hashKey,cfg.hashIv)});};assert.equal((await queryInSiteCredit(cfg,'QNT1',fetcher)).TradeStatus,'0');assert.equal(fetched[0],'https://ecpayment-stage.ecpay.com.tw/1.0.0/Cashier/QueryTrade');});
+test('查單商戶、訂單、付款方式不符或通訊失敗不可重試',async()=>{for(const d of [{MerchantID:'OTHER',RtnCode:1,OrderInfo:fail.OrderInfo},{MerchantID:'M1',RtnCode:1,OrderInfo:{...fail.OrderInfo,MerchantTradeNo:'OTHER'}},{MerchantID:'M1',RtnCode:1,OrderInfo:{...fail.OrderInfo,PaymentType:'ATM'}}])await assert.rejects(queryInSiteCredit(cfg,'QNT1',async()=>Response.json({MerchantID:'M1',TransCode:1,Data:encryptEcpayInSiteData(d,cfg.hashKey,cfg.hashIv)})),/不符/);await assert.rejects(queryInSiteCredit(cfg,'QNT1',async()=>new Response('',{status:503})),/暫時失敗/);});

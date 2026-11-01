@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     });
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
-    console.error("ECPay in-site CreatePayment failed", error);
+    console.error("ECPay in-site CreatePayment failed", error instanceof Error ? error.message : "unknown");
     return Response.json({ error: error instanceof Error ? error.message : "綠界付款送出失敗，請先查詢付款結果" }, { status: 400, headers: { "Cache-Control": "no-store" } });
   }
 }

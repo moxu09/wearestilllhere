@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import EcpayInstructionsView from "@/app/components/EcpayInstructionsView";
 import type { EcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 
-type PaymentStatus = { amount: number; status: string; payment_info: EcpayInstructions | null };
+type PaymentStatus = { amount: number; status: string; can_retry?: boolean; retry_to?:string|null; payment_info: EcpayInstructions | null };
 
 export default function ServicePaymentStatusClient({ order, gatewayFailed = false }: { order: string; gatewayFailed?: boolean }) {
   const [payment, setPayment] = useState<PaymentStatus | null>(null);
   const [error, setError] = useState("");
+  const [retrying,setRetrying]=useState(false);
+  async function retryPayment(){if(retrying)return;setRetrying(true);setError("");try{const r=await fetch("/api/payments/ecpay/service/retry",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({order})});const d=await r.json();if(!r.ok)throw new Error(d.error||"無法重新付款");window.location.href=d.url;}catch(e){setError(e instanceof Error?e.message:"請稍後再試");setRetrying(false);}}
   useEffect(() => {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -18,6 +20,7 @@ export default function ServicePaymentStatusClient({ order, gatewayFailed = fals
         const result = await response.json() as PaymentStatus & { error?: string };
         if (!response.ok) throw new Error(result.error || "無法查詢付款資訊");
         if (cancelled) return;
+        if(result.retry_to && /^[A-Za-z0-9]{1,20}$/.test(result.retry_to) && result.retry_to !== order){window.location.replace(`/payments/ecpay/service/status?order=${encodeURIComponent(result.retry_to)}`);return;}
         setPayment(result);
         setError("");
         if (result.status === "pending") timer = setTimeout(check, result.payment_info ? 30_000 : 3_000);
@@ -32,7 +35,7 @@ export default function ServicePaymentStatusClient({ order, gatewayFailed = fals
     return () => { cancelled = true; if (timer) clearTimeout(timer); };
   }, [order]);
   const paid = payment?.status === "paid";
-  const failed = !paid && !payment?.payment_info && (payment?.status === "failed" || (gatewayFailed && payment?.status === "pending"));
+  const failed = !paid && !payment?.payment_info && (payment?.can_retry || payment?.status === "failed" || (gatewayFailed && payment?.status === "pending"));
   return <section aria-live="polite" className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-slate-900 p-8 text-center shadow-xl sm:p-10">
     <div aria-hidden="true" className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl font-black ${paid ? "bg-emerald-500/15 text-emerald-300" : failed ? "bg-rose-500/15 text-rose-300" : "bg-sky-500/15 text-sky-300"}`}>{paid ? "✓" : failed ? "!" : "…"}</div>
     <h1 className="mt-5 text-3xl font-black">{paid ? "付款成功" : failed ? "付款未成功" : payment?.payment_info ? "請依下方資訊繳費" : "正在確認付款結果"}</h1>
@@ -42,6 +45,8 @@ export default function ServicePaymentStatusClient({ order, gatewayFailed = fals
       payment?.payment_info ? <EcpayInstructionsView info={payment.payment_info} /> :
       <p className="mt-6 text-slate-300">正在等候綠界付款通知，本頁會自動更新。請勿重複付款。</p>}
     {error && <p role="alert" className="mt-5 text-red-300">{error}</p>}
+    {(payment?.can_retry || payment?.retry_to) && <button type="button" disabled={retrying} onClick={()=>void retryPayment()} className="mt-6 w-full rounded-lg bg-emerald-600 px-5 py-3 font-bold disabled:opacity-50">{retrying?"正在確認並建立付款連結…":"重新付款／更換信用卡"}</button>}
+    {payment?.can_retry && <p className="mt-3 text-sm text-slate-300">沿用原訂單的優惠券與點數，按下後會先向綠界確認狀態。</p>}
     {payment && <button type="button" onClick={() => window.location.reload()} className="mt-7 rounded-lg border border-white/20 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">重新查詢</button>}
   </section>;
 }

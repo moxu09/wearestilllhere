@@ -123,6 +123,8 @@ export function buildEcpayInSiteTokenData(input: {
   };
 }
 
+export class EcpayInSiteBusinessError extends Error { data:Record<string,unknown>; constructor(data:Record<string,unknown>){super(`綠界站內付交易失敗（${String(data.RtnCode ?? "未知")}）`);this.data=data;} }
+
 export async function callEcpayInSiteApi(input: {
   merchantId: string;
   hashKey: string;
@@ -153,6 +155,6 @@ export async function callEcpayInSiteApi(input: {
   if (envelope.TransCode !== 1) throw new Error(`綠界站內付傳輸失敗（${String(envelope.TransCode)}）`);
   if (typeof envelope.Data !== "string") throw new Error("綠界站內付缺少回應資料");
   const data = decryptEcpayInSiteData(envelope.Data, input.hashKey, input.hashIv);
-  if (data.RtnCode !== 1) throw new Error(`綠界站內付交易失敗（${String(data.RtnCode ?? "未知")}）`);
+  if (data.RtnCode !== 1) throw new EcpayInSiteBusinessError(data);
   return data;
 }
