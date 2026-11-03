@@ -296,12 +296,19 @@ export async function POST(request: Request) {
       }
       const table =
         body.brand === "deepnight" ? "play_orders" : "qiunai_salary_orders";
+      const pendingStatus = body.brand === "deepnight" ? "work_pending" : "工時待審核";
+      if (typeof body.approved !== "boolean" || (!body.approved &&
+          (typeof body.note !== "string" || !body.note.trim() || body.note.length > 1000))) {
+        throw new Error("審核資料不正確，駁回時請填寫原因");
+      }
       const { data: report, error: reportError } = await admin
         .from(table)
         .select("*")
         .eq("id", body.reportId)
-        .single();
+        .eq("status", pendingStatus)
+        .maybeSingle();
       if (reportError) throw reportError;
+      if (!report) return Response.json({ error: "這筆申報已處理，請重新整理" }, { status: 409 });
       const meta = reportMeta(report);
       const reviewer = getDiscordProfile(user);
       const reviewedAt = new Date();
@@ -332,11 +339,15 @@ export async function POST(request: Request) {
                 }),
                 ...reviewAudit,
               };
-        const { error } = await admin
+        const { data: updated, error } = await admin
           .from(table)
           .update(payload)
-          .eq("id", body.reportId);
+          .eq("id", body.reportId)
+          .eq("status", pendingStatus)
+          .select("id")
+          .maybeSingle();
         if (error) throw error;
+        if (!updated) return Response.json({ error: "這筆申報已處理，請重新整理" }, { status: 409 });
         return Response.json({ ok: true });
       }
       const staffId = String(report.discord_id);
@@ -414,11 +425,15 @@ export async function POST(request: Request) {
               is_deleted: false,
               ...reviewAudit,
             };
-      const { error } = await admin
+      const { data: updated, error } = await admin
         .from(table)
         .update(payload)
-        .eq("id", body.reportId);
+        .eq("id", body.reportId)
+        .eq("status", pendingStatus)
+        .select("id")
+        .maybeSingle();
       if (error) throw error;
+      if (!updated) return Response.json({ error: "這筆申報已處理，請重新整理" }, { status: 409 });
       return Response.json({ ok: true });
     }
     throw new Error("不支援的操作");
