@@ -39,7 +39,9 @@ function commissionRate(
 
 export async function GET(request: Request) {
   try {
-    const { admin, profile, allowedBrands } = await requireStaff(request);
+    const { admin, profile, allowedBrands, canManageMembership } =
+      await requireStaff(request, true);
+    const empty = Promise.resolve({ data: [], error: null });
     const [
       deep,
       qiunai,
@@ -53,52 +55,52 @@ export async function GET(request: Request) {
       qiunaiReviewed,
     ] =
       await Promise.all([
-        admin
+        allowedBrands.includes("deepnight") ? admin
           .from("play_orders")
           .select("*")
           .eq("status", "work_pending")
-          .order("created_at"),
-        admin
+          .order("created_at") : empty,
+        allowedBrands.includes("qiunai") ? admin
           .from("qiunai_salary_orders")
           .select("*")
           .eq("status", "工時待審核")
-          .order("created_at"),
-        admin
+          .order("created_at") : empty,
+        canManageMembership ? admin
           .from("alliance_redemption_requests")
           .select("*")
           .eq("status", "pending")
-          .order("created_at"),
-        admin
+          .order("created_at") : empty,
+        canManageMembership ? admin
           .from("alliance_rewards")
           .select("*")
           .neq("status", "deleted")
           .order("sort_order")
-          .order("created_at", { ascending: false }),
-        admin
+          .order("created_at", { ascending: false }) : empty,
+        canManageMembership ? admin
           .from("alliance_members")
           .select("*")
           .order("lifetime_points", { ascending: false })
-          .order("updated_at", { ascending: false }),
-        admin.from("alliance_membership_tiers").select("*").order("sort_order"),
-        admin
+          .order("updated_at", { ascending: false }) : empty,
+        canManageMembership ? admin.from("alliance_membership_tiers").select("*").order("sort_order") : empty,
+        canManageMembership ? admin
           .from("platform_profiles")
-          .select("id, discord_user_id, display_name, role, status"),
-        admin
+          .select("id, discord_user_id, display_name, role, status") : empty,
+        canManageMembership ? admin
           .from("alliance_exclusive_invitations")
           .select("*")
-          .order("invited_at", { ascending: false }),
-        admin
+          .order("invited_at", { ascending: false }) : empty,
+        allowedBrands.includes("deepnight") ? admin
           .from("play_orders")
           .select("*")
           .not("reviewed_at", "is", null)
           .order("reviewed_at", { ascending: false })
-          .limit(100),
-        admin
+          .limit(100) : empty,
+        allowedBrands.includes("qiunai") ? admin
           .from("qiunai_salary_orders")
           .select("*")
           .not("reviewed_at", "is", null)
           .order("reviewed_at", { ascending: false })
-          .limit(100),
+          .limit(100) : empty,
       ]);
     for (const result of [
       deep,
@@ -157,6 +159,7 @@ export async function GET(request: Request) {
       ),
       actorRole: profile.role,
       allowedBrands,
+      canManageMembership,
     });
   } catch (error) {
     return apiError(error);
@@ -165,8 +168,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { admin, user, profile, allowedBrands } = await requireStaff(request);
+    if (!request.headers.get("authorization")) throw new Error("UNAUTHORIZED");
     const body = await request.json();
+    const { admin, user, profile, allowedBrands, discordId } =
+      await requireStaff(request, body?.action === "review_report");
     if (body.action === "invite_exclusive_member") {
       const discordUserId = String(body.discordUserId || "");
       const { data: member, error: memberError } = await admin
@@ -292,12 +297,13 @@ export async function POST(request: Request) {
     }
     if (body.action === "review_report") {
       if (!allowedBrands.includes(body.brand)) {
-        throw new Error("沒有此品牌的訂單審核權限");
+        return Response.json({ error: "沒有此店家的訂單審核權限" }, { status: 403 });
       }
       const table =
         body.brand === "deepnight" ? "play_orders" : "qiunai_salary_orders";
       const pendingStatus = body.brand === "deepnight" ? "work_pending" : "工時待審核";
-      if (typeof body.approved !== "boolean" || (!body.approved &&
+      if (typeof body.reportId !== "string" || !body.reportId.trim() || body.reportId.length > 160 ||
+          typeof body.approved !== "boolean" || (!body.approved &&
           (typeof body.note !== "string" || !body.note.trim() || body.note.length > 1000))) {
         throw new Error("審核資料不正確，駁回時請填寫原因");
       }
@@ -315,7 +321,7 @@ export async function POST(request: Request) {
       const reviewAudit = {
         review_decision: body.approved ? "approved" : "rejected",
         reviewer_auth_user_id: user.id,
-        reviewer_discord_id: reviewer.discordId || null,
+        reviewer_discord_id: discordId || null,
         reviewer_name: profile.display_name || reviewer.displayName,
         review_reason: body.approved ? null : body.note || "客服駁回",
         reviewed_at: reviewedAt.toISOString(),

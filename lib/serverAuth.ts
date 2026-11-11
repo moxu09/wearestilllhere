@@ -16,10 +16,29 @@ const STAFF_GUILDS = {
   },
 } as const;
 
-const staffBrandCache = new Map<
-  string,
-  { brands: StaffBrand[]; expiresAt: number }
->();
+// These are the staff servers used by the HR customer-service workbench.
+const ORDER_REVIEW_GUILDS = {
+  deepnight: {
+    ...STAFF_GUILDS.deepnight,
+    guildId: "1501836172199202856",
+    roleId: "1502010574781943989",
+  },
+  qiunai: {
+    ...STAFF_GUILDS.qiunai,
+    guildId: "1513174069087047731",
+    roleId: "1513203868895412305",
+  },
+} as const;
+
+type DiscordGuild = { guildId: string; roleId: string; tokenEnv: string };
+
+function getVerifiedDiscordId(user: User) {
+  const identity = user.identities?.find((item) => item.provider === "discord");
+  const data = identity?.identity_data;
+  return [data?.provider_id, data?.sub, data?.user_id, identity?.id]
+    .map((value) => String(value || ""))
+    .find((value) => /^\d{15,22}$/.test(value));
+}
 
 export function getDiscordId(user: User) {
   const identity = user.identities?.find((item) => item.provider === "discord");
@@ -93,7 +112,7 @@ export async function requireSiteAdmin(request: Request) {
 
 async function hasDiscordRole(
   userId: string,
-  config: (typeof STAFF_GUILDS)[StaffBrand],
+  config: DiscordGuild,
 ) {
   const botToken = process.env[config.tokenEnv];
   if (!botToken) throw new Error("客服權限驗證尚未設定完成");
@@ -103,36 +122,21 @@ async function hasDiscordRole(
     {
       headers: { authorization: `Bot ${botToken}` },
       cache: "no-store",
+      signal: AbortSignal.timeout(8000),
     },
   );
   if (response.status === 404) return false;
   if (!response.ok) throw new Error("暫時無法向 Discord 驗證客服身分組");
 
-  const member = (await response.json()) as { roles?: string[] };
-  return member.roles?.includes(config.roleId) || false;
+  const member = (await response.json()) as { roles?: string[]; pending?: boolean };
+  return !member.pending && member.roles?.includes(config.roleId) === true;
 }
 
-async function getStaffBrands(discordUserId: string) {
-  const cached = staffBrandCache.get(discordUserId);
-  if (cached && cached.expiresAt > Date.now()) return cached.brands;
+const staffBrands = Object.keys(STAFF_GUILDS) as StaffBrand[];
 
-  const checks = await Promise.all(
-    (Object.entries(STAFF_GUILDS) as [StaffBrand, (typeof STAFF_GUILDS)[StaffBrand]][])
-      .map(async ([brand, config]) => ({
-        brand,
-        allowed: await hasDiscordRole(discordUserId, config),
-      })),
-  );
-  const brands = checks.filter((item) => item.allowed).map((item) => item.brand);
-  staffBrandCache.set(discordUserId, {
-    brands,
-    expiresAt: Date.now() + 60_000,
-  });
-  return brands;
-}
-
-export async function requireStaff(request: Request) {
+export async function requireStaff(request: Request, includeOrderReview = false) {
   const context = await requireUser(request);
+  const discordId = getVerifiedDiscordId(context.user);
   const { data: profile } = await context.admin
     .from("platform_profiles")
     .select("id, role, display_name")
@@ -141,24 +145,44 @@ export async function requireStaff(request: Request) {
   if (profile?.role === "admin") {
     return {
       ...context,
+      discordId,
       profile,
-      allowedBrands: ["deepnight", "qiunai"] as StaffBrand[],
+      allowedBrands: staffBrands,
+      canManageMembership: true,
     };
   }
 
-  const discordUserId = getDiscordId(context.user);
-  if (!discordUserId) throw new Error("FORBIDDEN");
-  const allowedBrands = await getStaffBrands(discordUserId);
-  if (!allowedBrands.length) throw new Error("FORBIDDEN");
+  if (!discordId) throw new Error("FORBIDDEN");
+
+  const legacyChecks = staffBrands.map((brand) =>
+    hasDiscordRole(discordId, STAFF_GUILDS[brand]));
+  const orderChecks = includeOrderReview ? staffBrands.map((brand) =>
+    hasDiscordRole(discordId, ORDER_REVIEW_GUILDS[brand])) : [];
+  const results = await Promise.allSettled([...legacyChecks, ...orderChecks]);
+  const isAllowed = (index: number) => {
+    const result = results[index];
+    return result?.status === "fulfilled" && result.value;
+  };
+  const canManageMembership = staffBrands.some((_, index) => isAllowed(index));
+  const allowedBrands = staffBrands.filter((_, index) =>
+    isAllowed(index) || isAllowed(index + staffBrands.length));
+  if (!allowedBrands.length) {
+    if (results.some((result) => result.status === "rejected")) {
+      throw new Error("暫時無法向 Discord 驗證客服身分組");
+    }
+    throw new Error("FORBIDDEN");
+  }
 
   return {
     ...context,
+    discordId,
     profile: profile || {
       id: context.user.id,
       role: "staff",
       display_name: getDiscordProfile(context.user).displayName,
     },
     allowedBrands,
+    canManageMembership,
   };
 }
 
