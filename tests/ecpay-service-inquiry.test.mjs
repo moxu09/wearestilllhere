@@ -16,7 +16,7 @@ Object.assign(process.env, {
 
 const { db } = await import("./helpers/fakeSupabaseAdmin.mjs");
 const { checkMacValue } = await import("../lib/ecpayMac.ts");
-const { resetServiceInquiryLimits } = await import("../lib/ecpayServiceInquiry.ts");
+const { resetServiceInquiryLimits, acquireGlobalSlot, releaseGlobalSlot, globalSlotTokensForTest } = await import("../lib/ecpayServiceInquiry.ts");
 const { POST } = await import("../app/api/payments/ecpay/service/inquiry/route.ts");
 
 const ORDER = "QD0123456789ABCDEF01";
@@ -222,4 +222,24 @@ test("綠界連線失敗 → 502 error，釋放租約並記錄錯誤，不入帳
   assert.equal(inquiry().last_status, "error");
   assert.equal(inquiry().lease_until, null);
   assert.equal(markCalls().length, 0);
+});
+
+test("釋放全域名額只釋放自己的那一個（同毫秒取得也不互相影響）", () => {
+  const now = Date.now();
+  const first = acquireGlobalSlot(now);
+  const second = acquireGlobalSlot(now);
+  assert.equal(typeof first, "string");
+  assert.notEqual(first, second);
+  releaseGlobalSlot(first);
+  assert.deepEqual(globalSlotTokensForTest(), [second]);
+  releaseGlobalSlot(first);
+  assert.deepEqual(globalSlotTokensForTest(), [second], "重複釋放不影響他人");
+});
+
+test("綠界已付款但重新讀取時付款單變成非 paid 狀態 → needs_review，不回報 failed", async () => {
+  db.markPaidHook = payment => { payment.status = "failed"; };
+  db.tables.ecpay_service_payments.push(row());
+  const result = await call({});
+  assert.equal(result.body.status, "needs_review");
+  assert.equal(inquiry().review_required, true);
 });

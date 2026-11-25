@@ -29,22 +29,29 @@ const GLOBAL_WINDOW_MS = 60_000;
 const ALLOWED_KEYS = new Set(["order", "source", "userId", "channelId", "timestamp"]);
 
 // Per-process ceiling on QueryTradeInfo calls, on top of the DB-backed per-order schedule.
-const globalSlots: number[] = [];
+// Each acquisition gets its own token so a release frees exactly that slot.
+const globalSlots: { at: number; token: string }[] = [];
 
 export function resetServiceInquiryLimits() {
   globalSlots.length = 0;
 }
 
-function takeGlobalSlot(now: number): number {
-  while (globalSlots.length && now - globalSlots[0] >= GLOBAL_WINDOW_MS) globalSlots.shift();
-  if (globalSlots.length >= GLOBAL_LIMIT) return Math.max(1, Math.ceil((GLOBAL_WINDOW_MS - (now - globalSlots[0])) / 1000));
-  globalSlots.push(now);
-  return 0;
+/** Returns a slot token, or the seconds to wait when the per-process ceiling is reached. */
+export function acquireGlobalSlot(now: number): string | number {
+  while (globalSlots.length && now - globalSlots[0].at >= GLOBAL_WINDOW_MS) globalSlots.shift();
+  if (globalSlots.length >= GLOBAL_LIMIT) return Math.max(1, Math.ceil((GLOBAL_WINDOW_MS - (now - globalSlots[0].at)) / 1000));
+  const token = randomUUID();
+  globalSlots.push({ at: now, token });
+  return token;
 }
 
-function releaseGlobalSlot(now: number) {
-  const index = globalSlots.lastIndexOf(now);
+export function releaseGlobalSlot(token: string) {
+  const index = globalSlots.findIndex(slot => slot.token === token);
   if (index >= 0) globalSlots.splice(index, 1);
+}
+
+export function globalSlotTokensForTest(): string[] {
+  return globalSlots.map(slot => slot.token);
 }
 
 function verifySignature(raw: string, provided: string | null): boolean {
@@ -124,16 +131,16 @@ export async function handleServiceInquiry(raw: string, signature: string | null
   if (!isAppDrawPayment(payment)) return { httpStatus: 409, body: { error: "此付款類型不支援自動查詢" } };
   if (payment.status !== "pending") return localResult(payment);
 
-  const globalWait = takeGlobalSlot(now);
-  if (globalWait) return { httpStatus: 200, body: { status: "cooldown", retry_after: globalWait } };
+  const slot = acquireGlobalSlot(now);
+  if (typeof slot === "number") return { httpStatus: 200, body: { status: "cooldown", retry_after: slot } };
   let claim: Claim;
   try { claim = await claimInquiry(order, now); } catch (cause) {
-    releaseGlobalSlot(now);
+    releaseGlobalSlot(slot);
     console.error("ECPay service inquiry claim failed", order, cause);
     return { httpStatus: 502, body: { status: "error", error: "查單紀錄暫時無法更新" } };
   }
   if (claim.kind !== "claimed") {
-    releaseGlobalSlot(now);
+    releaseGlobalSlot(slot);
     return claim.kind === "review"
       ? { httpStatus: 200, body: { status: "needs_review" } }
       : { httpStatus: 200, body: { status: "cooldown", retry_after: claim.retryAfter } };
@@ -147,12 +154,14 @@ export async function handleServiceInquiry(raw: string, signature: string | null
       .select("status,fulfillment_status").eq("merchant_trade_no", order).maybeSingle();
     if (rereadError || !after) throw new Error("付款單重新讀取失敗");
     let result: ServiceInquiryResult;
-    if (after.status !== "pending") result = localResult(after);
-    else if (reconciled.remoteStatus === "paid")
-      result = { httpStatus: 200, body: { status: "needs_review", fulfillment_status: after.fulfillment_status ?? null } };
+    if (reconciled.remoteStatus === "paid")
+      // 綠界 says paid: only a row that is really paid is reported paid; any other status needs a human.
+      result = after.status === "paid" ? localResult(after)
+        : { httpStatus: 200, body: { status: "needs_review", fulfillment_status: after.fulfillment_status ?? null } };
+    else if (after.status !== "pending") result = localResult(after);
     else result = { httpStatus: 200, body: { status: reconciled.remoteStatus === "pending" ? "pending" : "failed", fulfillment_status: after.fulfillment_status ?? null } };
     await finishInquiry(order, claim.leaseToken, result.body.status || "error",
-      result.body.status === "needs_review" ? "綠界已付款但付款單未更新" : null);
+      result.body.status === "needs_review" ? `綠界已付款但付款單狀態為 ${after.status}` : null);
     return result;
   } catch (cause) {
     if (cause instanceof EcpayReconcileMismatchError) {
