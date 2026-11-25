@@ -4,6 +4,7 @@ import { isEcpayAtmAvailableForPayment, mayIssueNewServiceAtm } from "@/lib/ecpa
 import { decryptEcpayInSiteData, encryptEcpayInSiteData } from "@/lib/ecpayInSite";
 import { getEcpayInstructions, type EcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { appDrawTradeTexts } from "@/lib/ecpayServiceKind";
 
 type Method = "ATM" | "CVS" | "BARCODE";
 type Json = Record<string, unknown>;
@@ -84,13 +85,14 @@ export async function issueServiceDirect(order: string, method: Method): Promise
   if (claimError) throw new Error("此付款單已開始建立付款資料；請勿重複操作，若未顯示資訊請聯繫客服");
 
   const description = String(payment.description || "服務付款").replace(/[&<>#\x00-\x1f]/g, " ").slice(0, 100);
+  const drawTexts = appDrawTradeTexts(payment);
   const data = {
     MerchantID: gateway.merchantId, ChoosePayment: method,
     OrderInfo: {
       MerchantTradeNo: order, MerchantTradeDate: dateTaipei(), TotalAmount: amount,
       ReturnURL: `${gateway.baseUrl}/api/payments/ecpay/service/direct-return`,
-      TradeDesc: payment.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款",
-      ItemName: description || "服務付款",
+      TradeDesc: drawTexts?.tradeDesc ?? (payment.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款"),
+      ItemName: drawTexts?.itemName ?? (description || "服務付款"),
     },
     ...(method === "ATM" ? { ATMInfo: { ExpireDate: 3 } } : {}),
     ...(method === "CVS" ? { CVSInfo: { ExpireDate: 4320, CVSCode: "CVS" } } : {}),

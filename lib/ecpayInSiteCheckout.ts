@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { getEcpayConfig } from "@/lib/ecpay";
 import { buildEcpayInSiteTokenData, callEcpayInSiteApi, decryptEcpayInSiteData, parsePaidCreditNotice } from "@/lib/ecpayInSite";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { appDrawTradeTexts, serviceExpiredMessage } from "@/lib/ecpayServiceKind";
 
 export type InSiteKind = "service" | "merchandise" | "platform";
 type ObjectValue = Record<string, unknown>;
@@ -44,7 +45,9 @@ async function payableOrder(kind: InSiteKind, merchantTradeNo: string) {
       .eq("merchant_trade_no", merchantTradeNo).maybeSingle();
     if (error || !data || data.status !== "pending") throw new Error("付款單不存在或已完成");
     if (Date.now() - Date.parse(data.created_at) > 24 * 60 * 60 * 1000)
-      throw new Error("付款連結已過期，請回到 Discord 重新建立訂單");
+      throw new Error(serviceExpiredMessage(data));
+    const drawTexts = appDrawTradeTexts(data);
+    if (drawTexts) return { amount: Number(data.amount), phone: "", description: drawTexts.tradeDesc, itemName: drawTexts.itemName };
     return { amount: Number(data.amount), phone: "", description: data.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款", itemName: safeText(data.description, 100) || "服務付款" };
   }
   if (kind === "platform") {

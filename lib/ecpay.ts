@@ -11,6 +11,7 @@ import { checkMacValue, verifyEcpayMac } from "@/lib/ecpayMac";
 import { paymentInfoFields } from "@/lib/ecpayNoncredit";
 import { getEcpayInstructions } from "@/lib/ecpayPaymentInstructions";
 import { isEcpayAtmAvailable } from "@/lib/ecpayAtmSchedule";
+import { appDrawTradeTexts, serviceExpiredMessage } from "@/lib/ecpayServiceKind";
 
 const stageUrl = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5";
 const productionUrl = "https://payment.ecpay.com.tw/Cashier/AioCheckOut/V5";
@@ -181,7 +182,7 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string, select
   if (error || !payment) throw new Error("找不到綠界付款單");
   if (payment.status !== "pending") throw new Error("這筆付款已完成或不可付款");
   if (Date.now() - Date.parse(payment.created_at) > 24 * 60 * 60 * 1000)
-    throw new Error("付款連結已過期，請回到 Discord 重新建立訂單");
+    throw new Error(serviceExpiredMessage(payment));
   if (getEcpayInstructions(payment.raw_result))
     throw new Error("此付款單已取得繳費資訊，請使用原本的虛擬帳號或代碼");
   const { data: attempt, error: attemptError } = await getSupabaseAdmin().from("ecpay_insite_attempts")
@@ -190,14 +191,15 @@ export async function createEcpayServiceCheckout(merchantTradeNo: string, select
   const amount = Number(payment.amount);
   assertPaymentAmount(method, amount);
   const description = cleanTradeText(String(payment.description || "服務付款"), 100);
+  const drawTexts = appDrawTradeTexts(payment);
   const fields: Record<string, string> = {
     MerchantID: config.merchantId,
     MerchantTradeNo: merchantTradeNo,
     MerchantTradeDate: merchantTradeDate(),
     PaymentType: "aio",
     TotalAmount: String(amount),
-    TradeDesc: payment.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款",
-    ItemName: description || "服務付款",
+    TradeDesc: drawTexts?.tradeDesc ?? (payment.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款"),
+    ItemName: drawTexts?.itemName ?? (description || "服務付款"),
     ReturnURL: `${config.baseUrl}/api/payments/ecpay/service/result`,
     ...(method === "Credit" ? { OrderResultURL: `${config.baseUrl}/api/payments/ecpay/service/display` } : {}),
     ChoosePayment: method,
