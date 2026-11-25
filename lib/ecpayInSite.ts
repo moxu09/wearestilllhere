@@ -37,6 +37,9 @@ export function decryptEcpayInSiteData(cipherText: string, hashKey: string, hash
 
 export type EcpayInSiteMethod = "Credit" | "ATM" | "CVS" | "BARCODE";
 
+/** 綠界 decrypted, verified response with an explicit failed RtnCode (the request was refused, e.g. card declined). */
+export class EcpayInSiteDeclinedError extends Error {}
+
 // Only a paid, non-simulated server notification may settle an order.
 // Source: https://developers.ecpay.com.tw/9058/ (live checked 2026-09-23).
 export function parsePaidCreditNotice(data: Record<string, unknown>): {
@@ -153,6 +156,11 @@ export async function callEcpayInSiteApi(input: {
   if (envelope.TransCode !== 1) throw new Error(`綠界站內付傳輸失敗（${String(envelope.TransCode)}）`);
   if (typeof envelope.Data !== "string") throw new Error("綠界站內付缺少回應資料");
   const data = decryptEcpayInSiteData(envelope.Data, input.hashKey, input.hashIv);
-  if (data.RtnCode !== 1) throw new Error(`綠界站內付交易失敗（${String(data.RtnCode ?? "未知")}）`);
+  if (data.RtnCode !== 1) {
+    const message = `綠界站內付交易失敗（${String(data.RtnCode ?? "未知")}）`;
+    const explicit = (typeof data.RtnCode === "number" && Number.isFinite(data.RtnCode)) ||
+      (typeof data.RtnCode === "string" && /^\d+$/.test(data.RtnCode));
+    throw explicit ? new EcpayInSiteDeclinedError(message) : new Error(message);
+  }
   return data;
 }

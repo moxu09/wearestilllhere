@@ -1,10 +1,17 @@
 import { randomUUID } from "node:crypto";
 import { getEcpayConfig } from "@/lib/ecpay";
-import { buildEcpayInSiteTokenData, callEcpayInSiteApi, decryptEcpayInSiteData, parsePaidCreditNotice } from "@/lib/ecpayInSite";
+import { buildEcpayInSiteTokenData, callEcpayInSiteApi, decryptEcpayInSiteData, EcpayInSiteDeclinedError, parsePaidCreditNotice } from "@/lib/ecpayInSite";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { appDrawTradeTexts, serviceExpiredMessage } from "@/lib/ecpayServiceKind";
 
 export type InSiteKind = "service" | "merchandise" | "platform";
+
+// APP draw rows only (ecpay_service_payments.payment_kind = 'draw'): the APP must tell a definite
+// decline (safe to pay again) from an uncertain result (must not pay again).
+/** 綠界 explicitly refused the charge and the local row is not paid. */
+export class InSitePaymentDeclinedError extends Error {}
+/** Failure after the charge was submitted; the outcome is unknown. */
+export class InSitePaymentUncertainError extends Error {}
 type ObjectValue = Record<string, unknown>;
 
 function object(value: unknown): ObjectValue {
@@ -47,7 +54,7 @@ async function payableOrder(kind: InSiteKind, merchantTradeNo: string) {
     if (Date.now() - Date.parse(data.created_at) > 24 * 60 * 60 * 1000)
       throw new Error(serviceExpiredMessage(data));
     const drawTexts = appDrawTradeTexts(data);
-    if (drawTexts) return { amount: Number(data.amount), phone: "", description: drawTexts.tradeDesc, itemName: drawTexts.itemName };
+    if (drawTexts) return { amount: Number(data.amount), phone: "", description: drawTexts.tradeDesc, itemName: drawTexts.itemName, appDraw: true };
     return { amount: Number(data.amount), phone: "", description: data.organization_code === "qiunai" ? "秋奈電競服務付款" : "深夜不關燈服務付款", itemName: safeText(data.description, 100) || "服務付款" };
   }
   if (kind === "platform") {
@@ -141,17 +148,33 @@ export async function submitInSitePayment(input: {
   if (!/^[0-9a-f-]{36}$/i.test(input.attemptId)) throw new Error("付款工作階段錯誤");
   if (typeof input.payToken !== "string" || !input.payToken.trim() || input.payToken.length > 4096)
     throw new Error("付款代碼錯誤");
-  await payableOrder(input.kind, merchantTradeNo);
+  const order = await payableOrder(input.kind, merchantTradeNo);
   const admin = getSupabaseAdmin();
   const { data: claimed, error: claimError } = await admin.rpc("ecpay_insite_claim_create", {
     p_merchant_trade_no: merchantTradeNo, p_payment_kind: input.kind, p_attempt_id: input.attemptId,
   });
   if (claimError || claimed !== true) throw new Error("這筆付款已送出或付款畫面已過期；請先查詢付款結果");
+  if (!("appDraw" in order && order.appDraw)) return createAndSave(gateway, merchantTradeNo, input.attemptId, input.payToken);
+  try {
+    return await createAndSave(gateway, merchantTradeNo, input.attemptId, input.payToken);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "綠界付款送出結果不明，請先查詢付款結果";
+    if (error instanceof EcpayInSiteDeclinedError) {
+      const { data: row, error: rowError } = await admin.from("ecpay_service_payments")
+        .select("status").eq("merchant_trade_no", merchantTradeNo).maybeSingle();
+      if (!rowError && row && row.status !== "paid") throw new InSitePaymentDeclinedError(message);
+    }
+    throw new InSitePaymentUncertainError(message);
+  }
+}
+
+async function createAndSave(gateway: ReturnType<typeof config>, merchantTradeNo: string, attemptId: string, payToken: string) {
+  const admin = getSupabaseAdmin();
   // The claim remains 'creating' on timeout: never retry an ambiguous charge automatically.
   const result = await callEcpayInSiteApi({
     merchantId: gateway.merchantId, hashKey: gateway.hashKey, hashIv: gateway.hashIv,
     stage: gateway.stage, endpoint: "CreatePayment",
-    data: { MerchantID: gateway.merchantId, PayToken: input.payToken, MerchantTradeNo: merchantTradeNo },
+    data: { MerchantID: gateway.merchantId, PayToken: payToken, MerchantTradeNo: merchantTradeNo },
   });
   const orderInfo = object(result.OrderInfo);
   if (orderInfo.MerchantTradeNo !== merchantTradeNo) throw new Error("綠界交易編號不符，請聯繫客服核對");
@@ -160,7 +183,7 @@ export async function submitInSitePayment(input: {
     throw new Error("綠界 3D 驗證網址格式錯誤");
   const { data: saved, error: updateError } = await admin.from("ecpay_insite_attempts").update({
     status: "created", updated_at: new Date().toISOString(),
-  }).eq("merchant_trade_no", merchantTradeNo).eq("attempt_id", input.attemptId).eq("status", "creating")
+  }).eq("merchant_trade_no", merchantTradeNo).eq("attempt_id", attemptId).eq("status", "creating")
     .select("merchant_trade_no").maybeSingle();
   if (updateError || !saved) throw new Error("交易已建立，但付款狀態保存失敗；請查詢付款結果");
   return { threeDUrl: typeof threeDUrl === "string" ? threeDUrl : null, merchantTradeNo };

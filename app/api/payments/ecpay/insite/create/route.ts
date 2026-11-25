@@ -1,4 +1,4 @@
-import { submitInSitePayment, type InSiteKind } from "@/lib/ecpayInSiteCheckout";
+import { InSitePaymentDeclinedError, InSitePaymentUncertainError, submitInSitePayment, type InSiteKind } from "@/lib/ecpayInSiteCheckout";
 
 export const runtime = "nodejs";
 
@@ -16,6 +16,11 @@ export async function POST(request: Request) {
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("ECPay in-site CreatePayment failed", error);
+    // APP draw rows only: 402 means 綠界 explicitly refused the charge; 502 means the result is unknown.
+    if (error instanceof InSitePaymentDeclinedError)
+      return Response.json({ error: error.message, declined: true }, { status: 402, headers: { "Cache-Control": "no-store" } });
+    if (error instanceof InSitePaymentUncertainError)
+      return Response.json({ error: error.message }, { status: 502, headers: { "Cache-Control": "no-store" } });
     return Response.json({ error: error instanceof Error ? error.message : "綠界付款送出失敗，請先查詢付款結果" }, { status: 400, headers: { "Cache-Control": "no-store" } });
   }
 }
