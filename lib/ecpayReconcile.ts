@@ -2,6 +2,9 @@ import { getEcpayConfig } from "./ecpay";
 import { queryEcpayTrade } from "./ecpayQuery";
 import { getSupabaseAdmin } from "./supabaseAdmin";
 
+/** 綠界查單結果與本地付款單不一致：不可入帳，需客服核對。 */
+export class EcpayReconcileMismatchError extends Error {}
+
 export async function reconcileEcpayMerchandise(merchantTradeNo: string) {
   const admin = getSupabaseAdmin();
   const { data: order, error } = await admin.from("merchandise_orders")
@@ -33,9 +36,11 @@ export async function reconcileEcpayService(merchantTradeNo: string) {
     .eq("merchant_trade_no", merchantTradeNo).maybeSingle();
   if (error || !payment) throw new Error("找不到服務付款單");
   const remote = await queryEcpayTrade(getEcpayConfig(), merchantTradeNo);
-  if (remote.amount !== Number(payment.amount)) throw new Error("綠界與服務付款單金額不符");
+  if (remote.amount !== Number(payment.amount)) throw new EcpayReconcileMismatchError("綠界與服務付款單金額不符");
   if (payment.status === "paid" && payment.trade_no !== remote.tradeNo)
-    throw new Error("綠界交易序號與已付款服務單不符");
+    throw new EcpayReconcileMismatchError("綠界交易序號與已付款服務單不符");
+  if (remote.status === "paid" && remote.raw.SimulatePaid === "1")
+    throw new EcpayReconcileMismatchError("綠界模擬付款不可入帳");
   if (payment.status === "pending" && remote.status === "paid") {
     const { error: completeError } = await admin.rpc("ecpay_mark_service_paid", {
       p_merchant_trade_no: merchantTradeNo,

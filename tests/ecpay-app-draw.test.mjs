@@ -1,19 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { registerHooks } from "node:module";
+import "./helpers/aliasHooks.mjs";
 
-// Resolve the app's "@/lib/*" alias for node:test and swap Supabase for an in-memory fake.
 // fetch is stubbed below, so these tests never reach 綠界 or production.
-const libUrl = new URL("../lib/", import.meta.url);
-const fakeAdminUrl = new URL("./helpers/fakeSupabaseAdmin.mjs", import.meta.url).href;
-registerHooks({
-  resolve(specifier, context, nextResolve) {
-    if (specifier === "@/lib/supabaseAdmin") return { url: fakeAdminUrl, shortCircuit: true };
-    if (specifier.startsWith("@/lib/")) return nextResolve(new URL(`${specifier.slice(6)}.ts`, libUrl).href, context);
-    return nextResolve(specifier, context);
-  },
-});
-
 const MERCHANT = "3002607";
 const KEY = "pwFHCqoQZGmho4w6";
 const IV = "EkRm7iFT261dpevs";

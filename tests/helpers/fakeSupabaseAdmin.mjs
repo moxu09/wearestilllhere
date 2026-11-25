@@ -48,6 +48,11 @@ const client = {
       attempt.status = "creating";
       return Promise.resolve({ data: true, error: null });
     }
+    if (name === "ecpay_mark_service_paid") {
+      const payment = db.tables.ecpay_service_payments.find(row => row.merchant_trade_no === args.p_merchant_trade_no);
+      if (payment && payment.status === "pending")
+        Object.assign(payment, { status: "paid", trade_no: args.p_trade_no, fulfillment_status: "pending" });
+    }
     return Promise.resolve({ data: null, error: null });
   },
 };
