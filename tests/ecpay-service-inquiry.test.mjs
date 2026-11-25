@@ -16,7 +16,7 @@ Object.assign(process.env, {
 
 const { db } = await import("./helpers/fakeSupabaseAdmin.mjs");
 const { checkMacValue } = await import("../lib/ecpayMac.ts");
-const { resetServiceInquiryCooldown } = await import("../lib/ecpayServiceInquiry.ts");
+const { resetServiceInquiryLimits } = await import("../lib/ecpayServiceInquiry.ts");
 const { POST } = await import("../app/api/payments/ecpay/service/inquiry/route.ts");
 
 const ORDER = "QD0123456789ABCDEF01";
@@ -27,11 +27,11 @@ function stubQueryTradeInfo() {
   globalThis.fetch = async (url, init) => {
     assert.equal(String(url), "https://payment-stage.ecpay.com.tw/Cashier/QueryTradeInfo/V5");
     const sent = Object.fromEntries(new URLSearchParams(String(init.body)));
-    assert.equal(sent.MerchantTradeNo, ORDER);
+    assert.match(sent.MerchantTradeNo, /^QD/);
     assert.equal(sent.CheckMacValue, checkMacValue({ MerchantID: sent.MerchantID, MerchantTradeNo: sent.MerchantTradeNo, TimeStamp: sent.TimeStamp }, KEY, IV));
     queries.push(sent);
     const fields = {
-      MerchantID: MERCHANT, MerchantTradeNo: ORDER, TradeNo: "2611260000000009", TradeAmt: "300",
+      MerchantID: MERCHANT, MerchantTradeNo: sent.MerchantTradeNo, TradeNo: "2611260000000009", TradeAmt: "300",
       PaymentDate: "2026/11/26 12:00:00", PaymentType: "ATM_TAISHIN", TradeStatus: "1", ...remote,
     };
     const body = new URLSearchParams({ ...fields, CheckMacValue: checkMacValue(fields, KEY, IV) });
@@ -47,8 +47,8 @@ function row(overrides = {}) {
   };
 }
 
-function signedRequest(payload, { secret = SECRET, signature } = {}) {
-  const body = JSON.stringify({ order: ORDER, source: "manual", userId: "u", channelId: "", timestamp: Math.floor(Date.now() / 1000), ...payload });
+function signedRequest(payload, { secret = SECRET, signature, order = ORDER } = {}) {
+  const body = JSON.stringify({ order, source: "manual", userId: "u", channelId: "", timestamp: Math.floor(Date.now() / 1000), ...payload });
   const header = signature ?? createHmac("sha256", secret).update(body).digest("hex");
   return new Request("https://site.test/api/payments/ecpay/service/inquiry", {
     method: "POST", headers: { "Content-Type": "application/json", "X-Ecpay-Bot-Signature": header }, body,
@@ -61,9 +61,10 @@ async function call(payload, options) {
 }
 
 const markCalls = () => db.rpcCalls.filter(c => c.name === "ecpay_mark_service_paid");
+const inquiry = (order = ORDER) => db.tables.ecpay_service_inquiries.find(q => q.merchant_trade_no === order);
 
 test.beforeEach(() => {
-  db.reset(); queries.length = 0; remote = {}; resetServiceInquiryCooldown();
+  db.reset(); queries.length = 0; remote = {}; resetServiceInquiryLimits();
   stubQueryTradeInfo();
 });
 
@@ -83,28 +84,69 @@ test("時間戳超過 5 分鐘 → 401", async () => {
   assert.equal(queries.length, 0);
 });
 
-test("綠界回報已付款 → 呼叫 ecpay_mark_service_paid 一次，重查不再入帳", async () => {
+test("帶 direct-issue 欄位或金額等未知欄位的已簽章請求 → 400", async () => {
+  db.tables.ecpay_service_payments.push(row());
+  assert.equal((await call({ method: "ATM" })).code, 400);
+  assert.equal((await call({ amount: 30 })).code, 400);
+  assert.equal(queries.length, 0);
+});
+
+test("未宣告長度的超大串流請求 → 413（讀取時即中止）", async () => {
+  const big = new ReadableStream({ start(controller) { for (let i = 0; i < 10; i++) controller.enqueue(new Uint8Array(1024).fill(32)); controller.close(); } });
+  const response = await POST(new Request("https://site.test/api/payments/ecpay/service/inquiry", { method: "POST", body: big, duplex: "half" }));
+  assert.equal(response.status, 413);
+});
+
+test("非 draw 付款類別 → 409 不支援，不查綠界也不寫查單紀錄", async () => {
+  for (const payment_kind of ["topup", "order", "extension"]) {
+    db.reset();
+    db.tables.ecpay_service_payments.push(row({ payment_kind }));
+    const result = await call({});
+    assert.equal(result.code, 409, payment_kind);
+    assert.equal(result.body.error, "此付款類型不支援自動查詢");
+    assert.equal(db.tables.ecpay_service_inquiries.length, 0);
+  }
+  assert.equal(queries.length, 0);
+  assert.equal(markCalls().length, 0);
+});
+
+test("綠界回報已付款 → 入帳一次並回報重新讀取的狀態；重查不再查綠界", async () => {
   db.tables.ecpay_service_payments.push(row());
   const first = await call({});
   assert.equal(first.code, 200);
-  assert.equal(first.body.status, "paid");
+  assert.deepEqual(first.body, { status: "paid", fulfillment_status: "pending" });
   assert.equal(markCalls().length, 1);
   assert.deepEqual(
     { order: markCalls()[0].args.p_merchant_trade_no, amount: markCalls()[0].args.p_amount, tradeNo: markCalls()[0].args.p_trade_no },
     { order: ORDER, amount: 300, tradeNo: "2611260000000009" });
-  resetServiceInquiryCooldown();
+  assert.equal(inquiry().last_status, "paid");
+  assert.equal(inquiry().lease_until, null);
   const second = await call({});
   assert.equal(second.body.status, "paid");
   assert.equal(markCalls().length, 1);
-  assert.equal(queries.length, 1, "已付款的單不再查綠界");
+  assert.equal(queries.length, 1);
 });
 
-test("綠界尚未付款 → pending，不入帳；同單短時間重查 → cooldown", async () => {
+test("入帳 RPC 未實際更新付款單 → 不回報 paid，改 needs_review", async () => {
+  db.markPaidNoop = true;
+  db.tables.ecpay_service_payments.push(row());
+  const result = await call({});
+  assert.equal(result.body.status, "needs_review");
+  assert.equal(inquiry().review_required, true);
+});
+
+test("綠界尚未付款 → pending，寫入下次查詢時間供排程輪替；期限內重查 → cooldown", async () => {
   remote = { TradeStatus: "0", TradeNo: "", PaymentDate: "" };
   db.tables.ecpay_service_payments.push(row());
+  const before = Date.now();
   const first = await call({});
-  assert.equal(first.code, 200);
   assert.equal(first.body.status, "pending");
+  const q = inquiry();
+  assert.equal(q.attempts, 1);
+  assert.equal(q.last_status, "pending");
+  assert.equal(q.lease_until, null);
+  assert.ok(Date.parse(q.last_checked_at) >= before);
+  assert.ok(Date.parse(q.next_check_at) >= before + 299_000);
   const again = await call({});
   assert.equal(again.body.status, "cooldown");
   assert.ok(again.body.retry_after >= 1);
@@ -112,39 +154,57 @@ test("綠界尚未付款 → pending，不入帳；同單短時間重查 → coo
   assert.equal(markCalls().length, 0);
 });
 
+test("排程時間已到可再查；租約未到期或待覆核則不查", async () => {
+  remote = { TradeStatus: "0", TradeNo: "", PaymentDate: "" };
+  db.tables.ecpay_service_payments.push(row());
+  db.tables.ecpay_service_inquiries.push({ merchant_trade_no: ORDER, next_check_at: "-infinity", attempts: 3, lease_until: new Date(Date.now() + 30_000).toISOString(), review_required: false });
+  assert.equal((await call({})).body.status, "cooldown");
+  inquiry().lease_until = null;
+  assert.equal((await call({})).body.status, "pending");
+  assert.equal(inquiry().attempts, 4);
+  inquiry().review_required = true; inquiry().next_check_at = "-infinity";
+  assert.equal((await call({})).body.status, "needs_review");
+  assert.equal(queries.length, 1);
+});
+
 test("綠界回報非 0／1 狀態 → failed，不入帳", async () => {
   remote = { TradeStatus: "10200095", TradeNo: "" };
   db.tables.ecpay_service_payments.push(row());
-  const result = await call({});
-  assert.equal(result.body.status, "failed");
+  assert.equal((await call({})).body.status, "failed");
   assert.equal(markCalls().length, 0);
 });
 
-test("金額不符 → needs_review，拒絕入帳（不採信請求內金額）", async () => {
+test("金額不符 → needs_review 並標記待覆核，拒絕入帳", async () => {
   remote = { TradeAmt: "30" };
   db.tables.ecpay_service_payments.push(row());
-  const result = await call({ amount: 30 });
-  assert.equal(result.body.status, "needs_review");
+  assert.equal((await call({})).body.status, "needs_review");
   assert.equal(markCalls().length, 0);
+  assert.equal(inquiry().review_required, true);
   assert.equal(db.tables.ecpay_service_payments[0].status, "pending");
 });
 
 test("模擬付款 → needs_review，不入帳", async () => {
   remote = { SimulatePaid: "1" };
   db.tables.ecpay_service_payments.push(row());
-  const result = await call({});
-  assert.equal(result.body.status, "needs_review");
+  assert.equal((await call({})).body.status, "needs_review");
   assert.equal(markCalls().length, 0);
 });
 
-test("所有付款類別與兩個品牌都可查單", async () => {
-  for (const [payment_kind, organization_code] of [["topup", "qiunai"], ["order", "qiunai"], ["draw", "deepnight"]]) {
-    db.reset(); resetServiceInquiryCooldown();
-    db.tables.ecpay_service_payments.push(row({ payment_kind, organization_code }));
-    const result = await call({});
-    assert.equal(result.body.status, "paid", `${organization_code} ${payment_kind}`);
-  }
-  assert.equal(markCalls().length, 1);
+test("深夜品牌的 draw 也可查單", async () => {
+  db.tables.ecpay_service_payments.push(row({ organization_code: "deepnight" }));
+  assert.equal((await call({})).body.status, "paid");
+});
+
+test("每個程序每分鐘最多查綠界 30 次", async () => {
+  remote = { TradeStatus: "0", TradeNo: "", PaymentDate: "" };
+  const orders = Array.from({ length: 31 }, (_, i) => `QD${String(i).padStart(18, "0")}`);
+  for (const order of orders) db.tables.ecpay_service_payments.push(row({ merchant_trade_no: order }));
+  const statuses = [];
+  for (const order of orders) statuses.push((await call({ order }, { order })).body.status);
+  assert.equal(statuses.filter(s => s === "pending").length, 30);
+  assert.equal(statuses[30], "cooldown");
+  assert.equal(queries.length, 30);
+  assert.equal(inquiry(orders[30]), undefined, "被全域限制擋下的單不佔用排程");
 });
 
 test("找不到付款單 → 404；編號格式錯誤 → 400", async () => {
@@ -153,11 +213,13 @@ test("找不到付款單 → 404；編號格式錯誤 → 400", async () => {
   assert.equal(queries.length, 0);
 });
 
-test("綠界連線失敗 → 502 error，不入帳", async () => {
+test("綠界連線失敗 → 502 error，釋放租約並記錄錯誤，不入帳", async () => {
   db.tables.ecpay_service_payments.push(row());
   globalThis.fetch = async () => new Response("", { status: 503 });
   const result = await call({});
   assert.equal(result.code, 502);
   assert.equal(result.body.status, "error");
+  assert.equal(inquiry().last_status, "error");
+  assert.equal(inquiry().lease_until, null);
   assert.equal(markCalls().length, 0);
 });

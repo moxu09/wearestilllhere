@@ -3,8 +3,9 @@ export const db = {
   tables: {},
   rpcCalls: [],
   reset() {
-    this.tables = { ecpay_service_payments: [], ecpay_insite_attempts: [] };
+    this.tables = { ecpay_service_payments: [], ecpay_insite_attempts: [], ecpay_service_inquiries: [] };
     this.rpcCalls = [];
+    this.markPaidNoop = false;
   },
 };
 db.reset();
@@ -50,7 +51,7 @@ const client = {
     }
     if (name === "ecpay_mark_service_paid") {
       const payment = db.tables.ecpay_service_payments.find(row => row.merchant_trade_no === args.p_merchant_trade_no);
-      if (payment && payment.status === "pending")
+      if (payment && payment.status === "pending" && !db.markPaidNoop)
         Object.assign(payment, { status: "paid", trade_no: args.p_trade_no, fulfillment_status: "pending" });
     }
     return Promise.resolve({ data: null, error: null });
