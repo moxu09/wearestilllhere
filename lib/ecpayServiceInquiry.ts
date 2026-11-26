@@ -1,15 +1,18 @@
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { EcpayReconcileMismatchError, reconcileEcpayService } from "@/lib/ecpayReconcile";
-import { isAppDrawPayment } from "@/lib/ecpayServiceKind";
+import { appDirectTopupMethod, isAppDirectTopupPayment, isAppDrawPayment } from "@/lib/ecpayServiceKind";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
-// Signed 查單 for APP draw payments. Callers: the 秋奈 bot (qiunai/utils/ecpayInquiry.js, requestEcpayInquiry)
+// Signed 查單 for APP draw payments and APP 超商條碼／超商代碼／ATM 儲值 (direct-issued topup) payments. Callers: the 秋奈 bot (qiunai/utils/ecpayInquiry.js, requestEcpayInquiry)
 // and app-api. Body {order, source, userId, channelId, timestamp}; header X-Ecpay-Bot-Signature =
 // hex HMAC-SHA256(SUPABASE_SERVICE_ROLE_KEY, raw body). Request amounts are never read: paid state comes
 // only from a CheckMacValue-verified 綠界 QueryTradeInfo response.
 //
-// Only payment_kind='draw' is handled. topup/order/extension keep their guarded flow in the bot's
-// ecpay_claim_service_inquiry / ecpay_finish_service_inquiry (manual-credit and order-state checks).
+// Handled: payment_kind='draw', and payment_kind='topup' rows created by app-api's offline topup
+// (isAppDirectTopupPayment: 秋奈, metadata flow "app" + issue "direct"). Those topups additionally require the
+// 綠界 TradeNo/PaymentType to match the issued code and refuse (needs_review) when staff already credited the
+// customer by hand, the same check as the bot's ecpay_finish_service_inquiry. Every other topup and
+// order/extension gets 409 and keeps its existing flow.
 //
 // Scheduling state lives in public.ecpay_service_inquiries (the bot migration's table), the single source of
 // truth that the bot scheduler reads: last_checked_at, next_check_at, lease_*, attempts, last_status,
@@ -105,6 +108,35 @@ async function finishInquiry(order: string, leaseToken: string, status: string, 
   if (updateError) console.error("ECPay service inquiry finish failed", order, updateError.message);
 }
 
+type AppTopupRow = { merchant_trade_no: string; user_id: string; amount: number; created_at: string; metadata?: unknown; raw_result?: unknown };
+
+// Runs only when 綠界 reports paid for a still-pending APP direct topup, right before ecpay_mark_service_paid.
+async function guardAppTopup(payment: AppTopupRow, remote: { tradeNo: string; raw: Record<string, string> }) {
+  const issued = payment.raw_result && typeof payment.raw_result === "object" && !Array.isArray(payment.raw_result)
+    ? payment.raw_result as Record<string, unknown> : {};
+  const method = appDirectTopupMethod(payment);
+  if (!remote.tradeNo || issued.TradeNo !== remote.tradeNo)
+    throw new EcpayReconcileMismatchError("綠界交易序號與取號紀錄不符");
+  if (!method || issued.PaymentType !== method || (remote.raw.PaymentType && remote.raw.PaymentType.split("_")[0] !== method))
+    throw new EcpayReconcileMismatchError("綠界付款方式與取號紀錄不符");
+  // Same as the bot's ecpay_finish_service_inquiry: staff may have credited this customer by hand while the
+  // notification was lost. Then marking paid would let the bot credit the ASD a second time.
+  const admin = getSupabaseAdmin();
+  const { data: operation, error: operationError } = await admin.from("bot_financial_operations").select("status")
+    .eq("organization_code", "qiunai").eq("operation_key", `ecpay-topup:${payment.merchant_trade_no}`).eq("status", "completed").limit(1);
+  if (operationError) throw new Error("儲值入帳紀錄讀取失敗");
+  if (operation?.length) return;
+  const { data: walletCredits, error: walletError } = await admin.from("wallet_logs").select("user_id")
+    .eq("user_id", payment.user_id).eq("amount", Number(payment.amount)).eq("type", "管理員發錢").gte("created_at", payment.created_at).limit(1);
+  if (walletError) throw new Error("人工補款紀錄讀取失敗");
+  const { data: manualTopups, error: manualError } = await admin.from("bot_manual_topups").select("user_id")
+    .eq("organization_code", "qiunai").eq("user_id", payment.user_id).eq("amount", Number(payment.amount)).eq("status", "completed")
+    .gte("created_at", payment.created_at).limit(1);
+  if (manualError) throw new Error("人工儲值紀錄讀取失敗");
+  if (walletCredits?.length || manualTopups?.length)
+    throw new EcpayReconcileMismatchError("此儲值可能已人工補款，需客服核對，不自動入帳");
+}
+
 export async function handleServiceInquiry(raw: string, signature: string | null, now = Date.now()): Promise<ServiceInquiryResult> {
   if (Buffer.byteLength(raw, "utf8") > SERVICE_INQUIRY_MAX_BODY_BYTES) return { httpStatus: 413, body: { error: "請求過大" } };
   if (!verifySignature(raw, signature)) return { httpStatus: 401, body: { error: "未授權" } };
@@ -125,10 +157,12 @@ export async function handleServiceInquiry(raw: string, signature: string | null
 
   const admin = getSupabaseAdmin();
   const { data: payment, error } = await admin.from("ecpay_service_payments")
-    .select("status,fulfillment_status,payment_kind").eq("merchant_trade_no", order).maybeSingle();
+    .select("merchant_trade_no,status,fulfillment_status,payment_kind,organization_code,user_id,amount,created_at,metadata,raw_result")
+    .eq("merchant_trade_no", order).maybeSingle();
   if (error) return { httpStatus: 502, body: { status: "error", error: "付款單讀取失敗" } };
   if (!payment) return { httpStatus: 404, body: { error: "找不到付款單" } };
-  if (!isAppDrawPayment(payment)) return { httpStatus: 409, body: { error: "此付款類型不支援自動查詢" } };
+  const appTopup = isAppDirectTopupPayment(payment);
+  if (!isAppDrawPayment(payment) && !appTopup) return { httpStatus: 409, body: { error: "此付款類型不支援自動查詢" } };
   if (payment.status !== "pending") return localResult(payment);
 
   const slot = acquireGlobalSlot(now);
@@ -149,7 +183,7 @@ export async function handleServiceInquiry(raw: string, signature: string | null
   try {
     // Reuses the admin reconcile: verified QueryTradeInfo, amount/trade-no match, then ecpay_mark_service_paid
     // (row-locked and idempotent per trade_no, so a concurrent ReturnURL is safe).
-    const reconciled = await reconcileEcpayService(order);
+    const reconciled = await reconcileEcpayService(order, appTopup ? { beforeMarkPaid: remote => guardAppTopup(payment, remote) } : {});
     const { data: after, error: rereadError } = await admin.from("ecpay_service_payments")
       .select("status,fulfillment_status").eq("merchant_trade_no", order).maybeSingle();
     if (rereadError || !after) throw new Error("付款單重新讀取失敗");

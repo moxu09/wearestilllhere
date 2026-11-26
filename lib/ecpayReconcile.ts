@@ -29,7 +29,13 @@ export async function reconcileEcpayMerchandise(merchantTradeNo: string) {
   return { remoteStatus: remote.status, localStatus: order.status === "pending" && remote.status === "paid" ? "paid" : order.status };
 }
 
-export async function reconcileEcpayService(merchantTradeNo: string) {
+export type ServicePaymentGuard = (remote: Awaited<ReturnType<typeof queryEcpayTrade>>) => Promise<void>;
+
+/**
+ * `beforeMarkPaid` (optional) runs only when a pending row is about to be marked paid; it throws
+ * EcpayReconcileMismatchError to refuse. Callers without it (admin reconcile, draw inquiry) are unchanged.
+ */
+export async function reconcileEcpayService(merchantTradeNo: string, options: { beforeMarkPaid?: ServicePaymentGuard } = {}) {
   const admin = getSupabaseAdmin();
   const { data: payment, error } = await admin.from("ecpay_service_payments")
     .select("merchant_trade_no,status,amount,trade_no,organization_code,fulfillment_status")
@@ -42,6 +48,7 @@ export async function reconcileEcpayService(merchantTradeNo: string) {
   if (remote.status === "paid" && remote.raw.SimulatePaid === "1")
     throw new EcpayReconcileMismatchError("綠界模擬付款不可入帳");
   if (payment.status === "pending" && remote.status === "paid") {
+    if (options.beforeMarkPaid) await options.beforeMarkPaid(remote);
     const { error: completeError } = await admin.rpc("ecpay_mark_service_paid", {
       p_merchant_trade_no: merchantTradeNo,
       p_trade_no: remote.tradeNo,

@@ -16,6 +16,8 @@ class Query {
   rows() { return (db.tables[this.table] ||= []); }
   select() { this.returning = true; return this; }
   eq(key, value) { this.filters.push([key, value]); return this; }
+  gte(key, value) { this.filters.push([key, value, "gte"]); return this; }
+  limit(n) { return Promise.resolve({ data: this.run().slice(0, n).map(row => ({ ...row })), error: null }); }
   update(patch) { this.patch = patch; return this; }
   insert(row) {
     const rows = this.rows();
@@ -25,7 +27,7 @@ class Query {
     return Promise.resolve({ error: null });
   }
   run() {
-    const matches = this.rows().filter(row => this.filters.every(([key, value]) => row[key] === value));
+    const matches = this.rows().filter(row => this.filters.every(([key, value, op]) => op === "gte" ? String(row[key]) >= String(value) : row[key] === value));
     if (this.patch) for (const row of matches) Object.assign(row, this.patch);
     return matches;
   }
