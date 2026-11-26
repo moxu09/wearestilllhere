@@ -34,6 +34,7 @@ const navItems = [
   { label: "語音廳", href: "/voice-rooms" },
   { label: "送禮打賞", href: "/gifts/send" },
   { label: "我的錢包", href: "/wallet" },
+  { label: "下載 APP", href: "/download" },
 ];
 
 export default function PlatformTopNav() {
