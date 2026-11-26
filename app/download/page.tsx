@@ -5,10 +5,10 @@ import { ArrowLeft, Download, ShieldCheck, Smartphone } from "lucide-react";
 
 // Update these three together whenever public/downloads/qiunai-app.apk is replaced.
 const APK = {
-  version: "1.5.1",
+  version: "1.6.0",
   updated: "2026 年 11 月 26 日",
-  sizeMb: "9.2",
-  sha256: "98628e338cf98151f87ddd3a6df20e38fdf4b300621d1008c6759be9c4611063",
+  sizeMb: "7.5",
+  sha256: "fca437cb14fb14f0802877651537fa5295ef3e968c4f081ec81f5e2d3c19fb3a",
 };
 const APK_URL = `/downloads/qiunai-app.apk?v=${APK.version}`;
 
@@ -28,7 +28,7 @@ const FEATURES = [
 const STEPS = [
   { title: "下載安裝檔", body: "用手機打開這一頁，按下方「下載 Android APP」。" },
   { title: "允許安裝", body: "第一次安裝時，手機會詢問是否允許瀏覽器安裝未知應用程式，請選「允許」。" },
-  { title: "打開並登入", body: "安裝完成後開啟 APP，用 Discord 帳號登入即可。之後的新版本可以直接覆蓋安裝，資料不會不見。" },
+  { title: "打開並登入", body: "安裝完成後開啟 APP，用 Discord 帳號登入即可。之後的新版本可以直接覆蓋安裝，資料不會不見。如果你裝過 1.5.1 以前的版本，請先刪除舊的 APP 再安裝（只需要這一次，帳號資料都在伺服器上）。" },
 ];
 
 export default function DownloadPage() {
