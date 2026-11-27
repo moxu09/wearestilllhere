@@ -5,10 +5,10 @@ import { ArrowLeft, Download, ShieldCheck, Smartphone } from "lucide-react";
 
 // Update these three together whenever public/downloads/qiunai-app.apk is replaced.
 const APK = {
-  version: "1.6.1",
-  updated: "2026 年 11 月 26 日",
+  version: "1.6.2",
+  updated: "2026 年 11 月 27 日",
   sizeMb: "7.5",
-  sha256: "017a1f4c84ec43092e3d362c1daee6dacc64cc7a90c477727ee066b4e07a743b",
+  sha256: "c30e023fae2063dda133bfc9f812aac3c0dbcac4fcf22a6b967b574c0baa200b",
 };
 const APK_URL = `/downloads/qiunai-app.apk?v=${APK.version}`;
 
